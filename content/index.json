@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "lessons": [
+    {
+      "id": "day-001",
+      "title": "私はアンディです",
+      "date": "2026-10-01",
+      "file": "lessons/day-001.json",
+      "tags": ["です", "は", "自我介紹"],
+      "sample": true
+    },
+    {
+      "id": "day-002",
+      "title": "これ・それ・あれ",
+      "date": "2026-10-02",
+      "file": "lessons/day-002.json",
+      "tags": ["あれ", "この", "これ", "それ", "は"],
+      "sample": true
+    }
+  ]
+}

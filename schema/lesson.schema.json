@@ -1,0 +1,220 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://andyleehsa.github.io/japanese-log/schema/lesson.schema.json",
+  "title": "Daily lesson",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "title", "date", "level", "tags", "teaching", "questions"],
+  "properties": {
+    "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+    "title": { "type": "string", "minLength": 1 },
+    "date": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
+    "level": { "type": "string", "minLength": 1 },
+    "tags": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "sample": { "type": "boolean" },
+    "sampleNote": { "type": "string" },
+    "teaching": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/block" }
+    },
+    "questions": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/question" }
+    }
+  },
+  "$defs": {
+    "speak": { "type": "string", "minLength": 1, "description": "Japanese text spoken with the browser ja-JP voice." },
+    "audio": { "type": "string", "minLength": 1, "description": "Optional audio file URL, relative or https." },
+    "block": {
+      "oneOf": [
+        { "$ref": "#/$defs/textBlock" },
+        { "$ref": "#/$defs/vocabBlock" },
+        { "$ref": "#/$defs/exampleBlock" }
+      ]
+    },
+    "textBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "text"],
+      "properties": {
+        "type": { "enum": ["heading", "paragraph", "tip"] },
+        "text": { "type": "string", "minLength": 1, "description": "Traditional Chinese. paragraph and tip allow **bold**, `code`, and newlines." },
+        "speak": { "$ref": "#/$defs/speak" },
+        "audio": { "$ref": "#/$defs/audio" }
+      }
+    },
+    "vocabBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "items"],
+      "properties": {
+        "type": { "const": "vocab" },
+        "caption": { "type": "string" },
+        "items": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["word", "reading", "meaning"],
+            "properties": {
+              "word": { "type": "string", "minLength": 1 },
+              "reading": { "type": "string", "minLength": 1 },
+              "meaning": { "type": "string", "minLength": 1 },
+              "speak": { "$ref": "#/$defs/speak" }
+            }
+          }
+        }
+      }
+    },
+    "exampleBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "jp", "zh"],
+      "properties": {
+        "type": { "const": "example" },
+        "jp": { "type": "string", "minLength": 1 },
+        "reading": { "type": "string" },
+        "zh": { "type": "string", "minLength": 1 },
+        "note": { "type": "string" },
+        "speak": { "$ref": "#/$defs/speak" },
+        "audio": { "$ref": "#/$defs/audio" }
+      }
+    },
+    "question": {
+      "oneOf": [
+        { "$ref": "#/$defs/choice" },
+        { "$ref": "#/$defs/fill" },
+        { "$ref": "#/$defs/listeningChoice" },
+        { "$ref": "#/$defs/listeningFill" }
+      ]
+    },
+    "questionCommon": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+        "prompt": { "type": "string", "minLength": 1 },
+        "explanation": { "type": "string", "minLength": 1 },
+        "tags": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "speak": { "$ref": "#/$defs/speak" },
+        "audio": { "$ref": "#/$defs/audio" },
+        "hint": { "type": "string" }
+      },
+      "required": ["id", "prompt", "explanation", "tags"]
+    },
+    "choice": {
+      "allOf": [
+        { "$ref": "#/$defs/questionCommon" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type", "choices", "answer"],
+          "properties": {
+            "type": { "const": "choice" },
+            "id": true,
+            "prompt": true,
+            "explanation": true,
+            "tags": true,
+            "speak": true,
+            "audio": true,
+            "hint": true,
+            "choices": {
+              "type": "array",
+              "minItems": 2,
+              "items": { "type": "string", "minLength": 1 }
+            },
+            "answer": { "type": "integer", "minimum": 0 }
+          }
+        }
+      ]
+    },
+    "fill": {
+      "allOf": [
+        { "$ref": "#/$defs/questionCommon" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type", "accepted"],
+          "properties": {
+            "type": { "const": "fill" },
+            "id": true,
+            "prompt": true,
+            "explanation": true,
+            "tags": true,
+            "speak": true,
+            "audio": true,
+            "hint": true,
+            "accepted": {
+              "type": "array",
+              "minItems": 1,
+              "items": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+      ]
+    },
+    "listeningChoice": {
+      "allOf": [
+        { "$ref": "#/$defs/questionCommon" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type", "choices", "answer"],
+          "anyOf": [{ "required": ["speak"] }, { "required": ["audio"] }],
+          "properties": {
+            "type": { "const": "listening" },
+            "id": true,
+            "prompt": true,
+            "explanation": true,
+            "tags": true,
+            "speak": true,
+            "audio": true,
+            "hint": true,
+            "choices": {
+              "type": "array",
+              "minItems": 2,
+              "items": { "type": "string", "minLength": 1 }
+            },
+            "answer": { "type": "integer", "minimum": 0 }
+          }
+        }
+      ]
+    },
+    "listeningFill": {
+      "allOf": [
+        { "$ref": "#/$defs/questionCommon" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type", "accepted"],
+          "anyOf": [{ "required": ["speak"] }, { "required": ["audio"] }],
+          "properties": {
+            "type": { "const": "listening" },
+            "id": true,
+            "prompt": true,
+            "explanation": true,
+            "tags": true,
+            "speak": true,
+            "audio": true,
+            "hint": true,
+            "accepted": {
+              "type": "array",
+              "minItems": 1,
+              "items": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

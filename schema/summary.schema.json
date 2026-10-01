@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://andyleehsa.github.io/japanese-log/schema/summary.schema.json",
+  "title": "Learning summary",
+  "description": "logs/summary.json rewritten on every successful sync.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "generatedAt", "lastSyncedAt", "lastStudyDate", "streak", "overall", "perLesson", "perTag", "weakThreshold", "weakTags", "weakQuestions", "mistakes"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "generatedAt": { "type": ["string", "null"] },
+    "lastSyncedAt": { "type": ["string", "null"], "description": "UTC ISO-8601." },
+    "lastStudyDate": { "type": ["string", "null"] },
+    "timezoneNote": { "type": "string" },
+    "streak": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["current", "longest", "studyDates"],
+      "properties": {
+        "current": { "type": "integer", "minimum": 0 },
+        "longest": { "type": "integer", "minimum": 0 },
+        "studyDates": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "overall": { "$ref": "#/$defs/tally" },
+    "perLesson": { "type": "array", "items": { "$ref": "#/$defs/lessonRow" } },
+    "perTag": { "type": "array", "items": { "$ref": "#/$defs/tagRow" } },
+    "weakThreshold": { "type": "number" },
+    "weakTags": { "type": "array", "items": { "$ref": "#/$defs/tagRow" } },
+    "weakQuestions": { "type": "array", "items": { "$ref": "#/$defs/questionRow" } },
+    "mistakes": { "type": "array", "items": { "$ref": "#/$defs/questionRow" } }
+  },
+  "$defs": {
+    "tally": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["attempts", "correct", "accuracy"],
+      "properties": {
+        "attempts": { "type": "integer", "minimum": 0 },
+        "correct": { "type": "integer", "minimum": 0 },
+        "accuracy": { "type": ["number", "null"] },
+        "errorRate": { "type": ["number", "null"] }
+      }
+    },
+    "lessonRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["lessonId", "title", "attempts", "correct", "accuracy"],
+      "properties": {
+        "lessonId": { "type": "string" },
+        "title": { "type": "string" },
+        "attempts": { "type": "integer" },
+        "correct": { "type": "integer" },
+        "accuracy": { "type": ["number", "null"] },
+        "errorRate": { "type": ["number", "null"] }
+      }
+    },
+    "tagRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tag", "attempts", "correct", "accuracy"],
+      "properties": {
+        "tag": { "type": "string" },
+        "attempts": { "type": "integer" },
+        "correct": { "type": "integer" },
+        "accuracy": { "type": ["number", "null"] },
+        "errorRate": { "type": ["number", "null"] }
+      }
+    },
+    "questionRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["questionId", "lessonId", "tags", "attempts", "correct", "accuracy", "errorRate"],
+      "properties": {
+        "questionId": { "type": "string" },
+        "lessonId": { "type": "string" },
+        "lessonTitle": { "type": "string" },
+        "prompt": { "type": "string" },
+        "correctAnswer": { "type": "string" },
+        "tags": { "type": "array", "items": { "type": "string" } },
+        "lastUserAnswer": {},
+        "lastAt": { "type": "string" },
+        "wrongCount": { "type": "integer" },
+        "attempts": { "type": "integer" },
+        "correct": { "type": "integer" },
+        "accuracy": { "type": ["number", "null"] },
+        "errorRate": { "type": ["number", "null"] },
+        "lastCorrect": { "type": "boolean" }
+      }
+    }
+  }
+}
