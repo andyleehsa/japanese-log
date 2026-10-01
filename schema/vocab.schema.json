@@ -54,7 +54,28 @@
           "minItems": 1,
           "items": { "type": "string", "minLength": 1 }
         },
-        "speak": { "type": "string", "minLength": 1 }
+        "speak": { "type": "string", "minLength": 1 },
+        "verbGroup": { "enum": ["一類", "二類", "三類"] },
+        "forms": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["ます形", "て形", "ない形", "た形"],
+          "properties": {
+            "ます形": { "$ref": "#/$defs/verbForm" },
+            "て形": { "$ref": "#/$defs/verbForm" },
+            "ない形": { "$ref": "#/$defs/verbForm" },
+            "た形": { "$ref": "#/$defs/verbForm" }
+          }
+        }
+      }
+    },
+    "verbForm": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["japanese", "reading"],
+      "properties": {
+        "japanese": { "type": "string", "minLength": 1 },
+        "reading": { "type": "string", "minLength": 1 }
       }
     }
   }

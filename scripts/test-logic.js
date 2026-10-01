@@ -46,6 +46,25 @@ assert.strictEqual(logic.grade(choice, 1), false);
 assert.strictEqual(logic.userAnswerText(choice, 0), "我係學生。");
 assert.strictEqual(logic.correctAnswerText(choice), "我係學生。");
 
+const verbGroup = {
+  id: "day-001-q7",
+  type: "choice",
+  kind: "verb-group",
+  choices: ["一類", "二類", "三類", "唔係動詞"],
+  answer: 1
+};
+assert.strictEqual(logic.grade(verbGroup, 1), true);
+assert.strictEqual(logic.grade(verbGroup, 0), false);
+assert.strictEqual(logic.correctAnswerText(verbGroup), "二類");
+const verbForm = {
+  id: "day-001-q8",
+  type: "choice",
+  kind: "verb-form",
+  choices: ["食べて", "食べた", "食べない", "食べます"],
+  answer: 0
+};
+assert.strictEqual(logic.userAnswerText(verbForm, 1), "食べた");
+
 const fill = { id: "day-001-q2", type: "fill", accepted: ["は"], tags: ["は"] };
 assert.strictEqual(logic.grade(fill, " は "), true);
 assert.strictEqual(logic.grade(fill, "わ"), false);
@@ -171,6 +190,10 @@ function wrongAttempt(id, questionId, date, correct) {
   };
 }
 assert.strictEqual(logic.dueReviews([wrongAttempt("a", "q1", "2026-10-01", false)], "2026-10-02").length, 0);
+const verbDue = logic.dueReviews([wrongAttempt("verb-1", "day-001-q8", "2026-10-01", false)], "2026-10-03");
+assert.strictEqual(verbDue.length, 1);
+assert.strictEqual(verbDue[0].interval, 2);
+assert.strictEqual(verbDue[0].questionId, "day-001-q8");
 const dueOnce = logic.dueReviews([wrongAttempt("a", "q1", "2026-10-01", false)], "2026-10-03");
 assert.strictEqual(dueOnce.length, 1);
 assert.strictEqual(dueOnce[0].interval, 2);

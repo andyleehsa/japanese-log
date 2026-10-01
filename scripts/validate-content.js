@@ -86,6 +86,10 @@ function validateContent(rootDir) {
   const seenQuestionIds = new Set();
   const lessonTopics = new Map();
   const lessonsDir = path.resolve(rootDir, "content", "lessons");
+  const HIRAGANA_RE = /^[\u3040-\u309f\u30fc\s]+$/;
+  const READING_RE = /^[\u3040-\u30ff\u30fc\s、。！？]+$/;
+  const VERB_GROUPS = ["一類", "二類", "三類"];
+  const VERB_FORMS = ["ます形", "て形", "ない形", "た形"];
 
   index.lessons.forEach((item, indexNo) => {
     const label = "content/index.json lessons[" + indexNo + "]";
@@ -208,8 +212,9 @@ function validateContent(rootDir) {
     if (question.audio != null) validAudio(question.audio, label + ".audio");
 
     if (question.type === "choice") {
-      assertKeys(question, common.concat(["choices", "answer"]), label);
+      assertKeys(question, common.concat(["choices", "answer", "kind", "rule", "verb", "reading", "form"]), label);
       checkChoices(question, label);
+      checkVerbChoice(question, label);
     } else if (question.type === "fill") {
       assertKeys(question, common.concat(["accepted"]), label);
       checkAccepted(question, label);
@@ -237,6 +242,29 @@ function validateContent(rootDir) {
       }
     } else {
       fail(label + '.type "' + question.type + '" is not supported');
+    }
+  }
+
+  function checkVerbChoice(question, label) {
+    const verbFields = question.kind != null || question.rule != null || question.verb != null || question.reading != null || question.form != null;
+    if (!verbFields) return;
+    if (question.kind !== "verb-group" && question.kind !== "verb-form") {
+      fail(label + ".kind must be verb-group or verb-form");
+      return;
+    }
+    assertString(question.rule, label + ".rule");
+    assertString(question.verb, label + ".verb");
+    assertString(question.reading, label + ".reading");
+    if (typeof question.reading === "string" && !HIRAGANA_RE.test(question.reading)) {
+      fail(label + ".reading must be hiragana");
+    }
+    if (!Array.isArray(question.choices) || question.choices.length !== 4) {
+      fail(label + ".choices must contain exactly 4 strings");
+    }
+    if (question.kind === "verb-form") {
+      if (!VERB_FORMS.includes(question.form)) fail(label + ".form must be ます形, て形, ない形, or た形");
+    } else if (question.form != null) {
+      fail(label + ".form is only for kind verb-form");
     }
   }
 
@@ -331,9 +359,6 @@ function validateContent(rootDir) {
     });
   }
 
-  const HIRAGANA_RE = /^[\u3040-\u309f\u30fc\s]+$/;
-  const READING_RE = /^[\u3040-\u30ff\u30fc\s、。！？]+$/;
-
   function checkVocab() {
     const entryIds = new Set();
     const categoryIds = new Set();
@@ -372,7 +397,7 @@ function validateContent(rootDir) {
             fail(entryLabel + " must be an object");
             return;
           }
-          assertKeys(entry, ["id", "japanese", "reading", "meaning", "level", "category", "example", "tags", "speak"], entryLabel);
+          assertKeys(entry, ["id", "japanese", "reading", "meaning", "level", "category", "example", "tags", "speak", "verbGroup", "forms"], entryLabel);
           assertString(entry.id, entryLabel + ".id");
           if (entry.id && !ID_RE.test(entry.id)) fail(entryLabel + ".id must match " + ID_RE);
           if (entry.id && entryIds.has(entry.id)) fail(entryLabel + " duplicate vocab id " + entry.id);
@@ -387,6 +412,29 @@ function validateContent(rootDir) {
           if (entry.category !== category.id) fail(entryLabel + ".category must match parent category id");
           optionalString(entry, "speak", entryLabel);
           if (entry.tags != null) assertTags(entry.tags, entryLabel + ".tags");
+          if (entry.verbGroup != null && !VERB_GROUPS.includes(entry.verbGroup)) {
+            fail(entryLabel + ".verbGroup must be 一類, 二類, or 三類");
+          }
+          if (entry.forms != null) {
+            if (!isObject(entry.forms)) fail(entryLabel + ".forms must be an object");
+            else {
+              assertKeys(entry.forms, VERB_FORMS, entryLabel + ".forms");
+              VERB_FORMS.forEach((name) => {
+                const form = entry.forms[name];
+                const formLabel = entryLabel + ".forms." + name;
+                if (!isObject(form)) {
+                  fail(formLabel + " is required when forms is present");
+                  return;
+                }
+                assertKeys(form, ["japanese", "reading"], formLabel);
+                assertString(form.japanese, formLabel + ".japanese");
+                assertString(form.reading, formLabel + ".reading");
+                if (typeof form.reading === "string" && !HIRAGANA_RE.test(form.reading)) {
+                  fail(formLabel + ".reading must be hiragana");
+                }
+              });
+            }
+          }
           if (entry.example != null) {
             if (!isObject(entry.example)) fail(entryLabel + ".example must be an object");
             else {

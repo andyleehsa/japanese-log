@@ -490,6 +490,7 @@
       feedback = "<div class=\"feedback " + (correct ? "is-ok" : "is-bad") + "\" role=\"status\">"
         + "<p class=\"feedback-title\">" + (correct ? "啱！" : "錯咗") + "</p>"
         + (correct ? "" : "<p>正確答案：" + jaSpan(right) + "</p>")
+        + (!correct && question.rule ? "<p class=\"verb-rule\">" + escapeHtml(question.rule) + "</p>" : "")
         + "<p>" + inline(question.explanation || "") + "</p>"
         + "</div>";
     }
@@ -506,6 +507,8 @@
           + "<p class=\"flash-meaning\">" + escapeHtml(question.meaning || "") + "</p>"
           + "</section>";
       }
+    } else if (question.kind === "verb-group" || question.kind === "verb-form") {
+      media = renderVerbAsk(question);
     } else {
       media = "<div class=\"media\">" + audioElement(question.audio) + speakButton(question.speak) + "</div>"
         + (question.speak || question.audio ? "<p class=\"hint\">聽唔到聲，先檢查 iPhone 靜音掣同音量。</p>" : "");
@@ -519,6 +522,20 @@
       + answerUi
       + feedback
       + next;
+  }
+
+  function renderVerbAsk(question) {
+    var task = question.kind === "verb-form"
+      ? "揀" + (question.form || "")
+      : "係邊類？";
+    return "<section class=\"verb-ask\">"
+      + "<p class=\"kicker\">字典形</p>"
+      + "<p class=\"flash-jp jp\" lang=\"ja\">" + escapeHtml(question.verb || "") + "</p>"
+      + "<p class=\"flash-reading reading\" lang=\"ja\">" + escapeHtml(question.reading || "") + "</p>"
+      + "<p class=\"verb-ask-task\">" + escapeHtml(task) + "</p>"
+      + speakButton(question.speak || question.verb)
+      + "<p class=\"hint\">聽唔到聲，先檢查 iPhone 靜音掣同音量。</p>"
+      + "</section>";
   }
 
   function renderChoices(question) {
@@ -649,6 +666,7 @@
         + "<h2 class=\"prompt\">" + renderPrompt(prompt) + "</h2>"
         + "<p>你上次答：" + jaSpan(item.lastUserAnswer || "（空）") + "</p>"
         + (correct ? "<p>正確答案：" + jaSpan(correct) + "</p>" : "")
+        + (found && found.question.rule ? "<p class=\"verb-rule\">" + escapeHtml(found.question.rule) + "</p>" : "")
         + (explanation ? "<p>" + inline(explanation) + "</p>" : "")
         + "<p class=\"tags\">" + renderTags(item.tags) + "</p>"
         + "<p class=\"meta\">錯過 " + item.wrongCount + " 次 · 錯誤率 " + Math.round((item.errorRate || 0) * 100) + "%</p>"
@@ -792,6 +810,31 @@
     return shown.map(renderWord).join("") + more;
   }
 
+  var VERB_FORM_NAMES = ["ます形", "て形", "ない形", "た形"];
+
+  function renderVerbForms(entry) {
+    if (!entry || (!entry.verbGroup && !entry.forms)) return "";
+    var rows = "";
+    if (entry.forms) {
+      rows = VERB_FORM_NAMES.map(function (name) {
+        var form = entry.forms[name];
+        if (!form) return "";
+        return "<div class=\"verb-form\">"
+          + "<span class=\"verb-form-name\">" + escapeHtml(name) + "</span>"
+          + "<span class=\"verb-form-body\">"
+          + "<span class=\"verb-form-jp jp\" lang=\"ja\">" + escapeHtml(form.japanese) + "</span>"
+          + "<span class=\"verb-form-reading\" lang=\"ja\">" + escapeHtml(form.reading) + "</span>"
+          + "</span>"
+          + "</div>";
+      }).join("");
+    }
+    return "<section class=\"verb-forms\">"
+      + (entry.verbGroup ? "<p class=\"verb-group\">" + escapeHtml(entry.verbGroup) + "</p>" : "")
+      + "<p class=\"meta\">其他形都由字典形變出嚟。</p>"
+      + rows
+      + "</section>";
+  }
+
   function renderWord(entry) {
     var example = entry.example ? "<p class=\"jp\" lang=\"ja\">" + escapeHtml(entry.example.jp) + "</p>"
       + (entry.example.reading ? "<p class=\"reading\" lang=\"ja\">" + escapeHtml(entry.example.reading) + "</p>" : "")
@@ -801,6 +844,7 @@
       + "<p class=\"reading\" lang=\"ja\">" + escapeHtml(entry.reading) + "</p>"
       + "<p>" + escapeHtml(entry.meaning) + "</p>"
       + example
+      + renderVerbForms(entry)
       + speakButton(entry.speak)
       + "<p class=\"meta\">" + escapeHtml(markLabel(entry.id)) + "</p>"
       + "<button type=\"button\" class=\"btn\" data-action=\"vocab-known\" data-id=\"" + escapeHtml(entry.id) + "\">識</button>"
@@ -857,6 +901,7 @@
     var entry = cards.entries[cards.index];
     var meaning = cards.revealed
       ? "<p class=\"flash-meaning score\">" + escapeHtml(entry.meaning) + "</p>"
+        + renderVerbForms(entry)
         + (entry.example ? "<p class=\"jp\" lang=\"ja\">" + escapeHtml(entry.example.jp) + "</p><p>" + escapeHtml(entry.example.zh || "") + "</p>" : "")
         + "<button type=\"button\" class=\"btn ghost\" data-action=\"hide\">收起意思</button>"
       : "<button type=\"button\" class=\"btn secondary\" data-action=\"reveal\">睇意思</button>";

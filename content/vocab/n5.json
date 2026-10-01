@@ -1738,7 +1738,14 @@
       "動詞",
       "二類動詞（一段）"
      ],
-     "speak": "たべる"
+     "speak": "たべる",
+     "verbGroup": "二類",
+     "forms": {
+      "ます形": { "japanese": "食べます", "reading": "たべます" },
+      "て形": { "japanese": "食べて", "reading": "たべて" },
+      "ない形": { "japanese": "食べない", "reading": "たべない" },
+      "た形": { "japanese": "食べた", "reading": "たべた" }
+     }
     },
     {
      "id": "n5-v-0410",

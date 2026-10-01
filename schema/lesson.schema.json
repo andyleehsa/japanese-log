@@ -137,8 +137,40 @@
               "minItems": 2,
               "items": { "type": "string", "minLength": 1 }
             },
-            "answer": { "type": "integer", "minimum": 0 }
-          }
+            "answer": { "type": "integer", "minimum": 0 },
+            "kind": { "enum": ["verb-group", "verb-form"] },
+            "rule": { "type": "string", "minLength": 1 },
+            "verb": { "type": "string", "minLength": 1 },
+            "reading": { "type": "string", "minLength": 1 },
+            "form": { "enum": ["ます形", "て形", "ない形", "た形"] }
+          },
+          "allOf": [
+            {
+              "if": {
+                "properties": { "kind": { "const": "verb-group" } },
+                "required": ["kind"]
+              },
+              "then": {
+                "required": ["rule", "verb", "reading"],
+                "not": { "required": ["form"] },
+                "properties": {
+                  "choices": { "minItems": 4, "maxItems": 4 }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": { "kind": { "const": "verb-form" } },
+                "required": ["kind"]
+              },
+              "then": {
+                "required": ["rule", "verb", "reading", "form"],
+                "properties": {
+                  "choices": { "minItems": 4, "maxItems": 4 }
+                }
+              }
+            }
+          ]
         }
       ]
     },

@@ -270,6 +270,68 @@ a.tag.is-on { background: var(--indigo); color: #f7f3ea; }
   margin: 12px 0;
 }
 
+.verb-forms {
+  margin: 12px 0;
+  padding-top: 4px;
+  border-top: 1px solid var(--line);
+}
+
+.verb-group {
+  display: inline-block;
+  margin: 8px 0 0;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: var(--indigo-soft);
+  color: var(--indigo);
+  font-weight: 800;
+}
+
+.verb-form {
+  display: grid;
+  grid-template-columns: 4.6em 1fr;
+  gap: 2px 12px;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.verb-form-name {
+  font-weight: 800;
+  color: var(--muted);
+}
+
+.verb-form-body {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.verb-form-jp {
+  font-size: 1.35rem;
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.verb-form-reading {
+  font-size: 16px;
+  color: var(--muted);
+}
+
+.verb-ask {
+  margin: 8px 0 14px;
+}
+
+.verb-ask-task {
+  margin: 4px 0 8px;
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+
+.verb-rule {
+  margin: 8px 0;
+  font-weight: 800;
+}
+
 .back {
   color: var(--indigo);
   font-weight: 800;
