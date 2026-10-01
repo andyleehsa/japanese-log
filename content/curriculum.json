@@ -121,7 +121,9 @@
           "title": "數字 0 至 100",
           "description": "學習0至100的數字讀法，包括0、4、7、9的特殊讀法。",
           "level": "N5",
-          "lessonIds": [],
+          "lessonIds": [
+            "n5w1-d5"
+          ],
           "planned": 2
         },
         {
@@ -145,7 +147,9 @@
           "title": "指示詞（一）：これ・それ・あれ",
           "description": "分辨近稱、中稱、遠稱的事物指示詞，並配合疑問詞「どれ」。",
           "level": "N5",
-          "lessonIds": [],
+          "lessonIds": [
+            "n5w1-d3"
+          ],
           "planned": 1
         },
         {
@@ -153,7 +157,9 @@
           "title": "指示詞（二）：ここ・そこ・あそこ・この・その・あの",
           "description": "學習場所指示詞、連體詞「この／その／あの」及方向「こちら」等。",
           "level": "N5",
-          "lessonIds": [],
+          "lessonIds": [
+            "n5w1-d3"
+          ],
           "planned": 2
         },
         {
@@ -185,7 +191,9 @@
           "title": "時間：〜時〜分",
           "description": "學習幾點幾分的讀法（包括特殊讀音）及「午前／午後」。",
           "level": "N5",
-          "lessonIds": [],
+          "lessonIds": [
+            "n5w1-d5"
+          ],
           "planned": 2
         },
         {
@@ -193,7 +201,9 @@
           "title": "聆聽專項②：數字與時間",
           "description": "慢速聽辨數字、價錢、時間，並抄寫或選出正確答案。",
           "level": "N5",
-          "lessonIds": [],
+          "lessonIds": [
+            "n5w1-d5"
+          ],
           "planned": 2
         },
         {
@@ -209,7 +219,9 @@
           "title": "大數字與價錢",
           "description": "學習百、千、萬的讀法（含音變）及用「いくらですか」問價錢。",
           "level": "N5",
-          "lessonIds": [],
+          "lessonIds": [
+            "n5w1-d5"
+          ],
           "planned": 1
         },
         {
@@ -241,7 +253,9 @@
           "title": "い形容詞（一）：基本形與修飾名詞",
           "description": "認識い形容詞的特徵，學習肯定句、否定「くない」及修飾名詞。",
           "level": "N5",
-          "lessonIds": [],
+          "lessonIds": [
+            "n5w1-d6"
+          ],
           "planned": 2
         },
         {
@@ -249,7 +263,9 @@
           "title": "い形容詞（二）：過去式與連接",
           "description": "學習「かった」「くなかった」及以「くて」連接形容詞。",
           "level": "N5",
-          "lessonIds": [],
+          "lessonIds": [
+            "n5w1-d6"
+          ],
           "planned": 2
         },
         {
@@ -257,7 +273,9 @@
           "title": "な形容詞",
           "description": "學習な形容詞的現在、過去、否定及「な」修飾名詞。",
           "level": "N5",
-          "lessonIds": [],
+          "lessonIds": [
+            "n5w1-d6"
+          ],
           "planned": 2
         },
         {
@@ -307,7 +325,9 @@
           "title": "ます形：現在與未來",
           "description": "學習動詞ます形的肯定與否定，以及時間詞用法。",
           "level": "N5",
-          "lessonIds": [],
+          "lessonIds": [
+            "n5w1-d4"
+          ],
           "planned": 2
         },
         {
@@ -323,7 +343,9 @@
           "title": "助詞「に」「へ」：時間與目的地",
           "description": "學習以「に」表示時間點、以「に／へ」表示移動方向。",
           "level": "N5",
-          "lessonIds": [],
+          "lessonIds": [
+            "n5w1-d2"
+          ],
           "planned": 2
         },
         {
@@ -331,7 +353,9 @@
           "title": "助詞「で」：場所與手段",
           "description": "學習以「で」表示動作場所、交通工具及工具方法。",
           "level": "N5",
-          "lessonIds": [],
+          "lessonIds": [
+            "n5w1-d2"
+          ],
           "planned": 2
         },
         {
@@ -347,7 +371,9 @@
           "title": "ました形：過去式",
           "description": "學習動詞ます形的過去肯定與否定，描述昨天與上星期的事。",
           "level": "N5",
-          "lessonIds": [],
+          "lessonIds": [
+            "n5w1-d4"
+          ],
           "planned": 2
         },
         {
@@ -515,7 +541,9 @@
           "title": "N5 綜合複習與模擬",
           "description": "整理N5文法與詞彙，進行綜合練習及聽力小測。",
           "level": "N5",
-          "lessonIds": [],
+          "lessonIds": [
+            "n5w1-d7"
+          ],
           "planned": 3
         }
       ]

@@ -66,6 +66,120 @@
         "n5-036-verbclass"
       ],
       "sample": false
+    },
+    {
+      "id": "n5w1-d2",
+      "title": "第 2 日：助詞「で」同「に」",
+      "date": "2026-10-03",
+      "file": "lessons/n5w1-d2.json",
+      "tags": [
+        "で",
+        "に",
+        "助詞",
+        "聽力"
+      ],
+      "topics": [
+        "n5-039-ni-he",
+        "n5-040-de-particle"
+      ],
+      "sample": false
+    },
+    {
+      "id": "n5w1-d3",
+      "title": "第 3 日：これ・それ・あれ・どれ／ここ・そこ・あそこ・どこ",
+      "date": "2026-10-04",
+      "file": "lessons/n5w1-d3.json",
+      "tags": [
+        "こそあど",
+        "これ",
+        "ここ",
+        "どれ",
+        "どこ",
+        "聽力"
+      ],
+      "topics": [
+        "n5-017-demo1",
+        "n5-018-demo2"
+      ],
+      "sample": false
+    },
+    {
+      "id": "n5w1-d4",
+      "title": "第 4 日：由辭書形變ます形（現在・否定・過去・過去否定）",
+      "date": "2026-10-05",
+      "file": "lessons/n5w1-d4.json",
+      "tags": [
+        "ます形",
+        "否定",
+        "過去",
+        "動詞",
+        "辭書形",
+        "聽力"
+      ],
+      "topics": [
+        "n5-037-masu1",
+        "n5-042-masita"
+      ],
+      "sample": false
+    },
+    {
+      "id": "n5w1-d5",
+      "title": "第 5 日：數字・時間・價錢（いくらですか）",
+      "date": "2026-10-06",
+      "file": "lessons/n5w1-d5.json",
+      "tags": [
+        "數字",
+        "時間",
+        "價錢",
+        "いくら",
+        "聽力"
+      ],
+      "topics": [
+        "n5-014-numbers1",
+        "n5-022-time1",
+        "n5-025-numbers2",
+        "n5-023-listen2"
+      ],
+      "sample": false
+    },
+    {
+      "id": "n5w1-d6",
+      "title": "第 6 日：い形容詞同な形容詞（基本用法）",
+      "date": "2026-10-07",
+      "file": "lessons/n5w1-d6.json",
+      "tags": [
+        "い形容詞",
+        "な形容詞",
+        "否定",
+        "過去",
+        "聽力"
+      ],
+      "topics": [
+        "n5-029-iadj1",
+        "n5-030-iadj2",
+        "n5-031-naadj"
+      ],
+      "sample": false
+    },
+    {
+      "id": "n5w1-d7",
+      "title": "第 7 日：複習同小測",
+      "date": "2026-10-08",
+      "file": "lessons/n5w1-d7.json",
+      "tags": [
+        "複習",
+        "小測",
+        "長音",
+        "で",
+        "に",
+        "否定",
+        "過去",
+        "聽力"
+      ],
+      "topics": [
+        "n5-063-review5"
+      ],
+      "sample": false
     }
   ]
 }

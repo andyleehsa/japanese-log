@@ -336,9 +336,10 @@ a.tag.is-on { background: var(--indigo); color: #f7f3ea; }
   display: inline-block;
   margin-left: 8px;
   padding: 0 6px;
+  border: 1px solid #e4d3b0;
   border-radius: 999px;
-  background: #f3ecdf;
-  color: #7a6a55;
+  background: #f6f0e4;
+  color: #6f5e45;
   font-size: 12px;
   font-weight: 700;
   line-height: 1.7;
