@@ -215,8 +215,14 @@ function validateContent(rootDir) {
         fail(label + '.prompt must include the blank marker "___"');
       }
     } else if (question.type === "listening") {
-      assertKeys(question, common.concat(["choices", "answer", "accepted"]), label);
+      assertKeys(question, common.concat(["choices", "answer", "accepted", "jp", "reading", "meaning"]), label);
       if (!question.speak && !question.audio) fail(label + " needs speak or audio");
+      assertString(question.jp, label + ".jp");
+      assertString(question.reading, label + ".reading");
+      assertString(question.meaning, label + ".meaning");
+      if (typeof question.prompt === "string" && question.jp && question.prompt.includes(question.jp)) {
+        fail(label + ".prompt must not show the Japanese sentence before the answer");
+      }
       const hasChoices = Array.isArray(question.choices);
       const hasAccepted = Array.isArray(question.accepted);
       if (hasChoices === hasAccepted) fail(label + " must use either choices+answer or accepted, not both");

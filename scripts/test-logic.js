@@ -154,4 +154,56 @@ assert.strictEqual(vocab.byLevel[0].percent, 0.5);
 assert.strictEqual(vocab.unknown[0].id, "w2");
 assert.strictEqual(vocab.unknown[0].meaning, "食");
 
+assert.deepStrictEqual(logic.REVIEW_INTERVALS, [2, 5, 10]);
+assert.strictEqual(logic.reviewInterval(1), 2);
+assert.strictEqual(logic.reviewInterval(2), 5);
+assert.strictEqual(logic.reviewInterval(3), 10);
+assert.strictEqual(logic.reviewInterval(6), 10);
+
+function wrongAttempt(id, questionId, date, correct) {
+  return {
+    id: id,
+    questionId: questionId,
+    lessonId: "day-001",
+    correct: !!correct,
+    timestamp: date + "T10:00:00+08:00",
+    localDate: date
+  };
+}
+assert.strictEqual(logic.dueReviews([wrongAttempt("a", "q1", "2026-10-01", false)], "2026-10-02").length, 0);
+const dueOnce = logic.dueReviews([wrongAttempt("a", "q1", "2026-10-01", false)], "2026-10-03");
+assert.strictEqual(dueOnce.length, 1);
+assert.strictEqual(dueOnce[0].interval, 2);
+assert.strictEqual(dueOnce[0].due, "2026-10-03");
+const twice = [
+  wrongAttempt("a", "q1", "2026-10-01", false),
+  wrongAttempt("b", "q1", "2026-10-03", false)
+];
+assert.strictEqual(logic.dueReviews(twice, "2026-10-07").length, 0);
+assert.strictEqual(logic.dueReviews(twice, "2026-10-08")[0].interval, 5);
+const cleared = twice.concat([wrongAttempt("c", "q1", "2026-10-08", true)]);
+assert.strictEqual(logic.dueReviews(cleared, "2026-10-20").length, 0);
+const again = cleared.concat([wrongAttempt("d", "q1", "2026-10-09", false)]);
+assert.strictEqual(logic.dueReviews(again, "2026-10-11")[0].interval, 2);
+
+const plainAttempt = logic.makeAttempt({
+  question: { id: "q1", tags: ["は"] },
+  lessonId: "day-001",
+  userAnswerText: "は",
+  correct: true,
+  attemptNo: 1,
+  now: new Date(2026, 9, 1, 8, 0, 0)
+});
+assert.strictEqual(plainAttempt.review, undefined);
+const reviewAttempt = logic.makeAttempt({
+  question: { id: "q1", tags: ["は"] },
+  lessonId: "day-001",
+  userAnswerText: "わ",
+  correct: false,
+  attemptNo: 2,
+  review: true,
+  now: new Date(2026, 9, 3, 8, 0, 0)
+});
+assert.strictEqual(reviewAttempt.review, true);
+
 console.log("logic tests ok");

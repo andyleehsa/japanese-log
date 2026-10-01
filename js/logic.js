@@ -133,10 +133,57 @@
     return out;
   }
 
+  var REVIEW_INTERVALS = [2, 5, 10];
+
+  function reviewInterval(wrongStreak) {
+    var index = Math.min(Math.max(wrongStreak, 1), REVIEW_INTERVALS.length) - 1;
+    return REVIEW_INTERVALS[index];
+  }
+
+  function dueReviews(attempts, today) {
+    var day = today || todayLocalDate();
+    var byQuestion = new Map();
+    (attempts || []).forEach(function (attempt) {
+      if (!attempt || !attempt.questionId) return;
+      if (!byQuestion.has(attempt.questionId)) byQuestion.set(attempt.questionId, []);
+      byQuestion.get(attempt.questionId).push(attempt);
+    });
+    var due = [];
+    byQuestion.forEach(function (list, questionId) {
+      var sorted = list.slice().sort(function (a, b) {
+        return String(a.timestamp || "").localeCompare(String(b.timestamp || "")) || String(a.id || "").localeCompare(String(b.id || ""));
+      });
+      var last = sorted[sorted.length - 1];
+      if (!last || last.correct) return;
+      var streak = 0;
+      for (var i = sorted.length - 1; i >= 0; i--) {
+        if (sorted[i].correct) break;
+        streak += 1;
+      }
+      var from = last.localDate || String(last.timestamp || "").slice(0, 10);
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(from)) return;
+      var interval = reviewInterval(streak);
+      var dueDate = addDays(from, interval);
+      if (dueDate > day) return;
+      due.push({
+        questionId: questionId,
+        lessonId: last.lessonId || "",
+        due: dueDate,
+        interval: interval,
+        wrongStreak: streak,
+        lastAt: last.timestamp || ""
+      });
+    });
+    due.sort(function (a, b) {
+      return String(a.due).localeCompare(String(b.due)) || String(a.questionId).localeCompare(String(b.questionId));
+    });
+    return due;
+  }
+
   function makeAttempt(options) {
     var question = options.question;
     var when = formatLocalTimestamp(options.now || new Date());
-    return {
+    var attempt = {
       id: options.id || newId(),
       questionId: question.id,
       lessonId: options.lessonId,
@@ -147,6 +194,8 @@
       localDate: when.localDate,
       attemptNo: options.attemptNo
     };
+    if (options.review) attempt.review = true;
+    return attempt;
   }
 
   function tally(list) {
@@ -501,6 +550,9 @@
   return {
     WEAK_THRESHOLD: WEAK_THRESHOLD,
     COMPLETION_ACCURACY: COMPLETION_ACCURACY,
+    REVIEW_INTERVALS: REVIEW_INTERVALS,
+    reviewInterval: reviewInterval,
+    dueReviews: dueReviews,
     lessonIsDone: lessonIsDone,
     curriculumReport: curriculumReport,
     mergeVocabMarks: mergeVocabMarks,

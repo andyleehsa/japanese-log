@@ -167,27 +167,49 @@ App 會先做 Unicode NFKC（全形轉半形），再刪走所有空白，先至
 }
 ```
 
-### listening（而家可以用，樣本未用）
+### listening
 
-聽力題同 choice 或 fill 一樣，但一定要有 `speak`（瀏覽器用 ja-JP 朗讀）或者 `audio`（音檔），兩樣有一樣就得。唔好同時有 `choices` 同 `accepted`。
+聽力題答題之前**唔顯示日文**。Andy 撳「聽一次」或者「再聽」，兩樣都係大約 0.7 倍速，可以聽幾多次都得。有 `audio` 就播錄音檔；冇錄音先用 `speak` 用語音讀。提交之後先顯示 `jp`、平假名 `reading`、繁體中文 `meaning`，同埋 `explanation`。
+
+一定要有 `speak` 或者 `audio`，其中一樣就得。揀答案用 `choices` + `answer`。聽寫（例如時間、數字）用 `accepted`，`prompt` 要有 `___`。唔好同時有 `choices` 同 `accepted`。`prompt` 用中文出指令，唔好把 `jp` 寫入去，否則答之前就見到答案。
 
 ```json
 {
   "id": "day-003-q3",
   "type": "listening",
-  "prompt": "聽完揀意思。",
+  "prompt": "聽完揀意思。答題之前唔會顯示日文。",
   "speak": "これは水です。",
   "audio": "content/audio/day-003-q3.mp3",
+  "jp": "これは水です。",
+  "reading": "これは みずです。",
+  "meaning": "呢個係水。",
   "choices": ["呢個係水。", "呢個係茶。"],
   "answer": 0,
   "explanation": "「水」係水。",
-  "tags": ["これ"]
+  "tags": ["これ", "聽力"]
 }
 ```
 
-填空版就用 `accepted`，唔好再加 `choices`。`prompt` 如果係填空，一樣要有 `___`。
+聽寫例子：
 
-如果部機冇日文語音，三個掣仍然喺度，撳咗會見到中文提示，話你去邊度加日文聲音。有 `audio` 就仍然可以播檔。
+```json
+{
+  "id": "day-003-q4",
+  "type": "listening",
+  "prompt": "聽完用數字填時間：___時。",
+  "speak": "三時です。",
+  "jp": "三時です。",
+  "reading": "さんじです。",
+  "meaning": "三點。",
+  "accepted": ["3", "３", "三"],
+  "explanation": "「三時」係三點。",
+  "tags": ["聽力", "時間"]
+}
+```
+
+如果部機冇日文語音，掣仍然喺度，撳咗會見到中文提示。有 `audio` 就仍然可以播檔。練習頁會提醒：聽唔到聲，先檢查 iPhone 靜音掣同音量。
+
+樣本課題 `day-001` 有一題選擇聽力，`day-002` 有一題時間聽寫。
 
 ## 完整可跑例子
 

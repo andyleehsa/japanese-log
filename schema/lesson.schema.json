@@ -173,7 +173,7 @@
         {
           "type": "object",
           "additionalProperties": false,
-          "required": ["type", "choices", "answer"],
+          "required": ["type", "choices", "answer", "jp", "reading", "meaning"],
           "anyOf": [{ "required": ["speak"] }, { "required": ["audio"] }],
           "properties": {
             "type": { "const": "listening" },
@@ -184,6 +184,9 @@
             "speak": true,
             "audio": true,
             "hint": true,
+            "jp": { "type": "string", "minLength": 1 },
+            "reading": { "type": "string", "minLength": 1 },
+            "meaning": { "type": "string", "minLength": 1 },
             "choices": {
               "type": "array",
               "minItems": 2,
@@ -200,7 +203,7 @@
         {
           "type": "object",
           "additionalProperties": false,
-          "required": ["type", "accepted"],
+          "required": ["type", "accepted", "jp", "reading", "meaning"],
           "anyOf": [{ "required": ["speak"] }, { "required": ["audio"] }],
           "properties": {
             "type": { "const": "listening" },
@@ -211,6 +214,9 @@
             "speak": true,
             "audio": true,
             "hint": true,
+            "jp": { "type": "string", "minLength": 1 },
+            "reading": { "type": "string", "minLength": 1 },
+            "meaning": { "type": "string", "minLength": 1 },
             "accepted": {
               "type": "array",
               "minItems": 1,

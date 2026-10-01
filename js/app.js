@@ -52,10 +52,28 @@
       + "</div>";
   }
 
-  function audioElement(url) {
+  function audioElement(url, listening) {
     var src = safeAudio(url);
     if (!src) return "";
-    return "<audio controls preload=\"none\" src=\"" + escapeHtml(src) + "\"></audio>";
+    return "<audio " + (listening ? "data-listening " : "controls ") + "preload=\"none\" src=\"" + escapeHtml(src) + "\"></audio>";
+  }
+
+  function listeningControls(question) {
+    var row = "";
+    if (question.audio) {
+      row = audioElement(question.audio, true)
+        + "<div class=\"speak-row\">"
+        + "<button type=\"button\" class=\"speak\" data-action=\"listen-audio\">聽一次</button>"
+        + "<button type=\"button\" class=\"speak\" data-action=\"listen-audio\">再聽</button>"
+        + "</div>";
+    } else if (question.speak) {
+      var value = escapeHtml(question.speak);
+      row = "<div class=\"speak-row\">"
+        + "<button type=\"button\" class=\"speak\" data-speak=\"" + value + "\" data-speech=\"slow\">聽一次</button>"
+        + "<button type=\"button\" class=\"speak\" data-speak=\"" + value + "\" data-speech=\"slow\">再聽</button>"
+        + "</div>";
+    }
+    return row + "<p class=\"hint\">聽唔到聲，先檢查 iPhone 靜音掣同音量。可以聽幾多次都得。</p>";
   }
 
   function renderTags(tags) {
@@ -243,6 +261,7 @@
       + "<p class=\"meta\">最長連續 " + stats.streak.longest + " 日"
       + (stats.lastStudyDate ? " · 上次溫習 " + escapeHtml(window.JPLogic.formatDateLabel(stats.lastStudyDate)) : "")
       + "</p>"
+      + renderReviewCard()
       + todayHtml
       + "<button type=\"button\" class=\"btn ghost\" data-action=\"reload\">重新載入課題</button>"
       + renderLevelBars()
@@ -250,6 +269,25 @@
       + "<p class=\"meta\">任何課題都可以隨時再入去睇同再練，唔使按順序。</p>"
       + (list || "<p>未有課題。</p>")
       + renderSyncRow();
+  }
+
+  function dueQuestionList() {
+    return window.JPLogic.dueReviews(window.JPStore.loadAttempts(), window.JPLogic.todayLocalDate()).filter(function (item) {
+      return !!findQuestion(item.questionId);
+    });
+  }
+
+  function renderReviewCard() {
+    var count = dueQuestionList().length;
+    if (!count) {
+      return "<section class=\"card\"><p class=\"kicker\">今日要溫習</p><p>今日未有到期嘅錯題。</p></section>";
+    }
+    return "<a class=\"card today\" href=\"#/practice/review\">"
+      + "<p class=\"kicker\">今日要溫習</p>"
+      + "<p class=\"row-title\">" + count + " 題到期</p>"
+      + "<p class=\"meta\">答錯嘅題會喺 2 日、再錯 5 日、之後 10 日再出現。</p>"
+      + "<span class=\"btn secondary\">開始溫習</span>"
+      + "</a>";
   }
 
   function renderSyncRow() {
@@ -430,7 +468,9 @@
       return "<section class=\"panel\"><h1>搵唔到呢課</h1><p>可能老師未放，或者你離線未載入過。</p><a class=\"btn\" href=\"#/\">返回主頁</a></section>";
     }
     if (session.phase === "empty") {
-      return "<section class=\"panel\"><h1>" + escapeHtml(session.title || "練習") + "</h1><p>未有可以練嘅題。</p><a class=\"btn\" href=\"#/mistakes\">返回錯題本</a></section>";
+      var emptyNote = session.key === "review" ? "今日未有到期嘅錯題。" : "未有可以練嘅題。";
+      var emptyLink = session.key === "review" ? "<a class=\"btn\" href=\"#/\">返回主頁</a>" : "<a class=\"btn\" href=\"#/mistakes\">返回錯題本</a>";
+      return "<section class=\"panel\"><h1>" + escapeHtml(session.title || "練習") + "</h1><p>" + emptyNote + "</p>" + emptyLink + "</section>";
     }
     if (session.phase === "done") return renderDone();
     var question = session.questions[session.index];
@@ -453,13 +493,27 @@
     }
     var next = session.locked ? "<button type=\"button\" class=\"btn sticky-next\" data-action=\"next\">"
       + (session.index + 1 >= total ? "完成" : "下一題") + "</button>" : "";
+    var media = "";
+    if (question.type === "listening") {
+      media = "<div class=\"media\">" + listeningControls(question) + "</div>";
+      if (session.locked) {
+        media += "<section class=\"reveal\">"
+          + "<p class=\"kicker\">你聽到嘅係</p>"
+          + "<p class=\"flash-jp jp\" lang=\"ja\">" + escapeHtml(question.jp || "") + "</p>"
+          + "<p class=\"flash-reading reading\" lang=\"ja\">" + escapeHtml(question.reading || "") + "</p>"
+          + "<p class=\"flash-meaning\">" + escapeHtml(question.meaning || "") + "</p>"
+          + "</section>";
+      }
+    } else {
+      media = "<div class=\"media\">" + audioElement(question.audio) + speakButton(question.speak) + "</div>"
+        + (question.speak || question.audio ? "<p class=\"hint\">聽唔到聲，先檢查 iPhone 靜音掣同音量。</p>" : "");
+    }
     return "<div class=\"practice-head\"><a class=\"back\" href=\"#/\">離開</a>"
-      + "<h1>第 " + (session.index + 1) + " / " + total + " 題</h1></div>"
+      + "<h1>" + (session.key === "review" ? "今日要溫習 · " : "") + "第 " + (session.index + 1) + " / " + total + " 題</h1></div>"
       + "<progress max=\"" + total + "\" value=\"" + (session.index + (session.locked ? 1 : 0)) + "\"></progress>"
       + "<p class=\"prompt\">" + renderPrompt(question.prompt || "") + "</p>"
       + (question.hint && !session.locked ? "<p class=\"hint\">提示：" + inline(question.hint) + "</p>" : "")
-      + "<div class=\"media\">" + audioElement(question.audio) + speakButton(question.speak) + "</div>"
-      + (question.speak || question.audio || question.type === "listening" ? "<p class=\"hint\">聽唔到聲，先檢查 iPhone 靜音掣同音量。</p>" : "")
+      + media
       + answerUi
       + feedback
       + next;
@@ -911,6 +965,14 @@
       });
       return baseSession("mistakes", "再練錯題", questions, "mistakes");
     }
+    if (id === "review") {
+      var reviewQuestions = [];
+      dueQuestionList().forEach(function (item) {
+        var found = findQuestion(item.questionId);
+        if (found) reviewQuestions.push(found.question);
+      });
+      return baseSession("review", "今日要溫習", reviewQuestions, "review");
+    }
     var lesson = lessonById(id);
     if (!lesson || lesson.loadError) {
       return { key: id, phase: "missing", questions: [], results: [] };
@@ -935,7 +997,7 @@
   }
 
   function lessonIdFor(question) {
-    if (session && session.lessonId && session.key !== "mistakes") return session.lessonId;
+    if (session && session.lessonId && session.key !== "mistakes" && session.key !== "review") return session.lessonId;
     var found = findQuestion(question.id);
     return found ? found.lesson.id : "";
   }
@@ -948,7 +1010,8 @@
       userAnswerText: userText,
       correct: correct,
       attemptNo: window.JPLogic.nextAttemptNo(attempts, question.id),
-      now: new Date()
+      now: new Date(),
+      review: !!(session && session.key === "review")
     });
     window.JPStore.addAttempt(attempt);
     window.JPStore.setPending(true);
@@ -1199,6 +1262,16 @@
     var action = event.target.closest && event.target.closest("[data-action]");
     if (!action) return;
     var name = action.getAttribute("data-action");
+    if (name === "listen-audio") {
+      var clip = document.querySelector("#app audio[data-listening]");
+      if (clip) {
+        clip.playbackRate = 0.7;
+        try { clip.currentTime = 0; } catch (err) { /* Some browsers reject seek before metadata. */ }
+        var playing = clip.play();
+        if (playing && playing.catch) playing.catch(function () { showToast("播唔到呢段錄音。"); });
+      }
+      return;
+    }
     if (name === "next") nextQuestion();
     if (name === "skip") skipQuestion();
     if (name === "sync") manualSync();
