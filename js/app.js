@@ -11,7 +11,7 @@
   var cards = null;
   var vocabQuery = "";
   var syncing = false;
-  var ui = { syncError: "" };
+  var ui = { syncError: "", syncOk: "" };
 
   function escapeHtml(value) {
     return String(value == null ? "" : value).replace(/[&<>"']/g, function (ch) {
@@ -43,8 +43,13 @@
   }
 
   function speakButton(text) {
-    if (!text || !window.JPSpeech.supported()) return "";
-    return "<button type=\"button\" class=\"speak\" data-speak=\"" + escapeHtml(text) + "\">讀出嚟</button>";
+    if (!text) return "";
+    var value = escapeHtml(text);
+    return "<div class=\"speak-row\">"
+      + "<button type=\"button\" class=\"speak\" data-speak=\"" + value + "\" data-speech=\"play\">讀出嚟</button>"
+      + "<button type=\"button\" class=\"speak\" data-speak=\"" + value + "\" data-speech=\"slow\">慢速</button>"
+      + "<button type=\"button\" class=\"speak\" data-speak=\"" + value + "\" data-speech=\"replay\">再聽</button>"
+      + "</div>";
   }
 
   function audioElement(url) {
@@ -239,9 +244,6 @@
       + (stats.lastStudyDate ? " · 上次溫習 " + escapeHtml(window.JPLogic.formatDateLabel(stats.lastStudyDate)) : "")
       + "</p>"
       + todayHtml
-      + "<p class=\"meta sync-line\">" + escapeHtml(statusLine()) + "</p>"
-      + "<button type=\"button\" class=\"btn secondary\" data-action=\"sync\"" + (syncing ? " disabled" : "") + ">"
-      + (syncing ? "同步緊……" : "同步畀老師") + "</button>"
       + "<button type=\"button\" class=\"btn ghost\" data-action=\"reload\">重新載入課題</button>"
       + renderLevelBars()
       + "<h2>全部課題</h2>"
@@ -595,7 +597,7 @@
       + "<h1>設定</h1>"
       + "<section class=\"panel\">"
       + "<h2>同步畀老師</h2>"
-      + "<p>金鑰只留喺呢部機嘅 localStorage，唔會寫入 repo，亦唔會跟匯出檔走。</p>"
+      + "<p>主頁最底有個固定嘅「同步畀老師」，同「上次同步」時間。金鑰只留喺呢部機嘅 localStorage，唔會寫入 repo，亦唔會跟匯出檔走。</p>"
       + "<p class=\"meta\">" + escapeHtml(hint || "未儲存金鑰") + "</p>"
       + "<p class=\"meta\">" + escapeHtml(statusLine()) + "</p>"
       + warning
@@ -854,6 +856,8 @@
     else if (route.name === "settings") html = renderSettings();
     else html = renderHome();
     app.innerHTML = html;
+    updateSyncBar(route);
+    applySpeechHint();
     var fill = app.querySelector("#fill-answer");
     if (fill) {
       try { fill.focus({ preventScroll: true }); } catch (err) { fill.focus(); }
@@ -972,15 +976,60 @@
     };
   }
 
+  function updateSyncBar(route) {
+    var bar = document.getElementById("syncbar");
+    if (!bar) return;
+    var onHome = !route || route.name === "home";
+    bar.hidden = !onHome;
+    document.body.classList.toggle("has-syncbar", onHome);
+    var status = document.getElementById("sync-status");
+    if (status) status.textContent = "上次同步：" + formatClock(window.JPStore.getLastSynced())
+      + (window.JPStore.isPending() && window.JPStore.getToken() ? " · 有紀錄未同步" : "");
+    var feedback = document.getElementById("sync-feedback");
+    if (feedback) {
+      if (ui.syncError) {
+        feedback.hidden = false;
+        feedback.className = "sync-feedback is-bad";
+        feedback.textContent = ui.syncError;
+      } else if (ui.syncOk) {
+        feedback.hidden = false;
+        feedback.className = "sync-feedback is-ok";
+        feedback.textContent = ui.syncOk;
+      } else {
+        feedback.hidden = true;
+        feedback.textContent = "";
+      }
+    }
+    var button = document.getElementById("sync-button");
+    if (button) {
+      button.textContent = syncing ? "同步緊……" : "同步畀老師";
+      button.disabled = !!syncing;
+    }
+  }
+
+  function applySpeechHint() {
+    var el = document.getElementById("speech-hint");
+    if (!el || !window.JPSpeech) return;
+    var state = window.JPSpeech.voiceState();
+    if (state === "unsupported" || state === "missing") {
+      el.hidden = false;
+      el.textContent = window.JPSpeech.hint();
+    } else if (state === "ready") {
+      el.hidden = true;
+    }
+  }
+
   async function manualSync() {
     if (syncing) return;
     syncing = true;
     ui.syncError = "";
+    ui.syncOk = "";
     render();
     try {
       await window.JPSync.syncAll(syncPayload());
       ui.syncError = "";
-      showToast("同步成功。老師而家可以睇到你嘅進度。");
+      ui.syncOk = "同步成功。老師而家可以睇到你嘅進度。";
+      showToast(ui.syncOk);
     } catch (err) {
       if (!err || err.code !== "NO_TOKEN") window.JPStore.setPending(true);
       ui.syncError = window.JPSync.friendlyError(err);
@@ -1031,10 +1080,14 @@
     try {
       await window.JPSync.syncAll(syncPayload());
       if (session) session.syncState = "ok";
+      ui.syncError = "";
+      ui.syncOk = "同步成功。老師而家可以睇到你嘅進度。";
       showToast("已同步畀老師");
     } catch (err) {
       window.JPStore.setPending(true);
       if (session) session.syncState = "fail";
+      ui.syncOk = "";
+      ui.syncError = window.JPSync.friendlyError(err);
     }
     paint();
   }
@@ -1131,7 +1184,13 @@
     var speak = event.target.closest && event.target.closest("[data-speak]");
     if (speak) {
       event.preventDefault();
-      window.JPSpeech.speak(speak.getAttribute("data-speak"));
+      var text = speak.getAttribute("data-speak");
+      var mode = speak.getAttribute("data-speech");
+      var result = mode === "replay"
+        ? window.JPSpeech.replay(text)
+        : window.JPSpeech.speak(text, mode === "slow" ? 0.7 : 1);
+      applySpeechHint();
+      if (!result || !result.ok) showToast(window.JPSpeech.hint());
       return;
     }
     var choice = event.target.closest && event.target.closest("[data-choice]");
@@ -1259,6 +1318,8 @@
 
   async function boot() {
     bind();
+    window.JPSpeech.onChange(applySpeechHint);
+    applySpeechHint();
     registerSW();
     await reloadContent();
     render();

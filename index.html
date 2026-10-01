@@ -23,9 +23,15 @@
       <p class="brand">日文日誌</p>
       <p class="tagline" id="tagline">Andy，今日 10 分鐘就得。</p>
     </header>
+    <div id="speech-hint" class="banner speech-hint" role="status" hidden></div>
     <main id="app">
       <p class="boot">載入緊……</p>
     </main>
+    <div class="syncbar" id="syncbar" hidden>
+      <p id="sync-status" class="sync-status">上次同步：未同步過</p>
+      <p id="sync-feedback" class="sync-feedback" role="status" hidden></p>
+      <button type="button" class="btn" id="sync-button" data-action="sync">同步畀老師</button>
+    </div>
     <nav class="tabbar" id="tabbar" aria-label="主要">
       <a href="#/" data-tab="home">主頁</a>
       <a href="#/level/N5" data-tab="level">課程</a>
