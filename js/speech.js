@@ -1,7 +1,9 @@
 (function () {
   var lastRate = 1;
   var listeners = [];
-  var HINT = "呢部機未有日文語音，所以讀唔到。請去 iPhone「設定」→「輔助使用」→「朗讀內容」→「聲音」→「日文」，下載日文聲音，再返嚟撳。用電腦嘅話，請喺系統語音加日文。";
+  var voicesSettled = false;
+  var VOICE_WAIT_MS = 1500;
+  var HINT = "你部手機冇日文語音，請到 iPhone 設定 > 輔助使用 > 朗讀內容 > 語音 加日文語音";
 
   function supported() {
     return typeof window !== "undefined" && "speechSynthesis" in window && typeof SpeechSynthesisUtterance === "function";
@@ -26,7 +28,7 @@
 
   function voiceState() {
     if (!supported()) return "unsupported";
-    if (!voices().length) return "unknown";
+    if (!voices().length) return voicesSettled ? "missing" : "unknown";
     return pickVoice() ? "ready" : "missing";
   }
 
@@ -39,18 +41,25 @@
 
   function ensureVoices() {
     if (!supported()) return Promise.resolve();
-    if (voices().length) return Promise.resolve();
+    if (voices().length) {
+      voicesSettled = true;
+      return Promise.resolve();
+    }
     return new Promise(function (resolve) {
       var done = false;
       function finish() {
         if (done) return;
         done = true;
-        window.speechSynthesis.removeEventListener("voiceschanged", finish);
+        voicesSettled = true;
+        window.speechSynthesis.removeEventListener("voiceschanged", onVoices);
         resolve();
       }
-      window.speechSynthesis.addEventListener("voiceschanged", finish);
+      function onVoices() {
+        if (voices().length) finish();
+      }
+      window.speechSynthesis.addEventListener("voiceschanged", onVoices);
       window.speechSynthesis.getVoices();
-      setTimeout(finish, 800);
+      setTimeout(finish, VOICE_WAIT_MS);
     });
   }
 
@@ -73,23 +82,16 @@
       return { ok: false, reason: "unsupported" };
     }
     var state = voiceState();
-    if (state === "missing") {
-      publish();
-      return { ok: false, reason: "missing" };
-    }
-    var voice = pickVoice();
-    speakNow(value, speed, voice);
-    if (state === "unknown") {
+    if (state === "missing" || state === "unknown") {
       ensureVoices().then(function () {
         var found = pickVoice();
         publish();
-        if (!found) {
-          cancel();
-          return;
-        }
-        if (found !== voice) speakNow(value, speed, found);
+        if (found) speakNow(value, speed, found);
       });
+      publish();
+      return { ok: false, reason: "missing" };
     }
+    speakNow(value, speed, pickVoice());
     return { ok: true, rate: speed };
   }
 
@@ -102,8 +104,11 @@
   }
 
   if (supported()) {
-    window.speechSynthesis.addEventListener("voiceschanged", publish);
-    publish();
+    window.speechSynthesis.addEventListener("voiceschanged", function () {
+      if (voices().length) voicesSettled = true;
+      publish();
+    });
+    ensureVoices().then(publish);
   }
 
   window.JPSpeech = {

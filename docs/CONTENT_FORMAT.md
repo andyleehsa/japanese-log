@@ -2,7 +2,7 @@
 
 Andy 唔會打內容。老師每次推一課上 `main`，Andy 喺 app 撳「重新載入課題」就見到。教學同解釋用**繁體中文、書面粵語**（例如「係」「唔」「嘅」），日文內容保持正確日文。
 
-正式課題請刪走樣本，或者將 `sample` 設做 `false`。而家嘅 `day-001`、`day-002` 係樣本。
+正式課題請將 `sample` 設做 `false`。而家嘅 `day-001`、`day-002` 仍然係樣本，檔案留喺 repo，但 app 唔會喺主頁同課題列表顯示，亦唔計入進度。
 
 推上 GitHub 之後，Actions 會跑 `node scripts/validate-content.js`。有錯就唔好當嗰課已經上線。
 
@@ -40,11 +40,11 @@ Andy 唔會打內容。老師每次推一課上 `main`，Andy 喺 app 撳「重�
 | `schemaVersion` | 係 | 而家係 `1` |
 | `id` | 係 | 同檔名、課題檔 `id` 一樣 |
 | `title` | 係 | 列表標題，可以係日文 |
-| `date` | 係 | `YYYY-MM-DD`。同今日一樣嘅日期會變成「今日課題」。未來日期唔會鎖住，Andy 仍然入到 |
+| `date` | 係 | `YYYY-MM-DD`。未來日期唔會鎖住，Andy 仍然入到 |
 | `file` | 係 | `lessons/<id>.json` |
 | `tags` | 係 | 至少一個。同課題檔 `tags` 成員一致 |
 | `topics` | 否 | 課題 id 陣列，對應 `content/curriculum.json`。同課題檔 `topics` 要一樣。唔屬於任何課題就唔寫 |
-| `sample` | 否 | `true` 會顯示「樣本」 |
+| `sample` | 否 | `true` 係樣本課。App 唔顯示，亦唔計入打卡、正確率同錯題 |
 
 ## 課題檔
 
@@ -124,7 +124,7 @@ Andy 唔會打內容。老師每次推一課上 `main`，Andy 喺 app 撳「重�
 
 `jp` 同 `zh` 必須有。`reading`、`note`、`speak`、`audio`、`verified` 可選。`audio` 可以係 repo 入面嘅相對路徑，或者 `https://` 網址。唔好用 `javascript:`。
 
-`verified` 係 boolean。`false` 表示呢句例句未核對，課堂例句、生詞例句、卡片背面、同題目解釋下面嘅例句都會顯示細字「待核對」。冇呢個欄，或者係 `true`，就唔顯示。
+`verified` 係 boolean。`false` 表示呢句例句未核對。課堂例句，同題目解釋下面嘅例句，會喺句子旁邊顯示細字「讀音待核對」（至少 12px）。冇呢個欄，或者係 `true`，就唔顯示。生詞例句見下面生詞庫：詞條自己有 `verified` 嘅時候，顯示方式唔同。
 
 ```json
 {
@@ -227,42 +227,42 @@ App 會先做 Unicode NFKC（全形轉半形），再刪走所有空白，先至
 
 動詞題仍然係 `type: "choice"`，所以舊課題唔使改。用 `kind` 標明係邊種。答錯會同其他題一樣入錯題本，2 日、再錯 5 日、之後 10 日再出現喺「今日要溫習」。作答紀錄格式冇變。
 
-兩種都係四個選項，撳大掣，唔使打字。一定要有字典形 `verb`、平假名 `reading`，同一句繁體中文 `rule`。答錯先顯示正確答案同 `rule`；答啱唔顯示 `rule`。
+兩種都係四個選項，撳大掣，唔使打字。一定要有辭書形 `verb`、平假名 `reading`，同一句繁體中文 `rule`。答錯先顯示正確答案同 `rule`；答啱唔顯示 `rule`。
 
-`kind: "verb-group"`：認呢個字典形係一類、二類定三類。唔好寫 `form`。
+`kind: "verb-group"`：認呢個辭書形係一類、二類定三類。唔好寫 `form`。
 
 ```json
 {
   "id": "day-001-q7",
   "type": "choice",
   "kind": "verb-group",
-  "prompt": "睇字典形，揀呢個動詞係邊類。",
+  "prompt": "睇辭書形，揀呢個動詞係邊類。",
   "verb": "食べる",
   "reading": "たべる",
   "speak": "食べる",
   "choices": ["一類", "二類", "三類", "唔係動詞"],
   "answer": 1,
-  "rule": "二類動詞嘅字典形多數以「える」或者「いる」結尾，例如食べる。",
+  "rule": "二類動詞嘅辭書形多數以「える」或者「いる」結尾，例如食べる。",
   "explanation": "食べる讀たべる，係二類（一段）動詞。",
   "tags": ["動詞", "二類"]
 }
 ```
 
-`kind: "verb-form"`：畀字典形，揀其中一個活用形。`form` 一定係 `ます形`、`て形`、`ない形` 或者 `た形`。
+`kind: "verb-form"`：畀辭書形，揀其中一個活用形。`form` 一定係 `ます形`、`て形`、`ない形` 或者 `た形`。
 
 ```json
 {
   "id": "day-001-q8",
   "type": "choice",
   "kind": "verb-form",
-  "prompt": "由字典形揀正確嘅活用形。",
+  "prompt": "由辭書形揀正確嘅活用形。",
   "verb": "食べる",
   "reading": "たべる",
   "form": "て形",
   "speak": "食べる",
   "choices": ["食べて", "食べた", "食べない", "食べます"],
   "answer": 0,
-  "rule": "二類：字典形去掉「る」，て形加「て」。",
+  "rule": "二類：辭書形去掉「る」，て形加「て」。",
   "explanation": "食べる係二類。去掉る再加て，就係食べて。",
   "tags": ["動詞", "て形"]
 }
@@ -275,13 +275,13 @@ App 會先做 Unicode NFKC（全形轉半形），再刪走所有空白，先至
 - `content/lessons/day-001.json`（は／です）
 - `content/lessons/day-002.json`（これ・それ・あれ）
 
-兩課都係 N5，而且標咗 `sample: true`。
+兩課都係 N5，而且標咗 `sample: true`。App 正式版唔會列出呢兩課，主頁最頂卡片改為 index 順序入面下一課未做完嘅正式課（而家由 `n5w1-d1` 起）。全部正式課都做完，就顯示「全部做完」。樣本課嘅課題 id（`n5-wa-desu`、`n5-kosoado`）未入大綱，畫面唔會做成死連結。
 
 ## 課程大綱 content/curriculum.json
 
 App 主頁會為 **N5、N4、N3 每一級** 顯示一條進度列同百分比。課題列表喺 `#/level/N5`（N4、N3 同樣）。Andy 可以隨時開任何課題、任何課，**唔使按順序做完先至開下一課**。重練會繼續寫新嘅作答紀錄，錯題本仍然用「最近一次答錯」。
 
-而家 repo 入面嘅 `content/curriculum.json` 係老師嘅正式大綱，`sample` 係 `false`。N5 有 63 個課題、N4 有 70 個、N3 有 76 個，一共 209 個。每個課題嘅 `lessonIds` 暫時係空陣列，`planned` 仍然寫住計劃課數。未連課嘅課題，app 顯示「課堂準備中」，級別進度係 0%，唔會當作出錯。樣本課 `day-001`、`day-002` 仍然留喺 `content/lessons/`，佢哋嘅 `topics`（`n5-wa-desu`、`n5-kosoado`）未連入呢份大綱；因為標咗 `sample: true`，檢查會容許。
+而家 repo 入面嘅 `content/curriculum.json` 係老師嘅正式大綱，`sample` 係 `false`。N5 有 63 個課題、N4 有 70 個、N3 有 76 個，一共 209 個。每個課題嘅 `lessonIds` 暫時係空陣列，`planned` 仍然寫住計劃課數。未連課嘅課題，app 顯示「課堂準備中」，級別進度係 0%，唔會當作出錯。樣本課 `day-001`、`day-002` 仍然留喺 `content/lessons/`，但 app 唔顯示、唔計入進度。佢哋嘅 `topics`（`n5-wa-desu`、`n5-kosoado`）未連入呢份大綱；因為標咗 `sample: true`，檢查會容許。畫面只會為搵得到嘅課題畫連結。
 
 Schema：`schema/curriculum.schema.json`。`levels` 一定要係 N5、N4、N3，而且就係呢個次序。課題 `id` 全檔唔可以重複。
 
@@ -420,13 +420,14 @@ App 路徑：生詞 → 揀級別 → 揀分類。可以搜尋日文、讀音或
 | `meaning` | 係 | 繁體中文意思 |
 | `level` | 係 | 同檔案級別一樣 |
 | `category` | 係 | 同所屬分類 `id` 一樣 |
-| `example` | 否 | `jp`、`reading`、`zh` 三樣都要有。可選 `verified`（boolean）。`false` 先顯示「待核對」 |
+| `example` | 否 | `jp`、`reading`、`zh` 三樣都要有。可選 `verified`（boolean）。詞條本身冇標未核對、但例句 `verified` 係 `false` 時，例句照常顯示，旁邊有細字「讀音待核對」 |
+| `verified` | 否 | 詞條層級 boolean。`false` 表示呢個詞嘅讀音同例句未核對。詞卡同詞條詳情會將例句收埋喺「睇例句」，展開先見到例句同「讀音待核對」。`true` 或者冇呢欄，例句照原樣顯示。N5、N4 已核對嘅詞唔使加 |
 | `tags` | 否 | 至少一個字串。而家只係資料，畫面未用嚟篩 |
 | `speak` | 否 | 有嘅話，畫面有「讀出嚟」「慢速」「再聽」三個大掣 |
 | `verbGroup` | 否 | 只係動詞。`一類`、`二類` 或者 `三類`。卡片背面同詞條會顯示 |
-| `forms` | 否 | 由字典形變出嚟嘅四個形。有呢欄就要齊 `ます形`、`て形`、`ない形`、`た形`，每個有 `japanese` 同平假名 `reading`。唔好為每個形另開一個生詞 |
+| `forms` | 否 | 由辭書形變出嚟嘅四個形。有呢欄就要齊 `ます形`、`て形`、`ない形`、`た形`，每個有 `japanese` 同平假名 `reading`。唔好為每個形另開一個生詞 |
 
-動詞詞條嘅 `japanese` 係**字典形**。其他形只寫喺同一個詞嘅 `forms`，唔好改現有 `id`，亦唔好另開詞條。揭開卡片或者睇詞條先見到類別同四個形。而家 `食べる`（`n5-v-0389`）有呢兩欄，其他詞可以之後先補。
+動詞詞條嘅 `japanese` 係**辭書形**。其他形只寫喺同一個詞嘅 `forms`，唔好改現有 `id`，亦唔好另開詞條。揭開卡片或者睇詞條先見到類別同四個形。而家 `食べる`（`n5-v-0389`）有呢兩欄，其他詞可以之後先補。
 
 ```json
 "verbGroup": "二類",

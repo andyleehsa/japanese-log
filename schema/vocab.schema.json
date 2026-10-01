@@ -56,6 +56,7 @@
           "items": { "type": "string", "minLength": 1 }
         },
         "speak": { "type": "string", "minLength": 1 },
+        "verified": { "type": "boolean" },
         "verbGroup": { "enum": ["一類", "二類", "三類"] },
         "forms": {
           "type": "object",

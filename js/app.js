@@ -225,18 +225,20 @@
   }
 
   function renderHome() {
-    var attempts = window.JPStore.loadAttempts();
+    var attempts = progressAttempts(window.JPStore.loadAttempts());
     var stats = window.JPLogic.computeStats(attempts, { lessonTitles: lessonTitles() });
-    var todayItem = pickToday(attempts);
-    var todayLesson = todayItem ? lessonById(todayItem.id) : null;
+    var items = listedLessons();
+    var todayItem = nextOfficialLesson(attempts);
     var todayHtml;
-    if (!todayItem) {
+    if (!items.length) {
       todayHtml = "<section class=\"card\"><h1>未有課題</h1><p>老師未放課題。放咗之後撳下面「重新載入課題」。</p></section>";
+    } else if (!todayItem) {
+      todayHtml = "<section class=\"card\"><p class=\"kicker\">正式課題</p><h1>全部做完</h1><p>正式課題都做完喇。可以喺下面揀任何一課再睇、再練。</p></section>";
     } else {
+      var todayLesson = lessonById(todayItem.id);
       var progress = todayLesson ? window.JPLogic.lessonProgress(todayLesson, attempts) : null;
-      var label = todayItem.date === window.JPLogic.todayLocalDate() ? "今日課題" : (progress && progress.completed ? "最新課題" : "下一課");
       todayHtml = "<a class=\"card today\" href=\"#/lesson/" + encodeURIComponent(todayItem.id) + "\">"
-        + "<p class=\"kicker\">" + escapeHtml(label) + (isSample(todayLesson, todayItem) ? " · 樣本" : "") + "</p>"
+        + "<p class=\"kicker\">下一課</p>"
         + "<h1 class=\"jp\" lang=\"ja\">" + escapeHtml(todayItem.title) + "</h1>"
         + "<p class=\"meta\">" + escapeHtml(window.JPLogic.formatDateLabel(todayItem.date)) + "</p>"
         + "<p class=\"tags\">" + renderTags(todayItem.tags) + "</p>"
@@ -244,13 +246,12 @@
         + "<span class=\"btn\">開始溫習</span>"
         + "</a>";
     }
-    var list = ((state.index && state.index.lessons) || []).map(function (item) {
+    var list = items.map(function (item) {
       var lesson = lessonById(item.id);
       var progress = lesson ? window.JPLogic.lessonProgress(lesson, attempts) : null;
       return "<a class=\"card lesson-row\" href=\"#/lesson/" + encodeURIComponent(item.id) + "\">"
         + "<span class=\"row-title jp\" lang=\"ja\">" + escapeHtml(item.title) + "</span>"
-        + "<span class=\"meta\">" + escapeHtml(window.JPLogic.formatDateLabel(item.date))
-        + (isSample(lesson, item) ? " · 樣本" : "") + "</span>"
+        + "<span class=\"meta\">" + escapeHtml(window.JPLogic.formatDateLabel(item.date)) + "</span>"
         + "<span class=\"tags\">" + renderTags(item.tags) + "</span>"
         + "<span class=\"meta\">" + progressText(progress) + "</span>"
         + "</a>";
@@ -263,8 +264,8 @@
       + "<p class=\"meta\">最長連續 " + stats.streak.longest + " 日"
       + (stats.lastStudyDate ? " · 上次溫習 " + escapeHtml(window.JPLogic.formatDateLabel(stats.lastStudyDate)) : "")
       + "</p>"
-      + renderReviewCard()
       + todayHtml
+      + renderReviewCard()
       + "<button type=\"button\" class=\"btn ghost\" data-action=\"reload\">重新載入課題</button>"
       + renderLevelBars()
       + "<h2>全部課題</h2>"
@@ -274,8 +275,8 @@
   }
 
   function dueQuestionList() {
-    return window.JPLogic.dueReviews(window.JPStore.loadAttempts(), window.JPLogic.todayLocalDate()).filter(function (item) {
-      return !!findQuestion(item.questionId);
+    return window.JPLogic.dueReviews(progressAttempts(window.JPStore.loadAttempts()), window.JPLogic.todayLocalDate()).filter(function (item) {
+      return !!findQuestion(item.questionId) && !isSampleLessonId(item.lessonId);
     });
   }
 
@@ -377,8 +378,7 @@
     var list = level.topics.map(function (topic) {
       return "<a class=\"card lesson-row\" href=\"#/topic/" + encodeURIComponent(topic.id) + "\">"
         + "<span class=\"row-title\">" + escapeHtml(topic.title) + "</span>"
-        + "<span class=\"meta\">" + escapeHtml(topicStatus(topic)) + " · " + topic.doneCount + "/" + topic.planned + " 課達標</span>"
-        + "<span class=\"meta\">正確率 " + escapeHtml(window.JPLogic.formatPercent(topic.accuracy)) + "</span>"
+        + "<span class=\"meta\">" + escapeHtml(topicStatus(topic)) + " · " + topic.doneCount + "/" + topic.planned + " 課達標 · 正確率 " + escapeHtml(window.JPLogic.formatPercent(topic.accuracy)) + "</span>"
         + "<progress max=\"100\" value=\"" + Math.round(topic.percent * 100) + "\"></progress>"
         + "</a>";
     }).join("");
@@ -418,19 +418,30 @@
     return !!((lesson && lesson.sample) || (item && item.sample));
   }
 
-  function pickToday(attempts) {
-    var items = (state.index && state.index.lessons) || [];
-    if (!items.length) return null;
-    var today = window.JPLogic.todayLocalDate();
+  function isSampleLessonId(id) {
+    return isSample(lessonById(id), indexItem(id));
+  }
+
+  function listedLessons() {
+    return ((state.index && state.index.lessons) || []).filter(function (item) {
+      return !isSample(lessonById(item.id), item);
+    });
+  }
+
+  function progressAttempts(attempts) {
+    return (attempts || []).filter(function (attempt) {
+      return !isSampleLessonId(attempt.lessonId);
+    });
+  }
+
+  function nextOfficialLesson(attempts) {
+    var items = listedLessons();
     for (var i = 0; i < items.length; i++) {
-      if (items[i].date === today) return items[i];
+      var lesson = lessonById(items[i].id);
+      if (!lesson || lesson.loadError) return items[i];
+      if (!window.JPLogic.lessonProgress(lesson, attempts).completed) return items[i];
     }
-    for (var j = 0; j < items.length; j++) {
-      var lesson = lessonById(items[j].id);
-      if (!lesson || lesson.loadError) continue;
-      if (!window.JPLogic.lessonProgress(lesson, attempts).completed) return items[j];
-    }
-    return items[items.length - 1];
+    return null;
   }
 
   function renderLesson(id) {
@@ -452,8 +463,8 @@
     var practiceLabel = progress && progress.attempts ? "再練一次" : "開始練習";
     var topicLinks = ((lesson && lesson.topics) || []).map(function (topicId) {
       var topic = findTopic(topicId);
-      var title = topic ? topic.title : topicId;
-      return "<a class=\"tag\" href=\"#/topic/" + encodeURIComponent(topicId) + "\">" + escapeHtml(title) + "</a>";
+      if (!topic) return "";
+      return "<a class=\"tag\" href=\"#/topic/" + encodeURIComponent(topicId) + "\">" + escapeHtml(topic.title) + "</a>";
     }).join("");
     return "<a class=\"back\" href=\"#/\">返回</a>"
       + "<p class=\"kicker\">" + escapeHtml(level ? level + " · " : "") + escapeHtml(window.JPLogic.formatDateLabel(date))
@@ -525,18 +536,28 @@
       + next;
   }
 
-  function verifyMark(example) {
-    if (!window.JPLogic.examplePendingVerify(example)) return "";
-    return "<span class=\"verify-pending\">待核對</span>";
+  function verifyMark(example, force) {
+    var pending = !!force || window.JPLogic.examplePendingVerify(example);
+    if (!pending) return "";
+    return "<span class=\"verify-pending\">讀音待核對</span>";
   }
 
-  function renderExampleSentence(example) {
+  function renderExampleSentence(example, forcePending) {
     if (!example || !example.jp) return "";
     return "<div class=\"example-sentence\">"
-      + "<p class=\"jp\" lang=\"ja\">" + escapeHtml(example.jp) + verifyMark(example) + "</p>"
+      + "<p class=\"jp\" lang=\"ja\">" + escapeHtml(example.jp) + verifyMark(example, forcePending) + "</p>"
       + (example.reading ? "<p class=\"reading\" lang=\"ja\">" + escapeHtml(example.reading) + "</p>" : "")
       + (example.zh ? "<p>" + escapeHtml(example.zh) + "</p>" : "")
       + "</div>";
+  }
+
+  function renderEntryExample(entry) {
+    if (!entry || !entry.example) return "";
+    var pendingEntry = window.JPLogic.entryPendingVerify(entry);
+    var sentence = renderExampleSentence(entry.example, pendingEntry);
+    if (!sentence) return "";
+    if (!pendingEntry) return sentence;
+    return "<details class=\"example-fold\"><summary>睇例句</summary>" + sentence + "</details>";
   }
 
   function renderVerbAsk(question) {
@@ -544,7 +565,7 @@
       ? "揀" + (question.form || "")
       : "係邊類？";
     return "<section class=\"verb-ask\">"
-      + "<p class=\"kicker\">字典形</p>"
+      + "<p class=\"kicker\">辭書形</p>"
       + "<p class=\"flash-jp jp\" lang=\"ja\">" + escapeHtml(question.verb || "") + "</p>"
       + "<p class=\"flash-reading reading\" lang=\"ja\">" + escapeHtml(question.reading || "") + "</p>"
       + "<p class=\"verb-ask-task\">" + escapeHtml(task) + "</p>"
@@ -606,8 +627,8 @@
   }
 
   function renderLog() {
-    var stats = window.JPLogic.computeStats(window.JPStore.loadAttempts(), { lessonTitles: lessonTitles() });
-    var lessons = ((state.index && state.index.lessons) || []).map(function (item) {
+    var stats = window.JPLogic.computeStats(progressAttempts(window.JPStore.loadAttempts()), { lessonTitles: lessonTitles() });
+    var lessons = listedLessons().map(function (item) {
       var found = null;
       stats.perLesson.forEach(function (row) {
         if (row.lessonId === item.id) found = row;
@@ -667,7 +688,7 @@
   }
 
   function renderMistakes() {
-    var mistakes = window.JPLogic.computeStats(window.JPStore.loadAttempts(), { lessonTitles: lessonTitles() }).mistakes;
+    var mistakes = window.JPLogic.computeStats(progressAttempts(window.JPStore.loadAttempts()), { lessonTitles: lessonTitles() }).mistakes;
     if (!mistakes.length) {
       return "<h1>錯題本</h1><section class=\"card\"><p>未有錯題。最近一次答啱嘅題唔會留喺度。</p></section>";
     }
@@ -709,7 +730,7 @@
     var warning = "";
     var token = window.JPStore.getToken();
     if (token && token.indexOf("github_pat_") !== 0) {
-      warning = "<p class=\"banner\">已儲存嘅金鑰唔似 fine-grained token（開頭應係 github_pat_）。建議跟教學重新產生一條。</p>";
+      warning = "<p class=\"banner\">已儲存嘅存取碼（token）唔似細權限存取碼（fine-grained token，開頭應係 github_pat_）。建議跟教學重新產生一條。</p>";
     }
     var installHint = isStandalone() ? "" : "<div class=\"banner\" role=\"status\">你而家喺 Safari 分頁開。請加入主畫面，之後每次都用個「日文日誌」圖示開。Safari 同圖示嘅練習紀錄、金鑰係分開儲存，唔會互通。貼金鑰同第一次同步都要喺圖示入面做。如果紀錄分咗開，撳下面「匯出 JSON」留底。</div>";
     return banner()
@@ -717,17 +738,17 @@
       + installHint
       + "<section class=\"panel\">"
       + "<h2>同步畀老師</h2>"
-      + "<p>主頁最底有「上次同步」同「同步畀老師」。金鑰只留喺呢部機嘅 localStorage，唔會寫入 repo，亦唔會跟匯出檔走。</p>"
+      + "<p>主頁最底有「上次同步」同「同步畀老師」。金鑰只留喺呢部機嘅瀏覽器儲存（localStorage），唔會寫入儲存庫（repo），亦唔會跟匯出檔走。</p>"
       + "<p class=\"meta\">" + escapeHtml(hint || "未儲存金鑰") + "</p>"
       + "<p class=\"meta\">" + escapeHtml(statusLine()) + "</p>"
       + warning
-      + "<label for=\"token-input\">GitHub fine-grained token</label>"
+      + "<label for=\"token-input\">GitHub 細權限存取碼（fine-grained token）</label>"
       + "<textarea id=\"token-input\" rows=\"3\" autocomplete=\"off\" autocapitalize=\"off\" autocorrect=\"off\" spellcheck=\"false\" placeholder=\"github_pat_...\"></textarea>"
       + "<button type=\"button\" class=\"btn\" data-action=\"save-token\">儲存金鑰</button>"
       + "<button type=\"button\" class=\"btn secondary\" data-action=\"clear-token\">清除金鑰</button>"
       + "<button type=\"button\" class=\"btn secondary\" data-action=\"sync\"" + (syncing ? " disabled" : "") + ">"
       + (syncing ? "同步緊……" : "而家同步") + "</button>"
-      + "<p class=\"meta\">Repo：andyleehsa/japanese-log · 分支 main</p>"
+      + "<p class=\"meta\">儲存庫（repo）：andyleehsa/japanese-log · 分支 main</p>"
       + "</section>"
       + "<section class=\"panel\">"
       + "<h2>匯出 JSON</h2>"
@@ -736,9 +757,9 @@
       + "</section>"
       + "<section class=\"panel\">"
       + "<h2>點樣設定</h2>"
-      + "<p><a href=\"https://github.com/andyleehsa/japanese-log/blob/main/docs/SETUP_FOR_ANDY.md\" target=\"_blank\" rel=\"noopener\">打開 Andy 設定步驟</a></p>"
-      + "<p><a href=\"https://github.com/andyleehsa/japanese-log/blob/main/docs/CONTENT_FORMAT.md\" target=\"_blank\" rel=\"noopener\">課題格式（畀老師）</a></p>"
-      + "<p><a href=\"https://github.com/andyleehsa/japanese-log/blob/main/docs/LOGBOOK_FORMAT.md\" target=\"_blank\" rel=\"noopener\">進度檔格式（畀老師）</a></p>"
+      + "<p><a class=\"doc-link\" href=\"https://github.com/andyleehsa/japanese-log/blob/main/docs/SETUP_FOR_ANDY.md\" target=\"_blank\" rel=\"noopener\">打開 Andy 設定步驟</a></p>"
+      + "<p><a class=\"doc-link\" href=\"https://github.com/andyleehsa/japanese-log/blob/main/docs/CONTENT_FORMAT.md\" target=\"_blank\" rel=\"noopener\">課題格式（畀老師）</a></p>"
+      + "<p><a class=\"doc-link\" href=\"https://github.com/andyleehsa/japanese-log/blob/main/docs/LOGBOOK_FORMAT.md\" target=\"_blank\" rel=\"noopener\">進度檔格式（畀老師）</a></p>"
       + "</section>"
       + "<details class=\"panel\">"
       + "<summary>進階：清除呢部機嘅練習紀錄</summary>"
@@ -846,13 +867,13 @@
     }
     return "<section class=\"verb-forms\">"
       + (entry.verbGroup ? "<p class=\"verb-group\">" + escapeHtml(entry.verbGroup) + "</p>" : "")
-      + "<p class=\"meta\">其他形都由字典形變出嚟。</p>"
+      + "<p class=\"meta\">其他形都由辭書形變出嚟。</p>"
       + rows
       + "</section>";
   }
 
   function renderWord(entry) {
-    var example = renderExampleSentence(entry.example);
+    var example = renderEntryExample(entry);
     return "<article class=\"card\">"
       + "<p class=\"jp\" lang=\"ja\">" + escapeHtml(entry.japanese) + "</p>"
       + "<p class=\"reading\" lang=\"ja\">" + escapeHtml(entry.reading) + "</p>"
@@ -916,7 +937,7 @@
     var meaning = cards.revealed
       ? "<p class=\"flash-meaning score\">" + escapeHtml(entry.meaning) + "</p>"
         + renderVerbForms(entry)
-        + renderExampleSentence(entry.example)
+        + renderEntryExample(entry)
         + "<button type=\"button\" class=\"btn ghost\" data-action=\"hide\">收起意思</button>"
       : "<button type=\"button\" class=\"btn secondary\" data-action=\"reveal\">睇意思</button>";
     return "<a class=\"back\" href=\"#/vocab/" + encodeURIComponent(cards.level) + (cards.category ? "/" + encodeURIComponent(cards.category) : "") + "\">離開</a>"
@@ -1028,7 +1049,7 @@
 
   function createSession(id) {
     if (id === "mistakes") {
-      var mistakes = window.JPLogic.computeStats(window.JPStore.loadAttempts(), { lessonTitles: lessonTitles() }).mistakes;
+      var mistakes = window.JPLogic.computeStats(progressAttempts(window.JPStore.loadAttempts()), { lessonTitles: lessonTitles() }).mistakes;
       var questions = [];
       mistakes.forEach(function (item) {
         var found = findQuestion(item.questionId);
@@ -1139,11 +1160,11 @@
     };
   }
 
-  function applySpeechHint() {
+  function applySpeechHint(force) {
     var el = document.getElementById("speech-hint");
     if (!el || !window.JPSpeech) return;
     var state = window.JPSpeech.voiceState();
-    if (state === "unsupported" || state === "missing") {
+    if (force || state === "unsupported" || state === "missing") {
       el.hidden = false;
       el.textContent = window.JPSpeech.hint();
     } else if (state === "ready") {
@@ -1233,7 +1254,7 @@
     }
     window.JPStore.setToken(token);
     if (input) input.value = "";
-    if (token.indexOf("github_pat_") !== 0) showToast("已儲存。呢條唔似 fine-grained token（開頭應係 github_pat_）。");
+    if (token.indexOf("github_pat_") !== 0) showToast("已儲存。呢條唔似細權限存取碼（fine-grained token，開頭應係 github_pat_）。");
     else showToast("金鑰已儲存喺呢部機。");
     render();
   }
@@ -1321,8 +1342,7 @@
       var result = mode === "replay"
         ? window.JPSpeech.replay(text)
         : window.JPSpeech.speak(text, mode === "slow" ? 0.7 : 1);
-      applySpeechHint();
-      if (!result || !result.ok) showToast(window.JPSpeech.hint());
+      applySpeechHint(!result || !result.ok);
       return;
     }
     var choice = event.target.closest && event.target.closest("[data-choice]");

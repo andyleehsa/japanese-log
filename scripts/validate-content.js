@@ -419,7 +419,7 @@ function validateContent(rootDir) {
             fail(entryLabel + " must be an object");
             return;
           }
-          assertKeys(entry, ["id", "japanese", "reading", "meaning", "level", "category", "example", "tags", "speak", "verbGroup", "forms"], entryLabel);
+          assertKeys(entry, ["id", "japanese", "reading", "meaning", "level", "category", "example", "tags", "speak", "verbGroup", "forms", "verified"], entryLabel);
           assertString(entry.id, entryLabel + ".id");
           if (entry.id && !ID_RE.test(entry.id)) fail(entryLabel + ".id must match " + ID_RE);
           if (entry.id && entryIds.has(entry.id)) fail(entryLabel + " duplicate vocab id " + entry.id);
@@ -433,6 +433,7 @@ function validateContent(rootDir) {
           if (entry.level !== level) fail(entryLabel + ".level must be " + level);
           if (entry.category !== category.id) fail(entryLabel + ".category must match parent category id");
           optionalString(entry, "speak", entryLabel);
+          checkVerified(entry, entryLabel);
           if (entry.tags != null) assertTags(entry.tags, entryLabel + ".tags");
           if (entry.verbGroup != null && !VERB_GROUPS.includes(entry.verbGroup)) {
             fail(entryLabel + ".verbGroup must be 一類, 二類, or 三類");

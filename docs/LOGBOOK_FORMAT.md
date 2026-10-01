@@ -1,6 +1,6 @@
 # 進度檔格式
 
-Andy 撳「同步畀老師」之後，app 用 GitHub Contents API 寫入 `main`。老師唔使登入 Andy 部機。Repo 而家係公開，所以下面嘅 raw 網址任何人開到；唔好當佢係私隱檔。
+Andy 撳「同步畀老師」之後，app 用 GitHub Contents API 寫入 `main`。老師唔使登入 Andy 部機。儲存庫（repo）而家係公開，所以下面嘅 raw 網址任何人開到；唔好當佢係私隱檔。
 
 未同步之前，下面嘅網址會 404。生詞標記另外一個檔：
 

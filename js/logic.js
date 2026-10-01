@@ -540,6 +540,10 @@
     return !!(example && example.verified === false);
   }
 
+  function entryPendingVerify(entry) {
+    return !!(entry && entry.verified === false);
+  }
+
   function formatPercent(accuracy) {
     if (accuracy == null) return "未有紀錄";
     return Math.round(accuracy * 100) + "%";
@@ -579,6 +583,7 @@
     nextAttemptNo: nextAttemptNo,
     buildSummary: buildSummary,
     examplePendingVerify: examplePendingVerify,
+    entryPendingVerify: entryPendingVerify,
     formatPercent: formatPercent,
     formatDateLabel: formatDateLabel,
     studyDates: studyDates,

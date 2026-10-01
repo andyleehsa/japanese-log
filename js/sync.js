@@ -6,7 +6,7 @@
   var MESSAGES = {
     OFFLINE: "而家冇網絡，同步唔到。練習紀錄已經留喺呢部機，有網再試。",
     NO_TOKEN: "未有金鑰。請去設定頁貼上 GitHub 金鑰。",
-    BAD_TOKEN: "金鑰唔啱，或者已經過期。請檢查係咪 fine-grained token，然後再貼一次。",
+    BAD_TOKEN: "金鑰唔啱，或者已經過期。請檢查係咪細權限存取碼（fine-grained token），然後再貼一次。",
     FORBIDDEN: "GitHub 拒絕咗。請確認呢條金鑰只可以存取 japanese-log，而且 Contents 係 Read and write。",
     NOT_FOUND: "搵唔到 japanese-log。請確認金鑰嘅 resource owner 係你自己，而且只揀咗呢一個 repo。",
     CONFLICT: "同步撞到同時更新，重試幾次都未得。請等一陣再試。",
