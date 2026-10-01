@@ -82,6 +82,7 @@ function validateContent(rootDir) {
   }
 
   const seenIds = new Set();
+  const sampleLessonIds = new Set();
   const seenQuestionIds = new Set();
   const lessonTopics = new Map();
   const lessonsDir = path.resolve(rootDir, "content", "lessons");
@@ -104,6 +105,7 @@ function validateContent(rootDir) {
     assertTags(item.tags, label + ".tags");
     lessonTopics.set(item.id, assertIdList(item.topics, label + ".topics", true));
     if (item.sample != null && typeof item.sample !== "boolean") fail(label + ".sample must be boolean");
+    if (item.sample === true && item.id) sampleLessonIds.add(item.id);
     if (item.id && seenIds.has(item.id)) fail(label + " duplicate lesson id " + item.id);
     if (item.id) seenIds.add(item.id);
 
@@ -314,12 +316,16 @@ function validateContent(rootDir) {
       });
     });
     seenIds.forEach((lessonId) => {
-      const fromLesson = (lessonTopics.get(lessonId) || []).slice().sort();
-      const fromCurriculum = (topicLessons.get(lessonId) || []).slice().sort();
+      const fromLesson = (lessonTopics.get(lessonId) || []).slice();
+      const sample = sampleLessonIds.has(lessonId);
+      const known = [];
       fromLesson.forEach((topicId) => {
-        if (!topicIds.has(topicId)) fail("lesson " + lessonId + " topics includes unknown topic " + topicId);
+        if (topicIds.has(topicId)) known.push(topicId);
+        else if (!sample) fail("lesson " + lessonId + " topics includes unknown topic " + topicId);
       });
-      if (JSON.stringify(fromLesson) !== JSON.stringify(fromCurriculum)) {
+      known.sort();
+      const fromCurriculum = (topicLessons.get(lessonId) || []).slice().sort();
+      if (JSON.stringify(known) !== JSON.stringify(fromCurriculum)) {
         fail("lesson " + lessonId + " topics must match curriculum lessonIds both ways");
       }
     });

@@ -12,7 +12,7 @@ Andy 唔會打內容。老師每次推一課上 `main`，Andy 喺 app 撳「重�
 2. 喺 `content/index.json` 嘅 `lessons` 加一項，順序就係 app 嘅順序。
 3. `id`、`title`、`date`、`tags` 要同課題檔一致。`tags` 次序可以唔同，但成員要一樣。
 4. `file` 一定係 `lessons/<id>.json`。
-5. 如果呢課屬於課程大綱某個課題，`topics` 要同 `content/curriculum.json` 入面嗰個課題嘅 `lessonIds` 對得上。兩邊都要寫，檢查會對照。
+5. 如果呢課屬於課程大綱某個課題，`topics` 要同 `content/curriculum.json` 入面嗰個課題嘅 `lessonIds` 對得上。兩邊都要寫，檢查會對照。標咗 `sample: true` 嘅樣本課可以暫時保留未入大綱嘅課題 id；正式課題唔得。
 
 `id` 用小寫英數同連字號，建議 `day-001` 呢款。題目 `id` 要穩定：Andy 答過之後唔好改同一個 `id` 嘅題意。改題就用新 `id`。
 
@@ -224,7 +224,7 @@ App 會先做 Unicode NFKC（全形轉半形），再刪走所有空白，先至
 
 App 主頁會為 **N5、N4、N3 每一級** 顯示一條進度列同百分比。課題列表喺 `#/level/N5`（N4、N3 同樣）。Andy 可以隨時開任何課題、任何課，**唔使按順序做完先至開下一課**。重練會繼續寫新嘅作答紀錄，錯題本仍然用「最近一次答錯」。
 
-而家 repo 入面嘅 `content/curriculum.json` 標咗 `sample: true`。N5 有九個課題（は同です、これ・それ・あれ、動詞分組、い形容詞、な形容詞、て形、た形、ない形、助詞），N4 同 N3 各有幾個樣本課題。只有 `n5-wa-desu` → `day-001`、`n5-kosoado` → `day-002` 已經連住課。其餘課題 `lessonIds` 係空陣列，`planned` 仍然要寫，代表老師計劃之後放幾多課。
+而家 repo 入面嘅 `content/curriculum.json` 係老師嘅正式大綱，`sample` 係 `false`。N5 有 63 個課題、N4 有 70 個、N3 有 76 個，一共 209 個。每個課題嘅 `lessonIds` 暫時係空陣列，`planned` 仍然寫住計劃課數。未連課嘅課題，app 顯示「課堂準備中」，級別進度係 0%，唔會當作出錯。樣本課 `day-001`、`day-002` 仍然留喺 `content/lessons/`，佢哋嘅 `topics`（`n5-wa-desu`、`n5-kosoado`）未連入呢份大綱；因為標咗 `sample: true`，檢查會容許。
 
 Schema：`schema/curriculum.schema.json`。`levels` 一定要係 N5、N4、N3，而且就係呢個次序。課題 `id` 全檔唔可以重複。
 
@@ -239,7 +239,7 @@ Schema：`schema/curriculum.schema.json`。`levels` 一定要係 N5、N4、N3，
 
 ### 完整例子
 
-下面係可以通過檢查嘅最小大綱。正式內容請以 `content/curriculum.json` 做樣，將 `sample` 改做 `false`，同埋把 `lessonIds` 連去真課題。
+下面係可以通過檢查嘅最小大綱，只係格式例子。正式課題清單以 `content/curriculum.json` 為準。加課嘅時候將 `lessonIds` 連去真課題 id。
 
 ```json
 {
@@ -317,7 +317,7 @@ Schema：`schema/curriculum.schema.json`。`levels` 一定要係 N5、N4、N3，
 - `content/vocab/n4.json`
 - `content/vocab/n3.json`
 
-Schema：`schema/vocab.schema.json`。而家三個檔都係 `sample: true`。N5 樣本有動詞、い形容詞、な形容詞、名詞（飲食、交通、家庭、時間數字）、副詞，每個分類幾個詞。N4、N3 各有動詞同名詞幾個詞，方便試進度。
+Schema：`schema/vocab.schema.json`。而家三個檔係正式生詞庫（冇 `sample` 欄）：N5 747 個詞、N4 662 個、N3 1005 個，一共 2414 個。分類列表一次顯示。入去一個分類，或者搜尋結果，每次顯示 30 個，撳「再顯示」先至再載入下一批。卡片溫習仍然一張一張。
 
 App 路徑：生詞 → 揀級別 → 揀分類。可以搜尋日文、讀音或者意思。每個分類有「卡片溫習」：先顯示日文同讀音，撳「睇意思」先顯示中文，可以「收起意思」。撳「識」或「唔識」會記喺部機，同步時寫入 `logs/vocab.json`，老師喺 `summary.json` 睇到唔識嘅詞。
 

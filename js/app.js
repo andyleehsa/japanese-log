@@ -10,6 +10,8 @@
   var session = null;
   var cards = null;
   var vocabQuery = "";
+  var vocabShown = 30;
+  var VOCAB_PAGE = 30;
   var syncing = false;
   var ui = { syncError: "", syncOk: "" };
 
@@ -360,7 +362,7 @@
   }
 
   function topicStatus(topic) {
-    if (!topic.lessonIds.length) return "未有課題";
+    if (!topic.lessonIds.length) return "課堂準備中";
     if (topic.complete) return "達標";
     if (topic.lessons.some(function (lesson) { return lesson.attempts > 0; })) return "進行中";
     return "未開始";
@@ -409,7 +411,7 @@
       + "<p>" + escapeHtml(topic.description) + "</p>"
       + "<p class=\"meta\">" + topic.doneCount + "/" + topic.planned + " 課達標 · 正確率 "
       + escapeHtml(window.JPLogic.formatPercent(topic.accuracy)) + "</p>"
-      + (lessons || "<section class=\"card\"><p>老師未放呢個課題嘅課。放咗之後可以隨時入嚟，唔使等前面做完。</p></section>");
+      + (lessons || "<section class=\"card\"><h2>課堂準備中</h2><p>老師未放呢個課題嘅課。放咗之後可以隨時入嚟，唔使等前面做完。</p></section>");
   }
 
   function isSample(lesson, item) {
@@ -780,6 +782,16 @@
     return [entry.japanese, entry.reading, entry.meaning, entry.categoryTitle].join(" ").toLowerCase().indexOf(needle) !== -1;
   }
 
+  function pagedWords(entries, emptyText) {
+    if (!entries.length) return "<p>" + emptyText + "</p>";
+    var shown = entries.slice(0, vocabShown);
+    var rest = entries.length - shown.length;
+    var more = rest > 0
+      ? "<button type=\"button\" class=\"btn secondary\" data-action=\"vocab-more\">再顯示（仲有 " + rest + " 個）</button>"
+      : "";
+    return shown.map(renderWord).join("") + more;
+  }
+
   function renderWord(entry) {
     var example = entry.example ? "<p class=\"jp\" lang=\"ja\">" + escapeHtml(entry.example.jp) + "</p>"
       + (entry.example.reading ? "<p class=\"reading\" lang=\"ja\">" + escapeHtml(entry.example.reading) + "</p>" : "")
@@ -818,19 +830,19 @@
         + "<a class=\"btn\" href=\"#/vocab/review/" + encodeURIComponent(level) + "\">溫全部</a>"
         + "<label for=\"vocab-search\">搜尋</label>"
         + "<input id=\"vocab-search\" value=\"" + escapeHtml(vocabQuery) + "\" placeholder=\"日文、讀音或者意思\" autocomplete=\"off\">"
-        + "<div id=\"vocab-results\">" + (vocabQuery ? found.map(renderWord).join("") || "<p>搵唔到。</p>" : "") + "</div>"
+        + "<div id=\"vocab-results\">" + (vocabQuery ? pagedWords(found, "搵唔到。") : "") + "</div>"
         + "<h2>分類</h2>"
         + categories;
     }
     var category = null;
     (bank.categories || []).forEach(function (item) { if (item.id === categoryId) category = item; });
     if (!category) return "<h1>搵唔到呢個分類</h1><a class=\"btn\" href=\"#/vocab/" + encodeURIComponent(level) + "\">返回</a>";
-    var words = (category.entries || []).map(renderWord).join("");
+    var words = pagedWords(category.entries || [], "未有生詞。");
     return banner() + "<a class=\"back\" href=\"#/vocab/" + encodeURIComponent(level) + "\">返回 " + escapeHtml(level) + "</a>"
       + "<h1>" + escapeHtml(category.title) + "</h1>"
-      + "<p class=\"meta\">隨時可以再入嚟睇。</p>"
+      + "<p class=\"meta\">" + (category.entries || []).length + " 個 · 每次顯示 " + VOCAB_PAGE + " 個</p>"
       + "<a class=\"btn\" href=\"#/vocab/review/" + encodeURIComponent(level) + "/" + encodeURIComponent(category.id) + "\">卡片溫習</a>"
-      + (words || "<p>未有生詞。</p>");
+      + words;
   }
 
   function renderVocabReview() {
@@ -1288,6 +1300,10 @@
       cards.revealed = false;
       render();
     }
+    if (name === "vocab-more") {
+      vocabShown += VOCAB_PAGE;
+      render();
+    }
     if (name === "vocab-known") markVocab(action.getAttribute("data-id"), "known");
     if (name === "vocab-unknown") markVocab(action.getAttribute("data-id"), "unknown");
   }
@@ -1371,15 +1387,18 @@
     document.body.addEventListener("submit", onSubmit);
     document.body.addEventListener("input", function (event) {
       if (!event.target || event.target.id !== "vocab-search") return;
-      vocabQuery = event.target.value;
+      var nextQuery = event.target.value;
+      if (nextQuery !== vocabQuery) vocabShown = VOCAB_PAGE;
+      vocabQuery = nextQuery;
       var box = document.getElementById("vocab-results");
       if (!box) return;
       var route = parseRoute();
       var found = vocabEntries(route.level || "N5", "").filter(function (entry) { return matchesQuery(entry, vocabQuery); });
-      box.innerHTML = vocabQuery ? (found.map(renderWord).join("") || "<p>搵唔到。</p>") : "";
+      box.innerHTML = vocabQuery ? pagedWords(found, "搵唔到。") : "";
     });
     window.addEventListener("hashchange", function () {
       window.JPSpeech.cancel();
+      vocabShown = VOCAB_PAGE;
       render();
       window.scrollTo(0, 0);
     });
