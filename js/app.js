@@ -175,7 +175,7 @@
     }
     if (block.type === "example") {
       return "<figure class=\"example\">"
-        + "<p class=\"jp\" lang=\"ja\">" + escapeHtml(block.jp || "") + "</p>"
+        + "<p class=\"jp\" lang=\"ja\">" + escapeHtml(block.jp || "") + verifyMark(block) + "</p>"
         + (block.reading ? "<p class=\"reading\" lang=\"ja\">" + escapeHtml(block.reading) + "</p>" : "")
         + (block.zh ? "<figcaption>" + escapeHtml(block.zh) + "</figcaption>" : "")
         + (block.note ? "<p class=\"note\">" + inline(block.note) + "</p>" : "")
@@ -492,6 +492,7 @@
         + (correct ? "" : "<p>正確答案：" + jaSpan(right) + "</p>")
         + (!correct && question.rule ? "<p class=\"verb-rule\">" + escapeHtml(question.rule) + "</p>" : "")
         + "<p>" + inline(question.explanation || "") + "</p>"
+        + renderExampleSentence(question.example)
         + "</div>";
     }
     var next = session.locked ? "<button type=\"button\" class=\"btn sticky-next\" data-action=\"next\">"
@@ -522,6 +523,20 @@
       + answerUi
       + feedback
       + next;
+  }
+
+  function verifyMark(example) {
+    if (!window.JPLogic.examplePendingVerify(example)) return "";
+    return "<span class=\"verify-pending\">待核對</span>";
+  }
+
+  function renderExampleSentence(example) {
+    if (!example || !example.jp) return "";
+    return "<div class=\"example-sentence\">"
+      + "<p class=\"jp\" lang=\"ja\">" + escapeHtml(example.jp) + verifyMark(example) + "</p>"
+      + (example.reading ? "<p class=\"reading\" lang=\"ja\">" + escapeHtml(example.reading) + "</p>" : "")
+      + (example.zh ? "<p>" + escapeHtml(example.zh) + "</p>" : "")
+      + "</div>";
   }
 
   function renderVerbAsk(question) {
@@ -668,6 +683,7 @@
         + (correct ? "<p>正確答案：" + jaSpan(correct) + "</p>" : "")
         + (found && found.question.rule ? "<p class=\"verb-rule\">" + escapeHtml(found.question.rule) + "</p>" : "")
         + (explanation ? "<p>" + inline(explanation) + "</p>" : "")
+        + (found ? renderExampleSentence(found.question.example) : "")
         + "<p class=\"tags\">" + renderTags(item.tags) + "</p>"
         + "<p class=\"meta\">錯過 " + item.wrongCount + " 次 · 錯誤率 " + Math.round((item.errorRate || 0) * 100) + "%</p>"
         + "</article>";
@@ -836,9 +852,7 @@
   }
 
   function renderWord(entry) {
-    var example = entry.example ? "<p class=\"jp\" lang=\"ja\">" + escapeHtml(entry.example.jp) + "</p>"
-      + (entry.example.reading ? "<p class=\"reading\" lang=\"ja\">" + escapeHtml(entry.example.reading) + "</p>" : "")
-      + "<p>" + escapeHtml(entry.example.zh || "") + "</p>" : "";
+    var example = renderExampleSentence(entry.example);
     return "<article class=\"card\">"
       + "<p class=\"jp\" lang=\"ja\">" + escapeHtml(entry.japanese) + "</p>"
       + "<p class=\"reading\" lang=\"ja\">" + escapeHtml(entry.reading) + "</p>"
@@ -902,7 +916,7 @@
     var meaning = cards.revealed
       ? "<p class=\"flash-meaning score\">" + escapeHtml(entry.meaning) + "</p>"
         + renderVerbForms(entry)
-        + (entry.example ? "<p class=\"jp\" lang=\"ja\">" + escapeHtml(entry.example.jp) + "</p><p>" + escapeHtml(entry.example.zh || "") + "</p>" : "")
+        + renderExampleSentence(entry.example)
         + "<button type=\"button\" class=\"btn ghost\" data-action=\"hide\">收起意思</button>"
       : "<button type=\"button\" class=\"btn secondary\" data-action=\"reveal\">睇意思</button>";
     return "<a class=\"back\" href=\"#/vocab/" + encodeURIComponent(cards.level) + (cards.category ? "/" + encodeURIComponent(cards.category) : "") + "\">離開</a>"

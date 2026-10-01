@@ -536,6 +536,10 @@
     };
   }
 
+  function examplePendingVerify(example) {
+    return !!(example && example.verified === false);
+  }
+
   function formatPercent(accuracy) {
     if (accuracy == null) return "未有紀錄";
     return Math.round(accuracy * 100) + "%";
@@ -574,6 +578,7 @@
     lessonProgress: lessonProgress,
     nextAttemptNo: nextAttemptNo,
     buildSummary: buildSummary,
+    examplePendingVerify: examplePendingVerify,
     formatPercent: formatPercent,
     formatDateLabel: formatDateLabel,
     studyDates: studyDates,

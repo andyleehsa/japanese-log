@@ -332,6 +332,19 @@ a.tag.is-on { background: var(--indigo); color: #f7f3ea; }
   font-weight: 800;
 }
 
+.verify-pending {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: #f3ecdf;
+  color: #7a6a55;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.7;
+  vertical-align: 3px;
+}
+
 .back {
   color: var(--indigo);
   font-weight: 800;

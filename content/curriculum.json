@@ -1,1694 +1,1702 @@
 {
- "schemaVersion": 1,
- "sample": false,
- "completionAccuracy": 0.8,
- "levels": [
-  {
-   "level": "N5",
-   "topics": [
+  "schemaVersion": 1,
+  "sample": false,
+  "completionAccuracy": 0.8,
+  "levels": [
     {
-     "id": "n5-001-intro",
-     "title": "日語文字與發音入門",
-     "description": "認識平假名、片假名、漢字三種文字的分工，以及日語以「拍」為單位的節奏。",
-     "level": "N5",
-     "lessonIds": [],
-     "planned": 1
+      "level": "N5",
+      "topics": [
+        {
+          "id": "n5-001-intro",
+          "title": "日語文字與發音入門",
+          "description": "認識平假名、片假名、漢字三種文字的分工，以及日語以「拍」為單位的節奏。",
+          "level": "N5",
+          "lessonIds": [],
+          "planned": 1
+        },
+        {
+          "id": "n5-002-hira1",
+          "title": "平假名（一）：あ行・か行・さ行",
+          "description": "學習並書寫あ至そ共15個平假名，配合慢速發音跟讀。",
+          "level": "N5",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n5-003-hira2",
+          "title": "平假名（二）：た行・な行・は行",
+          "description": "學習た至ほ共15個平假名，留意「し・ち・つ・ふ」的特殊發音。",
+          "level": "N5",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n5-004-hira3",
+          "title": "平假名（三）：ま行・や行・ら行・わ行・ん",
+          "description": "學習餘下平假名，包括「ら行」的彈舌音及撥音「ん」。",
+          "level": "N5",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n5-005-dakuon",
+          "title": "濁音與半濁音",
+          "description": "掌握が・ざ・だ・ば行及ぱ行的寫法和清濁音分別。",
+          "level": "N5",
+          "lessonIds": [
+            "n5w1-d1"
+          ],
+          "planned": 1
+        },
+        {
+          "id": "n5-006-youon",
+          "title": "拗音",
+          "description": "學習きゃ、しゃ、ちゃ、にゃ、りゃ等拗音的拼寫和讀法。",
+          "level": "N5",
+          "lessonIds": [],
+          "planned": 1
+        },
+        {
+          "id": "n5-007-sokuon",
+          "title": "促音與長音",
+          "description": "掌握小「っ」的停頓與長音規則，明白長短音會改變詞義。",
+          "level": "N5",
+          "lessonIds": [
+            "n5w1-d1"
+          ],
+          "planned": 2
+        },
+        {
+          "id": "n5-008-greet",
+          "title": "基本招呼語與課堂用語",
+          "description": "學習おはよう、ありがとう、すみません等日常必備招呼語。",
+          "level": "N5",
+          "lessonIds": [],
+          "planned": 1
+        },
+        {
+          "id": "n5-009-kata1",
+          "title": "片假名（一）：ア行・カ行・サ行",
+          "description": "學習ア至ソ的片假名，並與平假名對照，留意シ／ツ、ソ／ン的分別。",
+          "level": "N5",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n5-010-kata2",
+          "title": "片假名（二）：タ行・ナ行・ハ行",
+          "description": "學習タ至ホ的片假名，練習認讀常見外來語。",
+          "level": "N5",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n5-011-kata3",
+          "title": "片假名（三）：マ行至ン",
+          "description": "學習餘下片假名，完成全部清音。",
+          "level": "N5",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n5-012-kata4",
+          "title": "片假名濁音、拗音與外來語",
+          "description": "學習片假名的濁音、拗音、長音符號「ー」，並認讀常見外來語。",
+          "level": "N5",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n5-013-listen1",
+          "title": "聆聽專項①：假名與音拍辨聽",
+          "description": "由慢速單詞開始，練習分辨清濁音、長短音、促音及撥音。",
+          "level": "N5",
+          "lessonIds": [
+            "n5w1-d1"
+          ],
+          "planned": 2
+        },
+        {
+          "id": "n5-014-numbers1",
+          "title": "數字 0 至 100",
+          "description": "學習0至100的數字讀法，包括0、4、7、9的特殊讀法。",
+          "level": "N5",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n5-015-noundesu",
+          "title": "名詞句：AはBです",
+          "description": "學習用「は」提示主題及「です」的肯定、否定與疑問基本句。",
+          "level": "N5",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n5-016-question",
+          "title": "疑問句「か」與「ね」「よ」",
+          "description": "學習以「か」構成是非問句，以及語氣助詞「ね」「よ」。",
+          "level": "N5",
+          "lessonIds": [],
+          "planned": 1
+        },
+        {
+          "id": "n5-017-demo1",
+          "title": "指示詞（一）：これ・それ・あれ",
+          "description": "分辨近稱、中稱、遠稱的事物指示詞，並配合疑問詞「どれ」。",
+          "level": "N5",
+          "lessonIds": [],
+          "planned": 1
+        },
+        {
+          "id": "n5-018-demo2",
+          "title": "指示詞（二）：ここ・そこ・あそこ・この・その・あの",
+          "description": "學習場所指示詞、連體詞「この／その／あの」及方向「こちら」等。",
+          "level": "N5",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n5-019-noparticle",
+          "title": "助詞「の」",
+          "description": "學習以「の」表示所屬、修飾及同位關係，例如「私の本」。",
+          "level": "N5",
+          "lessonIds": [],
+          "planned": 1
+        },
+        {
+          "id": "n5-020-selfintro",
+          "title": "自我介紹與國籍職業",
+          "description": "學習說出名字、國籍、職業、年齡，完成基本自我介紹。",
+          "level": "N5",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n5-021-interrog",
+          "title": "疑問詞總覽",
+          "description": "學習何、誰、どこ、いつ、どれ、どう、いくら等基本疑問詞及其句型。",
+          "level": "N5",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n5-022-time1",
+          "title": "時間：〜時〜分",
+          "description": "學習幾點幾分的讀法（包括特殊讀音）及「午前／午後」。",
+          "level": "N5",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n5-023-listen2",
+          "title": "聆聽專項②：數字與時間",
+          "description": "慢速聽辨數字、價錢、時間，並抄寫或選出正確答案。",
+          "level": "N5",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n5-024-date1",
+          "title": "日期：月・日・星期",
+          "description": "學習月份、日期（一至三十一日的特殊讀法）及星期的說法。",
+          "level": "N5",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n5-025-numbers2",
+          "title": "大數字與價錢",
+          "description": "學習百、千、萬的讀法（含音變）及用「いくらですか」問價錢。",
+          "level": "N5",
+          "lessonIds": [],
+          "planned": 1
+        },
+        {
+          "id": "n5-026-counter1",
+          "title": "助數詞（一）：つ・人・個・枚・本",
+          "description": "學習常用助數詞的基本用法，包括「一人、二人」及「ひとつ」系列。",
+          "level": "N5",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n5-027-counter2",
+          "title": "助數詞（二）：冊・台・回・階・歳等",
+          "description": "學習書本、機器、次數、樓層、年齡等助數詞及音變。",
+          "level": "N5",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n5-028-mo-to",
+          "title": "助詞「も」「と」「や」「など」",
+          "description": "學習「も」（也）、「と」（和）、「や」（列舉）及「など」。",
+          "level": "N5",
+          "lessonIds": [],
+          "planned": 1
+        },
+        {
+          "id": "n5-029-iadj1",
+          "title": "い形容詞（一）：基本形與修飾名詞",
+          "description": "認識い形容詞的特徵，學習肯定句、否定「くない」及修飾名詞。",
+          "level": "N5",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n5-030-iadj2",
+          "title": "い形容詞（二）：過去式與連接",
+          "description": "學習「かった」「くなかった」及以「くて」連接形容詞。",
+          "level": "N5",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n5-031-naadj",
+          "title": "な形容詞",
+          "description": "學習な形容詞的現在、過去、否定及「な」修飾名詞。",
+          "level": "N5",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n5-032-adverb1",
+          "title": "程度副詞與頻率副詞",
+          "description": "學習とても、少し、あまり、全然、よく、時々等副詞和否定呼應。",
+          "level": "N5",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n5-033-vocab-family",
+          "title": "詞彙主題：家人與人物稱呼",
+          "description": "學習稱呼自己及他人家人的分別，以及老師、學生等人物詞彙。",
+          "level": "N5",
+          "lessonIds": [],
+          "planned": 1
+        },
+        {
+          "id": "n5-034-vocab-food",
+          "title": "詞彙主題：飲食",
+          "description": "學習常見食物、飲品、餐具及餐廳用語。",
+          "level": "N5",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n5-035-listen3",
+          "title": "聆聽專項③：物品與場所短句",
+          "description": "聆聽單句的「這是什麼」「在哪裏」類問答，抓取關鍵詞。",
+          "level": "N5",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n5-036-verbclass",
+          "title": "動詞的種類與基本認識",
+          "description": "認識一類、二類及三類動詞的分別和辨認方法，並學習基本動詞。",
+          "level": "N5",
+          "lessonIds": [
+            "n5w1-d1v"
+          ],
+          "planned": 2
+        },
+        {
+          "id": "n5-037-masu1",
+          "title": "ます形：現在與未來",
+          "description": "學習動詞ます形的肯定與否定，以及時間詞用法。",
+          "level": "N5",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n5-038-wo-particle",
+          "title": "助詞「を」與他動詞句",
+          "description": "學習以「を」標示動作對象，並做食、飲、看、聽等基本造句。",
+          "level": "N5",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n5-039-ni-he",
+          "title": "助詞「に」「へ」：時間與目的地",
+          "description": "學習以「に」表示時間點、以「に／へ」表示移動方向。",
+          "level": "N5",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n5-040-de-particle",
+          "title": "助詞「で」：場所與手段",
+          "description": "學習以「で」表示動作場所、交通工具及工具方法。",
+          "level": "N5",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n5-041-vocab-transport",
+          "title": "詞彙主題：交通與地方",
+          "description": "學習交通工具、車站、街道及常見地方詞彙。",
+          "level": "N5",
+          "lessonIds": [],
+          "planned": 1
+        },
+        {
+          "id": "n5-042-masita",
+          "title": "ました形：過去式",
+          "description": "學習動詞ます形的過去肯定與否定，描述昨天與上星期的事。",
+          "level": "N5",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n5-043-kara-made",
+          "title": "助詞「から」「まで」",
+          "description": "學習表示時間和地點的起點終點，以及「〜から〜まで」。",
+          "level": "N5",
+          "lessonIds": [],
+          "planned": 1
+        },
+        {
+          "id": "n5-044-masenka",
+          "title": "邀請與提議：ませんか・ましょう",
+          "description": "學習邀請對方及提議一起做某事的說法與回應。",
+          "level": "N5",
+          "lessonIds": [],
+          "planned": 1
+        },
+        {
+          "id": "n5-045-aru-iru",
+          "title": "存在句：あります・います",
+          "description": "分辨有生命與無生命的存在動詞，並使用「に」表示位置。",
+          "level": "N5",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n5-046-position",
+          "title": "方位詞與位置表達",
+          "description": "學習上、下、前、後、中、旁邊等方位詞及「〜の上に」句型。",
+          "level": "N5",
+          "lessonIds": [],
+          "planned": 1
+        },
+        {
+          "id": "n5-047-vocab-body",
+          "title": "詞彙主題：身體與健康",
+          "description": "學習身體部位及常見不適說法，如「頭が痛いです」。",
+          "level": "N5",
+          "lessonIds": [],
+          "planned": 1
+        },
+        {
+          "id": "n5-048-ga-particle",
+          "title": "助詞「が」：喜好與能力",
+          "description": "學習「〜が好きです」「〜が上手です」「〜がわかります」等句型。",
+          "level": "N5",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n5-049-tai-hoshii",
+          "title": "願望表達：〜たい・〜がほしい",
+          "description": "學習以「たい」表達想做某事，以「ほしい」表達想要某物。",
+          "level": "N5",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n5-050-hikaku",
+          "title": "比較與最上級",
+          "description": "學習兩者比較及三者以上選最的句型。",
+          "level": "N5",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n5-051-conj1",
+          "title": "基本接續詞與「が」「から」",
+          "description": "學習そして、でも、それから、しかし及句末「が」逆接。",
+          "level": "N5",
+          "lessonIds": [],
+          "planned": 1
+        },
+        {
+          "id": "n5-052-dictform",
+          "title": "辭書形（字典形）",
+          "description": "學習三類動詞的辭書形變化規則，認識字典所載形式。",
+          "level": "N5",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n5-053-teform",
+          "title": "て形（一）：二類・三類動詞",
+          "description": "先學二類、三類動詞的て形（規則最簡單），並認識て形的功能。",
+          "level": "N5",
+          "lessonIds": [],
+          "planned": 3
+        },
+        {
+          "id": "n5-054-teform2",
+          "title": "て形（二）：一類動詞音便與總整理",
+          "description": "熟習一類動詞的い音便、促音便、撥音便及特殊動詞「行く」。",
+          "level": "N5",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n5-055-tekudasai",
+          "title": "請求與指示：〜てください",
+          "description": "學習以て形請求對方做某事，並加上「ちょっと」「すみませんが」。",
+          "level": "N5",
+          "lessonIds": [],
+          "planned": 1
+        },
+        {
+          "id": "n5-056-teiru",
+          "title": "進行與狀態：〜ている",
+          "description": "學習以「ている」表達進行中動作、習慣及結果狀態。",
+          "level": "N5",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n5-057-naiform",
+          "title": "ない形（否定形）",
+          "description": "學習三類動詞的ない形變化，包括「ある」→「ない」的特例。",
+          "level": "N5",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n5-058-naidekudasai",
+          "title": "禁止與許可：〜ないでください・〜てもいい",
+          "description": "學習請求不要做、許可「てもいい」及禁止「てはいけません」。",
+          "level": "N5",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n5-059-taform",
+          "title": "た形（過去形）",
+          "description": "學習動詞た形，用普通體描述過去經驗與動作。",
+          "level": "N5",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n5-060-listen4",
+          "title": "聆聽專項④：日常短對話",
+          "description": "聽兩至四句的日常對話，抓住誰、何時、在哪、做甚麼。",
+          "level": "N5",
+          "lessonIds": [],
+          "planned": 3
+        },
+        {
+          "id": "n5-061-kanji1",
+          "title": "漢字入門（一）：數字與日期",
+          "description": "學習一至十、百千萬、日月火水木金土等基本漢字的讀寫。",
+          "level": "N5",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n5-062-kanji2",
+          "title": "漢字入門（二）：人・物・方向",
+          "description": "學習人、大、小、中、上、下、山、川、學校等基本漢字。",
+          "level": "N5",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n5-063-review5",
+          "title": "N5 綜合複習與模擬",
+          "description": "整理N5文法與詞彙，進行綜合練習及聽力小測。",
+          "level": "N5",
+          "lessonIds": [],
+          "planned": 3
+        }
+      ]
     },
     {
-     "id": "n5-002-hira1",
-     "title": "平假名（一）：あ行・か行・さ行",
-     "description": "學習並書寫あ至そ共15個平假名，配合慢速發音跟讀。",
-     "level": "N5",
-     "lessonIds": [],
-     "planned": 2
+      "level": "N4",
+      "topics": [
+        {
+          "id": "n4-001-review-n5",
+          "title": "N5 重點回顧與弱項補強",
+          "description": "回顧助詞、動詞て形／ない形及常用詞彙，補強根基不穩之處。",
+          "level": "N4",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n4-002-listen-n4a",
+          "title": "聆聽專項①：普通體短句辨聽",
+          "description": "由慢速、短句開始，習慣日常會話中的普通體與縮約說話。",
+          "level": "N4",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n4-003-plain1",
+          "title": "普通體（一）：現在式與否定",
+          "description": "學習動詞、形容詞、名詞句的普通體現在式及否定形。",
+          "level": "N4",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n4-004-plain2",
+          "title": "普通體（二）：過去式與名詞修飾",
+          "description": "學習普通體過去式，並認識「普通體＋名詞」的修飾結構。",
+          "level": "N4",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n4-005-quote-to",
+          "title": "引用與想法：〜と思う・〜と言う",
+          "description": "學習以「と」引用說話內容及表達自己的想法。",
+          "level": "N4",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n4-006-relative",
+          "title": "名詞修飾句（關係子句）",
+          "description": "學習用句子修飾名詞，例如「昨日買った本」，及「が」代替「の」。",
+          "level": "N4",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n4-007-koto-no",
+          "title": "名詞化：〜こと・〜の",
+          "description": "學習「こと」「の」把動詞變成名詞，並用於興趣、能力表達。",
+          "level": "N4",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n4-008-kanou",
+          "title": "可能形",
+          "description": "學習一類、二類、三類動詞的可能形，及「ことができる」。",
+          "level": "N4",
+          "lessonIds": [],
+          "planned": 3
+        },
+        {
+          "id": "n4-009-kanou-use",
+          "title": "可能的用法：見える・聞こえる與助詞變化",
+          "description": "分辨可能形與自發動詞「見える」「聞こえる」，並留意助詞由「を」變「が」。",
+          "level": "N4",
+          "lessonIds": [],
+          "planned": 1
+        },
+        {
+          "id": "n4-010-volitional",
+          "title": "意向形",
+          "description": "學習各類動詞意向形的變化，表達「一起做吧」「打算做」。",
+          "level": "N4",
+          "lessonIds": [],
+          "planned": 3
+        },
+        {
+          "id": "n4-011-volitional-use",
+          "title": "意向形的用法：〜ようと思う・〜つもり",
+          "description": "學習「ようと思う」「つもりだ」「予定だ」表達計劃與打算。",
+          "level": "N4",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n4-012-jouken-tara",
+          "title": "條件形（一）：〜たら",
+          "description": "學習「たら」表達假設、完成後的動作及發現。",
+          "level": "N4",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n4-013-jouken-ba",
+          "title": "條件形（二）：〜ば",
+          "description": "學習各類詞的「ば」形變化及用法。",
+          "level": "N4",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n4-014-jouken-to-nara",
+          "title": "條件表達（三）：〜と・〜なら",
+          "description": "比較「と」「なら」「たら」「ば」的分別與使用場合。",
+          "level": "N4",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n4-015-tebakari",
+          "title": "〜てから・〜た後で・〜る前に",
+          "description": "學習動作先後次序的三種表達方式。",
+          "level": "N4",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n4-016-teiru2",
+          "title": "〜ている（二）：習慣與結果狀態",
+          "description": "深入分辨進行、習慣、狀態及經驗，認識「ている」與「てある」。",
+          "level": "N4",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n4-017-tearu-teoku",
+          "title": "〜てある・〜ておく・〜てしまう",
+          "description": "學習狀態、預先準備及完了／遺憾三種「て形＋補助動詞」。",
+          "level": "N4",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n4-018-temiru-te-kuru",
+          "title": "〜てみる・〜ていく・〜てくる",
+          "description": "學習嘗試、方向性及變化的補助動詞表達。",
+          "level": "N4",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n4-019-shite-kudasai",
+          "title": "請求、許可與禁止（進階）",
+          "description": "學習〜てもらえませんか、〜てもかまいません、〜てはいけない、〜なくてもいい。",
+          "level": "N4",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n4-020-nakereba",
+          "title": "義務：〜なければならない・〜なくてはいけない",
+          "description": "學習表示「必須」與「不必」的各種說法。",
+          "level": "N4",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n4-021-hou-ga-ii",
+          "title": "建議：〜たほうがいい・〜ないほうがいい",
+          "description": "學習給予建議與勸告，及其否定。",
+          "level": "N4",
+          "lessonIds": [],
+          "planned": 1
+        },
+        {
+          "id": "n4-022-koto-ga-aru",
+          "title": "經驗與習慣：〜たことがある・〜ことにする",
+          "description": "學習表達經驗、決定及規定的說法。",
+          "level": "N4",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n4-023-tari",
+          "title": "並列動作：〜たり〜たりする",
+          "description": "學習以「たり」列舉動作或狀態，並用於描述週末活動。",
+          "level": "N4",
+          "lessonIds": [],
+          "planned": 1
+        },
+        {
+          "id": "n4-024-nagara",
+          "title": "同時進行：〜ながら",
+          "description": "學習表示同時進行兩個動作，及與「ている」的分別。",
+          "level": "N4",
+          "lessonIds": [],
+          "planned": 1
+        },
+        {
+          "id": "n4-025-sugiru-yasui",
+          "title": "〜すぎる・〜やすい・〜にくい",
+          "description": "學習過度、容易及難以的動詞或形容詞接續。",
+          "level": "N4",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n4-026-youni-naru",
+          "title": "變化與努力：〜ようになる・〜ようにする",
+          "description": "學習表達能力、習慣的變化及努力使其成為現實。",
+          "level": "N4",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n4-027-you-ni-suru",
+          "title": "〜ように（目的）・〜ように言う",
+          "description": "學習以「ように」表示目的及轉述要求。",
+          "level": "N4",
+          "lessonIds": [],
+          "planned": 1
+        },
+        {
+          "id": "n4-028-adv-naru-ni",
+          "title": "形容詞副詞化與變化：〜くなる・〜になる",
+          "description": "學習形容詞的副詞形（く／に）及「なる」「する」的用法。",
+          "level": "N4",
+          "lessonIds": [],
+          "planned": 1
+        },
+        {
+          "id": "n4-029-adj-n4",
+          "title": "N4 形容詞擴充",
+          "description": "擴充N4形容詞，包括感覺、性格及狀態，並練習比較表達。",
+          "level": "N4",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n4-030-adv-n4",
+          "title": "副詞與擬聲擬態詞入門",
+          "description": "學習もう、まだ、すぐ、ずっと、だんだん、きっと等副詞及簡單擬態詞。",
+          "level": "N4",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n4-031-conj-n4",
+          "title": "接續詞②：だから・それで・ところが",
+          "description": "學習表示原因、對比、轉折的接續詞，如だから、すると、ところで。",
+          "level": "N4",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n4-032-tte-kara",
+          "title": "原因與理由：〜から・〜ので・〜ために",
+          "description": "比較「から」「ので」「ために」的語氣及使用場合。",
+          "level": "N4",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n4-033-noni",
+          "title": "逆接：〜のに・〜ても",
+          "description": "學習表示「明明…卻」及「即使…也」。",
+          "level": "N4",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n4-034-youda-souda",
+          "title": "推測與傳聞（一）：〜そうだ・〜ようだ",
+          "description": "分辨樣態「そうだ」、傳聞「そうだ」及推測「ようだ」。",
+          "level": "N4",
+          "lessonIds": [],
+          "planned": 3
+        },
+        {
+          "id": "n4-035-rashii-mitai",
+          "title": "推測與傳聞（二）：〜らしい・〜みたい・〜でしょう",
+          "description": "學習「らしい」「みたい」「かもしれない」「でしょう」「はずだ」。",
+          "level": "N4",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n4-036-kamoshirenai",
+          "title": "可能性與確信：かもしれない・はずだ・にちがいない",
+          "description": "學習不同確信程度的推測表達。",
+          "level": "N4",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n4-037-ukemi",
+          "title": "受身形（被動）",
+          "description": "學習各類動詞受身形變化，及直接受身句型。",
+          "level": "N4",
+          "lessonIds": [],
+          "planned": 3
+        },
+        {
+          "id": "n4-038-ukemi-use",
+          "title": "受身的用法：迷惑受身與施事者助詞",
+          "description": "學習「に」「によって」「から」表示施事者，以及受影響的迷惑受身。",
+          "level": "N4",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n4-039-shieki",
+          "title": "使役形",
+          "description": "學習各類動詞使役形變化，及使役句的人物與助詞。",
+          "level": "N4",
+          "lessonIds": [],
+          "planned": 3
+        },
+        {
+          "id": "n4-040-shieki-use",
+          "title": "使役的用法：〜させてください",
+          "description": "學習請求許可「〜させてください」及使役的語感差異。",
+          "level": "N4",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n4-041-shieki-ukemi",
+          "title": "使役受身形",
+          "description": "學習「食べさせられる」等使役受身形，表達被迫做某事。",
+          "level": "N4",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n4-042-jidoushi",
+          "title": "自動詞與他動詞",
+          "description": "認識「開く／開ける」等對應的自動詞和他動詞，及助詞選擇。",
+          "level": "N4",
+          "lessonIds": [],
+          "planned": 3
+        },
+        {
+          "id": "n4-043-jusu",
+          "title": "授受表現（一）：あげる・もらう・くれる",
+          "description": "學習三個授受動詞的方向性及助詞用法。",
+          "level": "N4",
+          "lessonIds": [],
+          "planned": 3
+        },
+        {
+          "id": "n4-044-jusu2",
+          "title": "授受表現（二）：〜てあげる・〜てもらう・〜てくれる",
+          "description": "學習「て形＋授受動詞」表達為別人做某事或受人恩惠。",
+          "level": "N4",
+          "lessonIds": [],
+          "planned": 3
+        },
+        {
+          "id": "n4-045-keigo1",
+          "title": "敬語入門：丁寧語與敬語概念",
+          "description": "認識丁寧語、尊敬語、謙讓語的分別及適用場合。",
+          "level": "N4",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n4-046-sonkei",
+          "title": "尊敬語基礎",
+          "description": "學習いらっしゃる、おっしゃる、なさる等及「お〜になる」「れる／られる」。",
+          "level": "N4",
+          "lessonIds": [],
+          "planned": 3
+        },
+        {
+          "id": "n4-047-kenjou",
+          "title": "謙讓語基礎",
+          "description": "學習いたす、参る、申す、伺う、拝見する等及「お〜する」。",
+          "level": "N4",
+          "lessonIds": [],
+          "planned": 3
+        },
+        {
+          "id": "n4-048-keigo-use",
+          "title": "常用敬語情境：店舖、電話、辦公室",
+          "description": "在餐廳、店舖、電話、辦公室等情境練習敬語表達。",
+          "level": "N4",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n4-049-sonkei-polite",
+          "title": "禮貌表達：お願いします・失礼します等",
+          "description": "學習日常客套話、道歉與道謝、拒絕及委婉請求。",
+          "level": "N4",
+          "lessonIds": [],
+          "planned": 1
+        },
+        {
+          "id": "n4-050-hou-komu",
+          "title": "〜はじめる・〜おわる・〜つづける",
+          "description": "學習複合動詞表示開始、結束、持續。",
+          "level": "N4",
+          "lessonIds": [],
+          "planned": 1
+        },
+        {
+          "id": "n4-051-mo-shi",
+          "title": "〜し〜し・〜ばかり・〜だけ・〜しか",
+          "description": "學習列舉理由、限定與只有的各種表達。",
+          "level": "N4",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n4-052-dake-shika",
+          "title": "助詞進階：しか・だけ・ばかり・でも・ほど・くらい",
+          "description": "學習限定、程度、舉例用的助詞，及其與否定的呼應。",
+          "level": "N4",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n4-053-ni-particle",
+          "title": "助詞「に」「で」「を」的多用法整理",
+          "description": "整理N5至N4助詞多重功能，比較「に」「で」「を」「が」的分別。",
+          "level": "N4",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n4-054-interrog-n4",
+          "title": "疑問詞進階與不定詞：誰か・何も・どれも",
+          "description": "學習疑問詞加「か」「も」「でも」的不定、全稱、全否定用法。",
+          "level": "N4",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n4-055-koto-ni-naru",
+          "title": "〜ことになる・〜ことにする",
+          "description": "學習決定及已定事項的表達。",
+          "level": "N4",
+          "lessonIds": [],
+          "planned": 1
+        },
+        {
+          "id": "n4-056-youni-iu",
+          "title": "間接引語與轉述",
+          "description": "學習把別人的說話轉述，及「〜と言っていた」「〜そうだ」。",
+          "level": "N4",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n4-057-toki-aida",
+          "title": "時間從句：〜とき・〜あいだ・〜うちに",
+          "description": "學習「とき」「あいだ」「うちに」「まえに」等時間從句。",
+          "level": "N4",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n4-058-kanji-n4-1",
+          "title": "N4 漢字（一）：生活與自然",
+          "description": "學習約百個N4漢字，包括天氣、家庭、生活常用字。",
+          "level": "N4",
+          "lessonIds": [],
+          "planned": 3
+        },
+        {
+          "id": "n4-059-kanji-n4-2",
+          "title": "N4 漢字（二）：動作與形容詞",
+          "description": "學習動詞及形容詞常見漢字及送假名。",
+          "level": "N4",
+          "lessonIds": [],
+          "planned": 3
+        },
+        {
+          "id": "n4-060-vocab-daily",
+          "title": "詞彙主題：日常生活與家居",
+          "description": "擴充家居、傢俬、日用品及家務詞彙。",
+          "level": "N4",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n4-061-vocab-work",
+          "title": "詞彙主題：學校與工作",
+          "description": "擴充學校、公司、職業與辦公室詞彙。",
+          "level": "N4",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n4-062-vocab-travel",
+          "title": "詞彙主題：旅行與交通",
+          "description": "擴充旅遊、酒店、車站、問路及交通相關詞彙。",
+          "level": "N4",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n4-063-vocab-health",
+          "title": "詞彙主題：身體、健康與病痛",
+          "description": "擴充身體、病徵、醫院相關詞彙。",
+          "level": "N4",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n4-064-vocab-weather",
+          "title": "詞彙主題：天氣、自然與季節",
+          "description": "擴充天氣、自然現象、動物及植物詞彙。",
+          "level": "N4",
+          "lessonIds": [],
+          "planned": 1
+        },
+        {
+          "id": "n4-065-vocab-shopping",
+          "title": "詞彙主題：購物、金錢與服飾",
+          "description": "擴充購物、付款、衣物及外貌詞彙。",
+          "level": "N4",
+          "lessonIds": [],
+          "planned": 1
+        },
+        {
+          "id": "n4-066-vocab-katakana",
+          "title": "外來語與片假名詞彙",
+          "description": "擴充生活常見外來語，並留意和製英語的發音。",
+          "level": "N4",
+          "lessonIds": [],
+          "planned": 1
+        },
+        {
+          "id": "n4-067-listen-n4b",
+          "title": "聆聽專項②：慢速對話與場景（問路・購物）",
+          "description": "聆聽問路、購物、餐廳等場景對話，抓取關鍵資訊。",
+          "level": "N4",
+          "lessonIds": [],
+          "planned": 3
+        },
+        {
+          "id": "n4-068-listen-n4c",
+          "title": "聆聽專項③：普通速度會話與縮約形",
+          "description": "熟悉「じゃ」「ちゃう」「んです」等口語縮約，聽普通速度會話。",
+          "level": "N4",
+          "lessonIds": [],
+          "planned": 3
+        },
+        {
+          "id": "n4-069-listen-n4d",
+          "title": "聆聽專項④：留言、廣播及簡短說明",
+          "description": "聆聽車站廣播、電話留言、簡短通知，抓取時間與要求。",
+          "level": "N4",
+          "lessonIds": [],
+          "planned": 3
+        },
+        {
+          "id": "n4-070-review-n4",
+          "title": "N4 綜合複習與模擬",
+          "description": "整理N4文法與詞彙並進行綜合練習及聽力模擬。",
+          "level": "N4",
+          "lessonIds": [],
+          "planned": 3
+        }
+      ]
     },
     {
-     "id": "n5-003-hira2",
-     "title": "平假名（二）：た行・な行・は行",
-     "description": "學習た至ほ共15個平假名，留意「し・ち・つ・ふ」的特殊發音。",
-     "level": "N5",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n5-004-hira3",
-     "title": "平假名（三）：ま行・や行・ら行・わ行・ん",
-     "description": "學習餘下平假名，包括「ら行」的彈舌音及撥音「ん」。",
-     "level": "N5",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n5-005-dakuon",
-     "title": "濁音與半濁音",
-     "description": "掌握が・ざ・だ・ば行及ぱ行的寫法和清濁音分別。",
-     "level": "N5",
-     "lessonIds": [],
-     "planned": 1
-    },
-    {
-     "id": "n5-006-youon",
-     "title": "拗音",
-     "description": "學習きゃ、しゃ、ちゃ、にゃ、りゃ等拗音的拼寫和讀法。",
-     "level": "N5",
-     "lessonIds": [],
-     "planned": 1
-    },
-    {
-     "id": "n5-007-sokuon",
-     "title": "促音與長音",
-     "description": "掌握小「っ」的停頓與長音規則，明白長短音會改變詞義。",
-     "level": "N5",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n5-008-greet",
-     "title": "基本招呼語與課堂用語",
-     "description": "學習おはよう、ありがとう、すみません等日常必備招呼語。",
-     "level": "N5",
-     "lessonIds": [],
-     "planned": 1
-    },
-    {
-     "id": "n5-009-kata1",
-     "title": "片假名（一）：ア行・カ行・サ行",
-     "description": "學習ア至ソ的片假名，並與平假名對照，留意シ／ツ、ソ／ン的分別。",
-     "level": "N5",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n5-010-kata2",
-     "title": "片假名（二）：タ行・ナ行・ハ行",
-     "description": "學習タ至ホ的片假名，練習認讀常見外來語。",
-     "level": "N5",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n5-011-kata3",
-     "title": "片假名（三）：マ行至ン",
-     "description": "學習餘下片假名，完成全部清音。",
-     "level": "N5",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n5-012-kata4",
-     "title": "片假名濁音、拗音與外來語",
-     "description": "學習片假名的濁音、拗音、長音符號「ー」，並認讀常見外來語。",
-     "level": "N5",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n5-013-listen1",
-     "title": "聆聽專項①：假名與音拍辨聽",
-     "description": "由慢速單詞開始，練習分辨清濁音、長短音、促音及撥音。",
-     "level": "N5",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n5-014-numbers1",
-     "title": "數字 0 至 100",
-     "description": "學習0至100的數字讀法，包括0、4、7、9的特殊讀法。",
-     "level": "N5",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n5-015-noundesu",
-     "title": "名詞句：AはBです",
-     "description": "學習用「は」提示主題及「です」的肯定、否定與疑問基本句。",
-     "level": "N5",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n5-016-question",
-     "title": "疑問句「か」與「ね」「よ」",
-     "description": "學習以「か」構成是非問句，以及語氣助詞「ね」「よ」。",
-     "level": "N5",
-     "lessonIds": [],
-     "planned": 1
-    },
-    {
-     "id": "n5-017-demo1",
-     "title": "指示詞（一）：これ・それ・あれ",
-     "description": "分辨近稱、中稱、遠稱的事物指示詞，並配合疑問詞「どれ」。",
-     "level": "N5",
-     "lessonIds": [],
-     "planned": 1
-    },
-    {
-     "id": "n5-018-demo2",
-     "title": "指示詞（二）：ここ・そこ・あそこ・この・その・あの",
-     "description": "學習場所指示詞、連體詞「この／その／あの」及方向「こちら」等。",
-     "level": "N5",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n5-019-noparticle",
-     "title": "助詞「の」",
-     "description": "學習以「の」表示所屬、修飾及同位關係，例如「私の本」。",
-     "level": "N5",
-     "lessonIds": [],
-     "planned": 1
-    },
-    {
-     "id": "n5-020-selfintro",
-     "title": "自我介紹與國籍職業",
-     "description": "學習說出名字、國籍、職業、年齡，完成基本自我介紹。",
-     "level": "N5",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n5-021-interrog",
-     "title": "疑問詞總覽",
-     "description": "學習何、誰、どこ、いつ、どれ、どう、いくら等基本疑問詞及其句型。",
-     "level": "N5",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n5-022-time1",
-     "title": "時間：〜時〜分",
-     "description": "學習幾點幾分的讀法（包括特殊讀音）及「午前／午後」。",
-     "level": "N5",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n5-023-listen2",
-     "title": "聆聽專項②：數字與時間",
-     "description": "慢速聽辨數字、價錢、時間，並抄寫或選出正確答案。",
-     "level": "N5",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n5-024-date1",
-     "title": "日期：月・日・星期",
-     "description": "學習月份、日期（一至三十一日的特殊讀法）及星期的說法。",
-     "level": "N5",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n5-025-numbers2",
-     "title": "大數字與價錢",
-     "description": "學習百、千、萬的讀法（含音變）及用「いくらですか」問價錢。",
-     "level": "N5",
-     "lessonIds": [],
-     "planned": 1
-    },
-    {
-     "id": "n5-026-counter1",
-     "title": "助數詞（一）：つ・人・個・枚・本",
-     "description": "學習常用助數詞的基本用法，包括「一人、二人」及「ひとつ」系列。",
-     "level": "N5",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n5-027-counter2",
-     "title": "助數詞（二）：冊・台・回・階・歳等",
-     "description": "學習書本、機器、次數、樓層、年齡等助數詞及音變。",
-     "level": "N5",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n5-028-mo-to",
-     "title": "助詞「も」「と」「や」「など」",
-     "description": "學習「も」（也）、「と」（和）、「や」（列舉）及「など」。",
-     "level": "N5",
-     "lessonIds": [],
-     "planned": 1
-    },
-    {
-     "id": "n5-029-iadj1",
-     "title": "い形容詞（一）：基本形與修飾名詞",
-     "description": "認識い形容詞的特徵，學習肯定句、否定「くない」及修飾名詞。",
-     "level": "N5",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n5-030-iadj2",
-     "title": "い形容詞（二）：過去式與連接",
-     "description": "學習「かった」「くなかった」及以「くて」連接形容詞。",
-     "level": "N5",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n5-031-naadj",
-     "title": "な形容詞",
-     "description": "學習な形容詞的現在、過去、否定及「な」修飾名詞。",
-     "level": "N5",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n5-032-adverb1",
-     "title": "程度副詞與頻率副詞",
-     "description": "學習とても、少し、あまり、全然、よく、時々等副詞和否定呼應。",
-     "level": "N5",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n5-033-vocab-family",
-     "title": "詞彙主題：家人與人物稱呼",
-     "description": "學習稱呼自己及他人家人的分別，以及老師、學生等人物詞彙。",
-     "level": "N5",
-     "lessonIds": [],
-     "planned": 1
-    },
-    {
-     "id": "n5-034-vocab-food",
-     "title": "詞彙主題：飲食",
-     "description": "學習常見食物、飲品、餐具及餐廳用語。",
-     "level": "N5",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n5-035-listen3",
-     "title": "聆聽專項③：物品與場所短句",
-     "description": "聆聽單句的「這是什麼」「在哪裏」類問答，抓取關鍵詞。",
-     "level": "N5",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n5-036-verbclass",
-     "title": "動詞的種類與基本認識",
-     "description": "認識一類、二類及三類動詞的分別和辨認方法，並學習基本動詞。",
-     "level": "N5",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n5-037-masu1",
-     "title": "ます形：現在與未來",
-     "description": "學習動詞ます形的肯定與否定，以及時間詞用法。",
-     "level": "N5",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n5-038-wo-particle",
-     "title": "助詞「を」與他動詞句",
-     "description": "學習以「を」標示動作對象，並做食、飲、看、聽等基本造句。",
-     "level": "N5",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n5-039-ni-he",
-     "title": "助詞「に」「へ」：時間與目的地",
-     "description": "學習以「に」表示時間點、以「に／へ」表示移動方向。",
-     "level": "N5",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n5-040-de-particle",
-     "title": "助詞「で」：場所與手段",
-     "description": "學習以「で」表示動作場所、交通工具及工具方法。",
-     "level": "N5",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n5-041-vocab-transport",
-     "title": "詞彙主題：交通與地方",
-     "description": "學習交通工具、車站、街道及常見地方詞彙。",
-     "level": "N5",
-     "lessonIds": [],
-     "planned": 1
-    },
-    {
-     "id": "n5-042-masita",
-     "title": "ました形：過去式",
-     "description": "學習動詞ます形的過去肯定與否定，描述昨天與上星期的事。",
-     "level": "N5",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n5-043-kara-made",
-     "title": "助詞「から」「まで」",
-     "description": "學習表示時間和地點的起點終點，以及「〜から〜まで」。",
-     "level": "N5",
-     "lessonIds": [],
-     "planned": 1
-    },
-    {
-     "id": "n5-044-masenka",
-     "title": "邀請與提議：ませんか・ましょう",
-     "description": "學習邀請對方及提議一起做某事的說法與回應。",
-     "level": "N5",
-     "lessonIds": [],
-     "planned": 1
-    },
-    {
-     "id": "n5-045-aru-iru",
-     "title": "存在句：あります・います",
-     "description": "分辨有生命與無生命的存在動詞，並使用「に」表示位置。",
-     "level": "N5",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n5-046-position",
-     "title": "方位詞與位置表達",
-     "description": "學習上、下、前、後、中、旁邊等方位詞及「〜の上に」句型。",
-     "level": "N5",
-     "lessonIds": [],
-     "planned": 1
-    },
-    {
-     "id": "n5-047-vocab-body",
-     "title": "詞彙主題：身體與健康",
-     "description": "學習身體部位及常見不適說法，如「頭が痛いです」。",
-     "level": "N5",
-     "lessonIds": [],
-     "planned": 1
-    },
-    {
-     "id": "n5-048-ga-particle",
-     "title": "助詞「が」：喜好與能力",
-     "description": "學習「〜が好きです」「〜が上手です」「〜がわかります」等句型。",
-     "level": "N5",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n5-049-tai-hoshii",
-     "title": "願望表達：〜たい・〜がほしい",
-     "description": "學習以「たい」表達想做某事，以「ほしい」表達想要某物。",
-     "level": "N5",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n5-050-hikaku",
-     "title": "比較與最上級",
-     "description": "學習兩者比較及三者以上選最的句型。",
-     "level": "N5",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n5-051-conj1",
-     "title": "基本接續詞與「が」「から」",
-     "description": "學習そして、でも、それから、しかし及句末「が」逆接。",
-     "level": "N5",
-     "lessonIds": [],
-     "planned": 1
-    },
-    {
-     "id": "n5-052-dictform",
-     "title": "辭書形（字典形）",
-     "description": "學習三類動詞的辭書形變化規則，認識字典所載形式。",
-     "level": "N5",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n5-053-teform",
-     "title": "て形（一）：二類・三類動詞",
-     "description": "先學二類、三類動詞的て形（規則最簡單），並認識て形的功能。",
-     "level": "N5",
-     "lessonIds": [],
-     "planned": 3
-    },
-    {
-     "id": "n5-054-teform2",
-     "title": "て形（二）：一類動詞音便與總整理",
-     "description": "熟習一類動詞的い音便、促音便、撥音便及特殊動詞「行く」。",
-     "level": "N5",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n5-055-tekudasai",
-     "title": "請求與指示：〜てください",
-     "description": "學習以て形請求對方做某事，並加上「ちょっと」「すみませんが」。",
-     "level": "N5",
-     "lessonIds": [],
-     "planned": 1
-    },
-    {
-     "id": "n5-056-teiru",
-     "title": "進行與狀態：〜ている",
-     "description": "學習以「ている」表達進行中動作、習慣及結果狀態。",
-     "level": "N5",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n5-057-naiform",
-     "title": "ない形（否定形）",
-     "description": "學習三類動詞的ない形變化，包括「ある」→「ない」的特例。",
-     "level": "N5",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n5-058-naidekudasai",
-     "title": "禁止與許可：〜ないでください・〜てもいい",
-     "description": "學習請求不要做、許可「てもいい」及禁止「てはいけません」。",
-     "level": "N5",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n5-059-taform",
-     "title": "た形（過去形）",
-     "description": "學習動詞た形，用普通體描述過去經驗與動作。",
-     "level": "N5",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n5-060-listen4",
-     "title": "聆聽專項④：日常短對話",
-     "description": "聽兩至四句的日常對話，抓住誰、何時、在哪、做甚麼。",
-     "level": "N5",
-     "lessonIds": [],
-     "planned": 3
-    },
-    {
-     "id": "n5-061-kanji1",
-     "title": "漢字入門（一）：數字與日期",
-     "description": "學習一至十、百千萬、日月火水木金土等基本漢字的讀寫。",
-     "level": "N5",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n5-062-kanji2",
-     "title": "漢字入門（二）：人・物・方向",
-     "description": "學習人、大、小、中、上、下、山、川、學校等基本漢字。",
-     "level": "N5",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n5-063-review5",
-     "title": "N5 綜合複習與模擬",
-     "description": "整理N5文法與詞彙，進行綜合練習及聽力小測。",
-     "level": "N5",
-     "lessonIds": [],
-     "planned": 3
+      "level": "N3",
+      "topics": [
+        {
+          "id": "n3-001-review-n4",
+          "title": "N4 重點回顧與弱項補強",
+          "description": "回顧て形、普通體、受身、使役及敬語基礎，補強根基。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n3-002-listen-n3a",
+          "title": "聆聽專項①：課題理解入門（慢速）",
+          "description": "由慢速、單一情境對話開始，學習先聽問題再抓取要做的事。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 3
+        },
+        {
+          "id": "n3-003-listen-n3b",
+          "title": "聆聽專項②：重點理解",
+          "description": "練習聽取對話中原因、理由與重點，留意說話者語氣。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 3
+        },
+        {
+          "id": "n3-004-listen-n3c",
+          "title": "聆聽專項③：概要理解與短文",
+          "description": "聆聽較長獨白或講座，掌握主旨與說話者立場。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 3
+        },
+        {
+          "id": "n3-005-listen-n3d",
+          "title": "聆聽專項④：即時應答與發話表現",
+          "description": "練習聽到一句話後立即選擇合適回應，及看圖說話場景。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 3
+        },
+        {
+          "id": "n3-006-listen-n3e",
+          "title": "聆聽專項⑤：縮約形、口語及語氣",
+          "description": "熟習口語縮約、助詞省略、語氣詞及男女用語。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n3-007-listen-n3f",
+          "title": "聆聽專項⑥：模擬試題與跟讀練習",
+          "description": "以N3程度模擬題及影子跟讀訓練速度與反應。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 3
+        },
+        {
+          "id": "n3-008-plain3",
+          "title": "普通體對話與口語縮約（總整理）",
+          "description": "整理普通體會話，學習「ちゃう」「てる」「んだ」等口語縮約。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n3-009-kanji-n3-1",
+          "title": "N3 漢字（一）：生活・社會",
+          "description": "學習約80個N3漢字，主題為生活與社會。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 3
+        },
+        {
+          "id": "n3-010-kanji-n3-2",
+          "title": "N3 漢字（二）：動作・狀態",
+          "description": "學習約80個動詞及形容詞常用漢字及讀音。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 3
+        },
+        {
+          "id": "n3-011-kanji-n3-3",
+          "title": "N3 漢字（三）：職場・學校・抽象詞",
+          "description": "學習約80個職場、教育及抽象概念漢字。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 3
+        },
+        {
+          "id": "n3-012-kanji-n3-4",
+          "title": "N3 漢字（四）：音讀與訓讀整理",
+          "description": "整理音讀、訓讀規律及特殊讀音（熟字訓）。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 3
+        },
+        {
+          "id": "n3-013-kanji-compound",
+          "title": "二字熟語與接頭接尾詞",
+          "description": "學習不・無・未、〜的、〜化、〜性等常見接頭接尾詞。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n3-014-voc-daily",
+          "title": "詞彙主題：家居、衣食與日用品",
+          "description": "擴充N3生活詞彙。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n3-015-voc-work",
+          "title": "詞彙主題：職場與商業",
+          "description": "學習職場、商業、文書及會議相關詞彙。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 3
+        },
+        {
+          "id": "n3-016-voc-school",
+          "title": "詞彙主題：學校、教育與研究",
+          "description": "學習考試、課程、研究、學位等教育詞彙。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n3-017-voc-society",
+          "title": "詞彙主題：社會、經濟與新聞",
+          "description": "學習新聞、政治、經濟、法律相關基礎詞彙。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 3
+        },
+        {
+          "id": "n3-018-voc-nature",
+          "title": "詞彙主題：自然、環境與天氣",
+          "description": "學習天氣、災害、環境及動植物詞彙。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n3-019-voc-health",
+          "title": "詞彙主題：身體、心理與醫療",
+          "description": "學習醫療、症狀、心情及性格詞彙。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n3-020-voc-leisure",
+          "title": "詞彙主題：娛樂、旅行與文化",
+          "description": "學習旅行、運動、藝術及傳統文化詞彙。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n3-021-voc-human",
+          "title": "詞彙主題：人際關係與感情",
+          "description": "學習人物關係、感情、態度及行為詞彙。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n3-022-voc-katakana",
+          "title": "外來語與和製英語（N3）",
+          "description": "擴充N3常見外來語並注意與英語的發音及語義差異。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n3-023-voc-noun-suru",
+          "title": "名詞＋する動詞",
+          "description": "整理「勉強する」類サ変動詞及自他兼用。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n3-024-voc-fukugou",
+          "title": "複合動詞",
+          "description": "學習〜出す、〜込む、〜上げる、〜合う等常見複合動詞。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 3
+        },
+        {
+          "id": "n3-025-voc-giongo",
+          "title": "擬聲擬態詞",
+          "description": "學習常見擬聲擬態詞（ぺらぺら、ぎりぎり等）。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 3
+        },
+        {
+          "id": "n3-026-voc-adv",
+          "title": "副詞（N3）：程度、頻率、時間",
+          "description": "學習以ほとんど、かなり、ずいぶん、ついに、思わず等副詞。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 3
+        },
+        {
+          "id": "n3-027-voc-adj",
+          "title": "形容詞（N3）：い形容詞與な形容詞擴充",
+          "description": "擴充描述人物、事物及抽象概念的形容詞。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 3
+        },
+        {
+          "id": "n3-028-voc-conj",
+          "title": "接續詞（N3）：論述與轉折",
+          "description": "學習したがって、ところが、そこで、つまり、むしろ等接續詞。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n3-029-voc-jidoushi",
+          "title": "自動詞與他動詞（N3 擴充）",
+          "description": "擴充更多自他動詞對，及其表達結果與意圖的差別。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 3
+        },
+        {
+          "id": "n3-030-voc-kanyouku",
+          "title": "慣用語與固定表達",
+          "description": "學習常見慣用語，例如「頭が上がらない」「気が合う」。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n3-031-gr-you-da",
+          "title": "推量與判斷：〜ようだ・〜らしい・〜みたい（深入）",
+          "description": "深入分辨推測、比喻、傳聞的語感差異及接續。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 3
+        },
+        {
+          "id": "n3-032-gr-hazu",
+          "title": "〜はずだ・〜わけだ・〜わけではない",
+          "description": "學習理所當然、理由及部分否定的表達。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 3
+        },
+        {
+          "id": "n3-033-gr-tame",
+          "title": "目的與原因：〜ために・〜ように・〜おかげで・〜せいで",
+          "description": "學習各種表示原因與目的的表達。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n3-034-gr-ba-tara",
+          "title": "條件表達總整理：と・ば・たら・なら",
+          "description": "整理四種條件表達的用法差異。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n3-035-gr-toki",
+          "title": "時點與時間：〜うちに・〜間に・〜ところ・〜最中",
+          "description": "學習うちに、間に、最中、ところ、たびに等時間表達。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 3
+        },
+        {
+          "id": "n3-036-gr-taki-kai",
+          "title": "變化與狀態持續：〜ようになる・〜つつある・〜続ける",
+          "description": "學習變化與持續類句型。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n3-037-gr-ukemi",
+          "title": "受身形深入：直接・間接・迷惑受身",
+          "description": "深入受身的各類型與自然用法。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 3
+        },
+        {
+          "id": "n3-038-gr-shieki",
+          "title": "使役形深入：使役・許可・放任",
+          "description": "深入使役的強制、許可、放任語感及使役受身。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 3
+        },
+        {
+          "id": "n3-039-gr-shieki-ukemi",
+          "title": "使役受身與〜させていただく",
+          "description": "學習使役受身及商務常用「〜させていただく」。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n3-040-gr-keigo-son",
+          "title": "尊敬語（N3 整理）",
+          "description": "整理特殊尊敬動詞與「お／ご〜になる」「〜られる」。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 3
+        },
+        {
+          "id": "n3-041-gr-keigo-ken",
+          "title": "謙讓語（N3 整理）",
+          "description": "整理特殊謙讓動詞與「お／ご〜する」。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 3
+        },
+        {
+          "id": "n3-042-gr-keigo-use",
+          "title": "敬語應用：電郵、電話及面試",
+          "description": "在求職、書信、電話中練習敬語表達與常見失誤。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 3
+        },
+        {
+          "id": "n3-043-gr-jusu",
+          "title": "授受表現（總整理）：〜てくださる・〜ていただく・〜てやる",
+          "description": "整理敬語及非敬語的授受表現。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 3
+        },
+        {
+          "id": "n3-044-gr-kanou",
+          "title": "可能與自發：〜られる・〜える・〜得る・〜かねる",
+          "description": "學習可能形進階及「〜える」「〜かねる」等書面表達。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n3-045-gr-ishi",
+          "title": "意向與決定：〜ようとする・〜つもり・〜ことにする",
+          "description": "學習「ようとする」「つもりだった」「ことになっている」等。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n3-046-gr-nai-koto",
+          "title": "否定與義務：〜ないではいられない・〜ざるを得ない",
+          "description": "學習「ないで」「ず」「ずに」「ないではいられない」「ざるをえない」。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 3
+        },
+        {
+          "id": "n3-047-gr-hanmen",
+          "title": "對比與逆接：〜のに・〜ものの・〜にもかかわらず",
+          "description": "學習のに、ものの、にもかかわらず、反面、一方等。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 3
+        },
+        {
+          "id": "n3-048-gr-cause",
+          "title": "原因理由（進階）：〜ので・〜ものだから・〜ばかりに",
+          "description": "學習ものだから、ことから、ばかりに、ため等。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 3
+        },
+        {
+          "id": "n3-049-gr-taido",
+          "title": "限定、強調與程度：〜ばかり・〜だけ・〜ほど・〜くらい",
+          "description": "學習ばかり、だけ、ほど、くらい、さえ、まで。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 3
+        },
+        {
+          "id": "n3-050-gr-oyobi",
+          "title": "範圍與觀點：〜について・〜に対して・〜によって",
+          "description": "學習表示話題、對象、依據的複合助詞。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 3
+        },
+        {
+          "id": "n3-051-gr-nitotte",
+          "title": "立場與評價：〜にとって・〜として・〜にしては",
+          "description": "學習站在某立場的表達。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n3-052-gr-ippou",
+          "title": "副詞性複合助詞：〜において・〜を通じて・〜をはじめ",
+          "description": "學習書面及新聞中常見的複合助詞。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 3
+        },
+        {
+          "id": "n3-053-gr-ni-shitagatte",
+          "title": "平行與比例：〜につれて・〜にしたがって・〜ほど",
+          "description": "學習隨著…而變化的各種表達。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n3-054-gr-tsutsu",
+          "title": "同時進行與附帶狀況：〜ながら・〜つつ・〜まま",
+          "description": "學習ながら、つつ、まま、っぱなし等。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n3-055-gr-sou",
+          "title": "傳聞與樣態：〜そうだ・〜という・〜とのことだ",
+          "description": "整理樣態與傳聞用法。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n3-056-gr-sugiru",
+          "title": "程度表達：〜すぎる・〜がち・〜気味",
+          "description": "學習過度、傾向的表達。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n3-057-gr-kakeru",
+          "title": "動作階段：〜かける・〜はじめる・〜ところだ・〜たばかり",
+          "description": "學習動作開始、進行中、完了之各階段。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n3-058-gr-mama",
+          "title": "〜たまま・〜っぱなし・〜ずに",
+          "description": "學習保持原狀的表達。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 1
+        },
+        {
+          "id": "n3-059-gr-youni",
+          "title": "內容轉述：〜ように言う・〜とか・〜って",
+          "description": "學習間接引用、請求轉述及口語「って」「とか」。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n3-060-gr-koto",
+          "title": "名詞化與形式名詞：〜こと・〜もの・〜わけ",
+          "description": "學習こと、もの、ところ、はず、わけ等形式名詞。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 3
+        },
+        {
+          "id": "n3-061-gr-wake",
+          "title": "說明與解釋：〜わけだ・〜のだ・〜ということだ",
+          "description": "學習「のだ」「わけだ」「というのは」等說明語氣。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n3-062-gr-bakari",
+          "title": "副助詞與強調：〜こそ・〜さえ・〜でも・〜まで",
+          "description": "學習こそ、さえ、でも、まで、すら等。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n3-063-gr-particles",
+          "title": "助詞進階整理：が・は・を・に・で・へ・と・の",
+          "description": "整理N3範圍助詞的對比，例如「は」與「が」。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 3
+        },
+        {
+          "id": "n3-064-gr-particles-end",
+          "title": "終助詞與間投助詞",
+          "description": "學習口語中終助詞（かな、わ、ぞ、ぜ、さ）的語氣差異。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n3-065-gr-question",
+          "title": "疑問詞進階：誰でも・何でも・どんな〜も",
+          "description": "學習疑問詞的不定及全稱用法與「〜か〜か」。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n3-066-gr-noun-modify",
+          "title": "名詞修飾與長句理解",
+          "description": "訓練解讀長修飾句及讀懂句子結構。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 3
+        },
+        {
+          "id": "n3-067-gr-connect",
+          "title": "連接與列舉：〜たり・〜し・〜上に・〜ばかりでなく",
+          "description": "學習並列及添加表達：上に、ばかりでなく、のみならず、に加え。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n3-068-gr-conditional2",
+          "title": "假定與條件：〜としたら・〜とすれば・〜場合",
+          "description": "學習「としたら」「場合」「ても」「たとえ〜ても」等。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 3
+        },
+        {
+          "id": "n3-069-gr-purpose",
+          "title": "目的與用途：〜のに・〜ための",
+          "description": "整理表示目的、用途的句型。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 1
+        },
+        {
+          "id": "n3-070-gr-must",
+          "title": "義務、許可及勸告：〜べきだ・〜ことはない・〜ものだ",
+          "description": "學習べき、ことはない、ものだ、ほうがいい。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n3-071-gr-kitai",
+          "title": "期待與希望：〜てほしい・〜たがる・〜ようにしている",
+          "description": "學習他人願望、期待及習慣努力。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n3-072-gr-hyougen",
+          "title": "新聞及書面文章用語",
+          "description": "學習「である」體、新聞標題及說明文章常見詞。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 3
+        },
+        {
+          "id": "n3-073-read-n3a",
+          "title": "閱讀策略：短文與通知",
+          "description": "練習閱讀通知、電郵、短文，找出重點資訊。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 3
+        },
+        {
+          "id": "n3-074-read-n3b",
+          "title": "閱讀策略：中長文與說明文",
+          "description": "閱讀散文、說明文，訓練掌握主旨及指示詞指涉。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 3
+        },
+        {
+          "id": "n3-075-read-n3c",
+          "title": "閱讀策略：資訊檢索",
+          "description": "在廣告、時間表中取得所需資訊。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n3-076-review-n3",
+          "title": "N3 綜合複習與模擬",
+          "description": "整理N3文法詞彙，並進行聆聽及閱讀模擬試。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 4
+        }
+      ]
     }
-   ]
-  },
-  {
-   "level": "N4",
-   "topics": [
-    {
-     "id": "n4-001-review-n5",
-     "title": "N5 重點回顧與弱項補強",
-     "description": "回顧助詞、動詞て形／ない形及常用詞彙，補強根基不穩之處。",
-     "level": "N4",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n4-002-listen-n4a",
-     "title": "聆聽專項①：普通體短句辨聽",
-     "description": "由慢速、短句開始，習慣日常會話中的普通體與縮約說話。",
-     "level": "N4",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n4-003-plain1",
-     "title": "普通體（一）：現在式與否定",
-     "description": "學習動詞、形容詞、名詞句的普通體現在式及否定形。",
-     "level": "N4",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n4-004-plain2",
-     "title": "普通體（二）：過去式與名詞修飾",
-     "description": "學習普通體過去式，並認識「普通體＋名詞」的修飾結構。",
-     "level": "N4",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n4-005-quote-to",
-     "title": "引用與想法：〜と思う・〜と言う",
-     "description": "學習以「と」引用說話內容及表達自己的想法。",
-     "level": "N4",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n4-006-relative",
-     "title": "名詞修飾句（關係子句）",
-     "description": "學習用句子修飾名詞，例如「昨日買った本」，及「が」代替「の」。",
-     "level": "N4",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n4-007-koto-no",
-     "title": "名詞化：〜こと・〜の",
-     "description": "學習「こと」「の」把動詞變成名詞，並用於興趣、能力表達。",
-     "level": "N4",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n4-008-kanou",
-     "title": "可能形",
-     "description": "學習一類、二類、三類動詞的可能形，及「ことができる」。",
-     "level": "N4",
-     "lessonIds": [],
-     "planned": 3
-    },
-    {
-     "id": "n4-009-kanou-use",
-     "title": "可能的用法：見える・聞こえる與助詞變化",
-     "description": "分辨可能形與自發動詞「見える」「聞こえる」，並留意助詞由「を」變「が」。",
-     "level": "N4",
-     "lessonIds": [],
-     "planned": 1
-    },
-    {
-     "id": "n4-010-volitional",
-     "title": "意向形",
-     "description": "學習各類動詞意向形的變化，表達「一起做吧」「打算做」。",
-     "level": "N4",
-     "lessonIds": [],
-     "planned": 3
-    },
-    {
-     "id": "n4-011-volitional-use",
-     "title": "意向形的用法：〜ようと思う・〜つもり",
-     "description": "學習「ようと思う」「つもりだ」「予定だ」表達計劃與打算。",
-     "level": "N4",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n4-012-jouken-tara",
-     "title": "條件形（一）：〜たら",
-     "description": "學習「たら」表達假設、完成後的動作及發現。",
-     "level": "N4",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n4-013-jouken-ba",
-     "title": "條件形（二）：〜ば",
-     "description": "學習各類詞的「ば」形變化及用法。",
-     "level": "N4",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n4-014-jouken-to-nara",
-     "title": "條件表達（三）：〜と・〜なら",
-     "description": "比較「と」「なら」「たら」「ば」的分別與使用場合。",
-     "level": "N4",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n4-015-tebakari",
-     "title": "〜てから・〜た後で・〜る前に",
-     "description": "學習動作先後次序的三種表達方式。",
-     "level": "N4",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n4-016-teiru2",
-     "title": "〜ている（二）：習慣與結果狀態",
-     "description": "深入分辨進行、習慣、狀態及經驗，認識「ている」與「てある」。",
-     "level": "N4",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n4-017-tearu-teoku",
-     "title": "〜てある・〜ておく・〜てしまう",
-     "description": "學習狀態、預先準備及完了／遺憾三種「て形＋補助動詞」。",
-     "level": "N4",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n4-018-temiru-te-kuru",
-     "title": "〜てみる・〜ていく・〜てくる",
-     "description": "學習嘗試、方向性及變化的補助動詞表達。",
-     "level": "N4",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n4-019-shite-kudasai",
-     "title": "請求、許可與禁止（進階）",
-     "description": "學習〜てもらえませんか、〜てもかまいません、〜てはいけない、〜なくてもいい。",
-     "level": "N4",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n4-020-nakereba",
-     "title": "義務：〜なければならない・〜なくてはいけない",
-     "description": "學習表示「必須」與「不必」的各種說法。",
-     "level": "N4",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n4-021-hou-ga-ii",
-     "title": "建議：〜たほうがいい・〜ないほうがいい",
-     "description": "學習給予建議與勸告，及其否定。",
-     "level": "N4",
-     "lessonIds": [],
-     "planned": 1
-    },
-    {
-     "id": "n4-022-koto-ga-aru",
-     "title": "經驗與習慣：〜たことがある・〜ことにする",
-     "description": "學習表達經驗、決定及規定的說法。",
-     "level": "N4",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n4-023-tari",
-     "title": "並列動作：〜たり〜たりする",
-     "description": "學習以「たり」列舉動作或狀態，並用於描述週末活動。",
-     "level": "N4",
-     "lessonIds": [],
-     "planned": 1
-    },
-    {
-     "id": "n4-024-nagara",
-     "title": "同時進行：〜ながら",
-     "description": "學習表示同時進行兩個動作，及與「ている」的分別。",
-     "level": "N4",
-     "lessonIds": [],
-     "planned": 1
-    },
-    {
-     "id": "n4-025-sugiru-yasui",
-     "title": "〜すぎる・〜やすい・〜にくい",
-     "description": "學習過度、容易及難以的動詞或形容詞接續。",
-     "level": "N4",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n4-026-youni-naru",
-     "title": "變化與努力：〜ようになる・〜ようにする",
-     "description": "學習表達能力、習慣的變化及努力使其成為現實。",
-     "level": "N4",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n4-027-you-ni-suru",
-     "title": "〜ように（目的）・〜ように言う",
-     "description": "學習以「ように」表示目的及轉述要求。",
-     "level": "N4",
-     "lessonIds": [],
-     "planned": 1
-    },
-    {
-     "id": "n4-028-adv-naru-ni",
-     "title": "形容詞副詞化與變化：〜くなる・〜になる",
-     "description": "學習形容詞的副詞形（く／に）及「なる」「する」的用法。",
-     "level": "N4",
-     "lessonIds": [],
-     "planned": 1
-    },
-    {
-     "id": "n4-029-adj-n4",
-     "title": "N4 形容詞擴充",
-     "description": "擴充N4形容詞，包括感覺、性格及狀態，並練習比較表達。",
-     "level": "N4",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n4-030-adv-n4",
-     "title": "副詞與擬聲擬態詞入門",
-     "description": "學習もう、まだ、すぐ、ずっと、だんだん、きっと等副詞及簡單擬態詞。",
-     "level": "N4",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n4-031-conj-n4",
-     "title": "接續詞②：だから・それで・ところが",
-     "description": "學習表示原因、對比、轉折的接續詞，如だから、すると、ところで。",
-     "level": "N4",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n4-032-tte-kara",
-     "title": "原因與理由：〜から・〜ので・〜ために",
-     "description": "比較「から」「ので」「ために」的語氣及使用場合。",
-     "level": "N4",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n4-033-noni",
-     "title": "逆接：〜のに・〜ても",
-     "description": "學習表示「明明…卻」及「即使…也」。",
-     "level": "N4",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n4-034-youda-souda",
-     "title": "推測與傳聞（一）：〜そうだ・〜ようだ",
-     "description": "分辨樣態「そうだ」、傳聞「そうだ」及推測「ようだ」。",
-     "level": "N4",
-     "lessonIds": [],
-     "planned": 3
-    },
-    {
-     "id": "n4-035-rashii-mitai",
-     "title": "推測與傳聞（二）：〜らしい・〜みたい・〜でしょう",
-     "description": "學習「らしい」「みたい」「かもしれない」「でしょう」「はずだ」。",
-     "level": "N4",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n4-036-kamoshirenai",
-     "title": "可能性與確信：かもしれない・はずだ・にちがいない",
-     "description": "學習不同確信程度的推測表達。",
-     "level": "N4",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n4-037-ukemi",
-     "title": "受身形（被動）",
-     "description": "學習各類動詞受身形變化，及直接受身句型。",
-     "level": "N4",
-     "lessonIds": [],
-     "planned": 3
-    },
-    {
-     "id": "n4-038-ukemi-use",
-     "title": "受身的用法：迷惑受身與施事者助詞",
-     "description": "學習「に」「によって」「から」表示施事者，以及受影響的迷惑受身。",
-     "level": "N4",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n4-039-shieki",
-     "title": "使役形",
-     "description": "學習各類動詞使役形變化，及使役句的人物與助詞。",
-     "level": "N4",
-     "lessonIds": [],
-     "planned": 3
-    },
-    {
-     "id": "n4-040-shieki-use",
-     "title": "使役的用法：〜させてください",
-     "description": "學習請求許可「〜させてください」及使役的語感差異。",
-     "level": "N4",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n4-041-shieki-ukemi",
-     "title": "使役受身形",
-     "description": "學習「食べさせられる」等使役受身形，表達被迫做某事。",
-     "level": "N4",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n4-042-jidoushi",
-     "title": "自動詞與他動詞",
-     "description": "認識「開く／開ける」等對應的自動詞和他動詞，及助詞選擇。",
-     "level": "N4",
-     "lessonIds": [],
-     "planned": 3
-    },
-    {
-     "id": "n4-043-jusu",
-     "title": "授受表現（一）：あげる・もらう・くれる",
-     "description": "學習三個授受動詞的方向性及助詞用法。",
-     "level": "N4",
-     "lessonIds": [],
-     "planned": 3
-    },
-    {
-     "id": "n4-044-jusu2",
-     "title": "授受表現（二）：〜てあげる・〜てもらう・〜てくれる",
-     "description": "學習「て形＋授受動詞」表達為別人做某事或受人恩惠。",
-     "level": "N4",
-     "lessonIds": [],
-     "planned": 3
-    },
-    {
-     "id": "n4-045-keigo1",
-     "title": "敬語入門：丁寧語與敬語概念",
-     "description": "認識丁寧語、尊敬語、謙讓語的分別及適用場合。",
-     "level": "N4",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n4-046-sonkei",
-     "title": "尊敬語基礎",
-     "description": "學習いらっしゃる、おっしゃる、なさる等及「お〜になる」「れる／られる」。",
-     "level": "N4",
-     "lessonIds": [],
-     "planned": 3
-    },
-    {
-     "id": "n4-047-kenjou",
-     "title": "謙讓語基礎",
-     "description": "學習いたす、参る、申す、伺う、拝見する等及「お〜する」。",
-     "level": "N4",
-     "lessonIds": [],
-     "planned": 3
-    },
-    {
-     "id": "n4-048-keigo-use",
-     "title": "常用敬語情境：店舖、電話、辦公室",
-     "description": "在餐廳、店舖、電話、辦公室等情境練習敬語表達。",
-     "level": "N4",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n4-049-sonkei-polite",
-     "title": "禮貌表達：お願いします・失礼します等",
-     "description": "學習日常客套話、道歉與道謝、拒絕及委婉請求。",
-     "level": "N4",
-     "lessonIds": [],
-     "planned": 1
-    },
-    {
-     "id": "n4-050-hou-komu",
-     "title": "〜はじめる・〜おわる・〜つづける",
-     "description": "學習複合動詞表示開始、結束、持續。",
-     "level": "N4",
-     "lessonIds": [],
-     "planned": 1
-    },
-    {
-     "id": "n4-051-mo-shi",
-     "title": "〜し〜し・〜ばかり・〜だけ・〜しか",
-     "description": "學習列舉理由、限定與只有的各種表達。",
-     "level": "N4",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n4-052-dake-shika",
-     "title": "助詞進階：しか・だけ・ばかり・でも・ほど・くらい",
-     "description": "學習限定、程度、舉例用的助詞，及其與否定的呼應。",
-     "level": "N4",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n4-053-ni-particle",
-     "title": "助詞「に」「で」「を」的多用法整理",
-     "description": "整理N5至N4助詞多重功能，比較「に」「で」「を」「が」的分別。",
-     "level": "N4",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n4-054-interrog-n4",
-     "title": "疑問詞進階與不定詞：誰か・何も・どれも",
-     "description": "學習疑問詞加「か」「も」「でも」的不定、全稱、全否定用法。",
-     "level": "N4",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n4-055-koto-ni-naru",
-     "title": "〜ことになる・〜ことにする",
-     "description": "學習決定及已定事項的表達。",
-     "level": "N4",
-     "lessonIds": [],
-     "planned": 1
-    },
-    {
-     "id": "n4-056-youni-iu",
-     "title": "間接引語與轉述",
-     "description": "學習把別人的說話轉述，及「〜と言っていた」「〜そうだ」。",
-     "level": "N4",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n4-057-toki-aida",
-     "title": "時間從句：〜とき・〜あいだ・〜うちに",
-     "description": "學習「とき」「あいだ」「うちに」「まえに」等時間從句。",
-     "level": "N4",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n4-058-kanji-n4-1",
-     "title": "N4 漢字（一）：生活與自然",
-     "description": "學習約百個N4漢字，包括天氣、家庭、生活常用字。",
-     "level": "N4",
-     "lessonIds": [],
-     "planned": 3
-    },
-    {
-     "id": "n4-059-kanji-n4-2",
-     "title": "N4 漢字（二）：動作與形容詞",
-     "description": "學習動詞及形容詞常見漢字及送假名。",
-     "level": "N4",
-     "lessonIds": [],
-     "planned": 3
-    },
-    {
-     "id": "n4-060-vocab-daily",
-     "title": "詞彙主題：日常生活與家居",
-     "description": "擴充家居、傢俬、日用品及家務詞彙。",
-     "level": "N4",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n4-061-vocab-work",
-     "title": "詞彙主題：學校與工作",
-     "description": "擴充學校、公司、職業與辦公室詞彙。",
-     "level": "N4",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n4-062-vocab-travel",
-     "title": "詞彙主題：旅行與交通",
-     "description": "擴充旅遊、酒店、車站、問路及交通相關詞彙。",
-     "level": "N4",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n4-063-vocab-health",
-     "title": "詞彙主題：身體、健康與病痛",
-     "description": "擴充身體、病徵、醫院相關詞彙。",
-     "level": "N4",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n4-064-vocab-weather",
-     "title": "詞彙主題：天氣、自然與季節",
-     "description": "擴充天氣、自然現象、動物及植物詞彙。",
-     "level": "N4",
-     "lessonIds": [],
-     "planned": 1
-    },
-    {
-     "id": "n4-065-vocab-shopping",
-     "title": "詞彙主題：購物、金錢與服飾",
-     "description": "擴充購物、付款、衣物及外貌詞彙。",
-     "level": "N4",
-     "lessonIds": [],
-     "planned": 1
-    },
-    {
-     "id": "n4-066-vocab-katakana",
-     "title": "外來語與片假名詞彙",
-     "description": "擴充生活常見外來語，並留意和製英語的發音。",
-     "level": "N4",
-     "lessonIds": [],
-     "planned": 1
-    },
-    {
-     "id": "n4-067-listen-n4b",
-     "title": "聆聽專項②：慢速對話與場景（問路・購物）",
-     "description": "聆聽問路、購物、餐廳等場景對話，抓取關鍵資訊。",
-     "level": "N4",
-     "lessonIds": [],
-     "planned": 3
-    },
-    {
-     "id": "n4-068-listen-n4c",
-     "title": "聆聽專項③：普通速度會話與縮約形",
-     "description": "熟悉「じゃ」「ちゃう」「んです」等口語縮約，聽普通速度會話。",
-     "level": "N4",
-     "lessonIds": [],
-     "planned": 3
-    },
-    {
-     "id": "n4-069-listen-n4d",
-     "title": "聆聽專項④：留言、廣播及簡短說明",
-     "description": "聆聽車站廣播、電話留言、簡短通知，抓取時間與要求。",
-     "level": "N4",
-     "lessonIds": [],
-     "planned": 3
-    },
-    {
-     "id": "n4-070-review-n4",
-     "title": "N4 綜合複習與模擬",
-     "description": "整理N4文法與詞彙並進行綜合練習及聽力模擬。",
-     "level": "N4",
-     "lessonIds": [],
-     "planned": 3
-    }
-   ]
-  },
-  {
-   "level": "N3",
-   "topics": [
-    {
-     "id": "n3-001-review-n4",
-     "title": "N4 重點回顧與弱項補強",
-     "description": "回顧て形、普通體、受身、使役及敬語基礎，補強根基。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n3-002-listen-n3a",
-     "title": "聆聽專項①：課題理解入門（慢速）",
-     "description": "由慢速、單一情境對話開始，學習先聽問題再抓取要做的事。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 3
-    },
-    {
-     "id": "n3-003-listen-n3b",
-     "title": "聆聽專項②：重點理解",
-     "description": "練習聽取對話中原因、理由與重點，留意說話者語氣。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 3
-    },
-    {
-     "id": "n3-004-listen-n3c",
-     "title": "聆聽專項③：概要理解與短文",
-     "description": "聆聽較長獨白或講座，掌握主旨與說話者立場。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 3
-    },
-    {
-     "id": "n3-005-listen-n3d",
-     "title": "聆聽專項④：即時應答與發話表現",
-     "description": "練習聽到一句話後立即選擇合適回應，及看圖說話場景。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 3
-    },
-    {
-     "id": "n3-006-listen-n3e",
-     "title": "聆聽專項⑤：縮約形、口語及語氣",
-     "description": "熟習口語縮約、助詞省略、語氣詞及男女用語。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n3-007-listen-n3f",
-     "title": "聆聽專項⑥：模擬試題與跟讀練習",
-     "description": "以N3程度模擬題及影子跟讀訓練速度與反應。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 3
-    },
-    {
-     "id": "n3-008-plain3",
-     "title": "普通體對話與口語縮約（總整理）",
-     "description": "整理普通體會話，學習「ちゃう」「てる」「んだ」等口語縮約。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n3-009-kanji-n3-1",
-     "title": "N3 漢字（一）：生活・社會",
-     "description": "學習約80個N3漢字，主題為生活與社會。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 3
-    },
-    {
-     "id": "n3-010-kanji-n3-2",
-     "title": "N3 漢字（二）：動作・狀態",
-     "description": "學習約80個動詞及形容詞常用漢字及讀音。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 3
-    },
-    {
-     "id": "n3-011-kanji-n3-3",
-     "title": "N3 漢字（三）：職場・學校・抽象詞",
-     "description": "學習約80個職場、教育及抽象概念漢字。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 3
-    },
-    {
-     "id": "n3-012-kanji-n3-4",
-     "title": "N3 漢字（四）：音讀與訓讀整理",
-     "description": "整理音讀、訓讀規律及特殊讀音（熟字訓）。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 3
-    },
-    {
-     "id": "n3-013-kanji-compound",
-     "title": "二字熟語與接頭接尾詞",
-     "description": "學習不・無・未、〜的、〜化、〜性等常見接頭接尾詞。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n3-014-voc-daily",
-     "title": "詞彙主題：家居、衣食與日用品",
-     "description": "擴充N3生活詞彙。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n3-015-voc-work",
-     "title": "詞彙主題：職場與商業",
-     "description": "學習職場、商業、文書及會議相關詞彙。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 3
-    },
-    {
-     "id": "n3-016-voc-school",
-     "title": "詞彙主題：學校、教育與研究",
-     "description": "學習考試、課程、研究、學位等教育詞彙。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n3-017-voc-society",
-     "title": "詞彙主題：社會、經濟與新聞",
-     "description": "學習新聞、政治、經濟、法律相關基礎詞彙。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 3
-    },
-    {
-     "id": "n3-018-voc-nature",
-     "title": "詞彙主題：自然、環境與天氣",
-     "description": "學習天氣、災害、環境及動植物詞彙。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n3-019-voc-health",
-     "title": "詞彙主題：身體、心理與醫療",
-     "description": "學習醫療、症狀、心情及性格詞彙。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n3-020-voc-leisure",
-     "title": "詞彙主題：娛樂、旅行與文化",
-     "description": "學習旅行、運動、藝術及傳統文化詞彙。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n3-021-voc-human",
-     "title": "詞彙主題：人際關係與感情",
-     "description": "學習人物關係、感情、態度及行為詞彙。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n3-022-voc-katakana",
-     "title": "外來語與和製英語（N3）",
-     "description": "擴充N3常見外來語並注意與英語的發音及語義差異。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n3-023-voc-noun-suru",
-     "title": "名詞＋する動詞",
-     "description": "整理「勉強する」類サ変動詞及自他兼用。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n3-024-voc-fukugou",
-     "title": "複合動詞",
-     "description": "學習〜出す、〜込む、〜上げる、〜合う等常見複合動詞。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 3
-    },
-    {
-     "id": "n3-025-voc-giongo",
-     "title": "擬聲擬態詞",
-     "description": "學習常見擬聲擬態詞（ぺらぺら、ぎりぎり等）。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 3
-    },
-    {
-     "id": "n3-026-voc-adv",
-     "title": "副詞（N3）：程度、頻率、時間",
-     "description": "學習以ほとんど、かなり、ずいぶん、ついに、思わず等副詞。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 3
-    },
-    {
-     "id": "n3-027-voc-adj",
-     "title": "形容詞（N3）：い形容詞與な形容詞擴充",
-     "description": "擴充描述人物、事物及抽象概念的形容詞。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 3
-    },
-    {
-     "id": "n3-028-voc-conj",
-     "title": "接續詞（N3）：論述與轉折",
-     "description": "學習したがって、ところが、そこで、つまり、むしろ等接續詞。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n3-029-voc-jidoushi",
-     "title": "自動詞與他動詞（N3 擴充）",
-     "description": "擴充更多自他動詞對，及其表達結果與意圖的差別。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 3
-    },
-    {
-     "id": "n3-030-voc-kanyouku",
-     "title": "慣用語與固定表達",
-     "description": "學習常見慣用語，例如「頭が上がらない」「気が合う」。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n3-031-gr-you-da",
-     "title": "推量與判斷：〜ようだ・〜らしい・〜みたい（深入）",
-     "description": "深入分辨推測、比喻、傳聞的語感差異及接續。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 3
-    },
-    {
-     "id": "n3-032-gr-hazu",
-     "title": "〜はずだ・〜わけだ・〜わけではない",
-     "description": "學習理所當然、理由及部分否定的表達。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 3
-    },
-    {
-     "id": "n3-033-gr-tame",
-     "title": "目的與原因：〜ために・〜ように・〜おかげで・〜せいで",
-     "description": "學習各種表示原因與目的的表達。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n3-034-gr-ba-tara",
-     "title": "條件表達總整理：と・ば・たら・なら",
-     "description": "整理四種條件表達的用法差異。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n3-035-gr-toki",
-     "title": "時點與時間：〜うちに・〜間に・〜ところ・〜最中",
-     "description": "學習うちに、間に、最中、ところ、たびに等時間表達。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 3
-    },
-    {
-     "id": "n3-036-gr-taki-kai",
-     "title": "變化與狀態持續：〜ようになる・〜つつある・〜続ける",
-     "description": "學習變化與持續類句型。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n3-037-gr-ukemi",
-     "title": "受身形深入：直接・間接・迷惑受身",
-     "description": "深入受身的各類型與自然用法。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 3
-    },
-    {
-     "id": "n3-038-gr-shieki",
-     "title": "使役形深入：使役・許可・放任",
-     "description": "深入使役的強制、許可、放任語感及使役受身。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 3
-    },
-    {
-     "id": "n3-039-gr-shieki-ukemi",
-     "title": "使役受身與〜させていただく",
-     "description": "學習使役受身及商務常用「〜させていただく」。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n3-040-gr-keigo-son",
-     "title": "尊敬語（N3 整理）",
-     "description": "整理特殊尊敬動詞與「お／ご〜になる」「〜られる」。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 3
-    },
-    {
-     "id": "n3-041-gr-keigo-ken",
-     "title": "謙讓語（N3 整理）",
-     "description": "整理特殊謙讓動詞與「お／ご〜する」。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 3
-    },
-    {
-     "id": "n3-042-gr-keigo-use",
-     "title": "敬語應用：電郵、電話及面試",
-     "description": "在求職、書信、電話中練習敬語表達與常見失誤。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 3
-    },
-    {
-     "id": "n3-043-gr-jusu",
-     "title": "授受表現（總整理）：〜てくださる・〜ていただく・〜てやる",
-     "description": "整理敬語及非敬語的授受表現。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 3
-    },
-    {
-     "id": "n3-044-gr-kanou",
-     "title": "可能與自發：〜られる・〜える・〜得る・〜かねる",
-     "description": "學習可能形進階及「〜える」「〜かねる」等書面表達。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n3-045-gr-ishi",
-     "title": "意向與決定：〜ようとする・〜つもり・〜ことにする",
-     "description": "學習「ようとする」「つもりだった」「ことになっている」等。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n3-046-gr-nai-koto",
-     "title": "否定與義務：〜ないではいられない・〜ざるを得ない",
-     "description": "學習「ないで」「ず」「ずに」「ないではいられない」「ざるをえない」。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 3
-    },
-    {
-     "id": "n3-047-gr-hanmen",
-     "title": "對比與逆接：〜のに・〜ものの・〜にもかかわらず",
-     "description": "學習のに、ものの、にもかかわらず、反面、一方等。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 3
-    },
-    {
-     "id": "n3-048-gr-cause",
-     "title": "原因理由（進階）：〜ので・〜ものだから・〜ばかりに",
-     "description": "學習ものだから、ことから、ばかりに、ため等。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 3
-    },
-    {
-     "id": "n3-049-gr-taido",
-     "title": "限定、強調與程度：〜ばかり・〜だけ・〜ほど・〜くらい",
-     "description": "學習ばかり、だけ、ほど、くらい、さえ、まで。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 3
-    },
-    {
-     "id": "n3-050-gr-oyobi",
-     "title": "範圍與觀點：〜について・〜に対して・〜によって",
-     "description": "學習表示話題、對象、依據的複合助詞。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 3
-    },
-    {
-     "id": "n3-051-gr-nitotte",
-     "title": "立場與評價：〜にとって・〜として・〜にしては",
-     "description": "學習站在某立場的表達。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n3-052-gr-ippou",
-     "title": "副詞性複合助詞：〜において・〜を通じて・〜をはじめ",
-     "description": "學習書面及新聞中常見的複合助詞。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 3
-    },
-    {
-     "id": "n3-053-gr-ni-shitagatte",
-     "title": "平行與比例：〜につれて・〜にしたがって・〜ほど",
-     "description": "學習隨著…而變化的各種表達。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n3-054-gr-tsutsu",
-     "title": "同時進行與附帶狀況：〜ながら・〜つつ・〜まま",
-     "description": "學習ながら、つつ、まま、っぱなし等。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n3-055-gr-sou",
-     "title": "傳聞與樣態：〜そうだ・〜という・〜とのことだ",
-     "description": "整理樣態與傳聞用法。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n3-056-gr-sugiru",
-     "title": "程度表達：〜すぎる・〜がち・〜気味",
-     "description": "學習過度、傾向的表達。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n3-057-gr-kakeru",
-     "title": "動作階段：〜かける・〜はじめる・〜ところだ・〜たばかり",
-     "description": "學習動作開始、進行中、完了之各階段。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n3-058-gr-mama",
-     "title": "〜たまま・〜っぱなし・〜ずに",
-     "description": "學習保持原狀的表達。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 1
-    },
-    {
-     "id": "n3-059-gr-youni",
-     "title": "內容轉述：〜ように言う・〜とか・〜って",
-     "description": "學習間接引用、請求轉述及口語「って」「とか」。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n3-060-gr-koto",
-     "title": "名詞化與形式名詞：〜こと・〜もの・〜わけ",
-     "description": "學習こと、もの、ところ、はず、わけ等形式名詞。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 3
-    },
-    {
-     "id": "n3-061-gr-wake",
-     "title": "說明與解釋：〜わけだ・〜のだ・〜ということだ",
-     "description": "學習「のだ」「わけだ」「というのは」等說明語氣。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n3-062-gr-bakari",
-     "title": "副助詞與強調：〜こそ・〜さえ・〜でも・〜まで",
-     "description": "學習こそ、さえ、でも、まで、すら等。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n3-063-gr-particles",
-     "title": "助詞進階整理：が・は・を・に・で・へ・と・の",
-     "description": "整理N3範圍助詞的對比，例如「は」與「が」。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 3
-    },
-    {
-     "id": "n3-064-gr-particles-end",
-     "title": "終助詞與間投助詞",
-     "description": "學習口語中終助詞（かな、わ、ぞ、ぜ、さ）的語氣差異。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n3-065-gr-question",
-     "title": "疑問詞進階：誰でも・何でも・どんな〜も",
-     "description": "學習疑問詞的不定及全稱用法與「〜か〜か」。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n3-066-gr-noun-modify",
-     "title": "名詞修飾與長句理解",
-     "description": "訓練解讀長修飾句及讀懂句子結構。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 3
-    },
-    {
-     "id": "n3-067-gr-connect",
-     "title": "連接與列舉：〜たり・〜し・〜上に・〜ばかりでなく",
-     "description": "學習並列及添加表達：上に、ばかりでなく、のみならず、に加え。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n3-068-gr-conditional2",
-     "title": "假定與條件：〜としたら・〜とすれば・〜場合",
-     "description": "學習「としたら」「場合」「ても」「たとえ〜ても」等。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 3
-    },
-    {
-     "id": "n3-069-gr-purpose",
-     "title": "目的與用途：〜のに・〜ための",
-     "description": "整理表示目的、用途的句型。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 1
-    },
-    {
-     "id": "n3-070-gr-must",
-     "title": "義務、許可及勸告：〜べきだ・〜ことはない・〜ものだ",
-     "description": "學習べき、ことはない、ものだ、ほうがいい。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n3-071-gr-kitai",
-     "title": "期待與希望：〜てほしい・〜たがる・〜ようにしている",
-     "description": "學習他人願望、期待及習慣努力。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n3-072-gr-hyougen",
-     "title": "新聞及書面文章用語",
-     "description": "學習「である」體、新聞標題及說明文章常見詞。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 3
-    },
-    {
-     "id": "n3-073-read-n3a",
-     "title": "閱讀策略：短文與通知",
-     "description": "練習閱讀通知、電郵、短文，找出重點資訊。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 3
-    },
-    {
-     "id": "n3-074-read-n3b",
-     "title": "閱讀策略：中長文與說明文",
-     "description": "閱讀散文、說明文，訓練掌握主旨及指示詞指涉。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 3
-    },
-    {
-     "id": "n3-075-read-n3c",
-     "title": "閱讀策略：資訊檢索",
-     "description": "在廣告、時間表中取得所需資訊。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 2
-    },
-    {
-     "id": "n3-076-review-n3",
-     "title": "N3 綜合複習與模擬",
-     "description": "整理N3文法詞彙，並進行聆聽及閱讀模擬試。",
-     "level": "N3",
-     "lessonIds": [],
-     "planned": 4
-    }
-   ]
-  }
- ]
+  ]
 }

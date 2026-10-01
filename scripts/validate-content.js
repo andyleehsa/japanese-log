@@ -178,7 +178,7 @@ function validateContent(rootDir) {
         optionalString(row, "speak", rowLabel);
       });
     } else if (block.type === "example") {
-      assertKeys(block, ["type", "jp", "reading", "zh", "speak", "note", "audio"], label);
+      assertKeys(block, ["type", "jp", "reading", "zh", "speak", "note", "audio", "verified"], label);
       assertString(block.jp, label + ".jp");
       assertString(block.zh, label + ".zh");
       optionalString(block, "reading", label);
@@ -189,6 +189,27 @@ function validateContent(rootDir) {
     }
     optionalString(block, "speak", label);
     if (block.audio != null) validAudio(block.audio, label + ".audio");
+    checkVerified(block, label);
+  }
+
+  function checkVerified(obj, label) {
+    if (obj.verified == null) return;
+    if (typeof obj.verified !== "boolean") fail(label + ".verified must be boolean");
+  }
+
+  function checkVocabExample(example, label, readingOptional) {
+    if (!isObject(example)) {
+      fail(label + " must be an object");
+      return;
+    }
+    assertKeys(example, ["jp", "reading", "zh", "verified"], label);
+    assertString(example.jp, label + ".jp");
+    assertString(example.zh, label + ".zh");
+    if (!readingOptional || example.reading != null) assertString(example.reading, label + ".reading");
+    if (typeof example.reading === "string" && example.reading && !READING_RE.test(example.reading)) {
+      fail(label + ".reading must be kana");
+    }
+    checkVerified(example, label);
   }
 
   function checkQuestion(question, lesson, label) {
@@ -196,7 +217,7 @@ function validateContent(rootDir) {
       fail(label + " must be an object");
       return;
     }
-    const common = ["id", "type", "prompt", "explanation", "tags", "speak", "audio", "hint"];
+    const common = ["id", "type", "prompt", "explanation", "tags", "speak", "audio", "hint", "example"];
     assertString(question.id, label + ".id");
     if (question.id && !ID_RE.test(question.id)) fail(label + ".id must match " + ID_RE);
     if (question.id && lesson.id && !question.id.startsWith(lesson.id + "-")) {
@@ -210,6 +231,7 @@ function validateContent(rootDir) {
     optionalString(question, "speak", label);
     optionalString(question, "hint", label);
     if (question.audio != null) validAudio(question.audio, label + ".audio");
+    if (question.example != null) checkVocabExample(question.example, label + ".example", true);
 
     if (question.type === "choice") {
       assertKeys(question, common.concat(["choices", "answer", "kind", "rule", "verb", "reading", "form"]), label);
@@ -438,13 +460,7 @@ function validateContent(rootDir) {
           if (entry.example != null) {
             if (!isObject(entry.example)) fail(entryLabel + ".example must be an object");
             else {
-              assertKeys(entry.example, ["jp", "reading", "zh"], entryLabel + ".example");
-              assertString(entry.example.jp, entryLabel + ".example.jp");
-              assertString(entry.example.reading, entryLabel + ".example.reading");
-              if (typeof entry.example.reading === "string" && !READING_RE.test(entry.example.reading)) {
-                fail(entryLabel + ".example.reading must be kana");
-              }
-              assertString(entry.example.zh, entryLabel + ".example.zh");
+              checkVocabExample(entry.example, entryLabel + ".example", false);
             }
           }
         });

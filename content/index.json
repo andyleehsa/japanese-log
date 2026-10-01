@@ -6,8 +6,14 @@
       "title": "私はアンディです",
       "date": "2026-10-01",
       "file": "lessons/day-001.json",
-      "tags": ["です", "は", "自我介紹"],
-      "topics": ["n5-wa-desu"],
+      "tags": [
+        "です",
+        "は",
+        "自我介紹"
+      ],
+      "topics": [
+        "n5-wa-desu"
+      ],
       "sample": true
     },
     {
@@ -15,9 +21,51 @@
       "title": "これ・それ・あれ",
       "date": "2026-10-02",
       "file": "lessons/day-002.json",
-      "tags": ["あれ", "この", "これ", "それ", "は"],
-      "topics": ["n5-kosoado"],
+      "tags": [
+        "あれ",
+        "この",
+        "これ",
+        "それ",
+        "は"
+      ],
+      "topics": [
+        "n5-kosoado"
+      ],
       "sample": true
+    },
+    {
+      "id": "n5w1-d1",
+      "title": "第 1 日：長音・濁音・半濁音",
+      "date": "2026-10-02",
+      "file": "lessons/n5w1-d1.json",
+      "tags": [
+        "長音",
+        "濁音",
+        "半濁音",
+        "聽力"
+      ],
+      "topics": [
+        "n5-005-dakuon",
+        "n5-007-sokuon",
+        "n5-013-listen1"
+      ],
+      "sample": false
+    },
+    {
+      "id": "n5w1-d1v",
+      "title": "第 1 日（動詞篇）：辭書形同三類動詞",
+      "date": "2026-10-02",
+      "file": "lessons/n5w1-d1v.json",
+      "tags": [
+        "動詞",
+        "辭書形",
+        "動詞分類",
+        "聽力"
+      ],
+      "topics": [
+        "n5-036-verbclass"
+      ],
+      "sample": false
     }
   ]
 }

@@ -64,6 +64,10 @@ const verbForm = {
   answer: 0
 };
 assert.strictEqual(logic.userAnswerText(verbForm, 1), "食べた");
+assert.strictEqual(logic.examplePendingVerify({ jp: "水を飲む。", verified: false }), true);
+assert.strictEqual(logic.examplePendingVerify({ jp: "水を飲む。", verified: true }), false);
+assert.strictEqual(logic.examplePendingVerify({ jp: "水を飲む。" }), false);
+assert.strictEqual(logic.examplePendingVerify(null), false);
 
 const fill = { id: "day-001-q2", type: "fill", accepted: ["は"], tags: ["は"] };
 assert.strictEqual(logic.grade(fill, " は "), true);

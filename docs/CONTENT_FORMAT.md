@@ -122,7 +122,19 @@ Andy 唔會打內容。老師每次推一課上 `main`，Andy 喺 app 撳「重�
 }
 ```
 
-`jp` 同 `zh` 必須有。`reading`、`note`、`speak`、`audio` 可選。`audio` 可以係 repo 入面嘅相對路徑，或者 `https://` 網址。唔好用 `javascript:`。
+`jp` 同 `zh` 必須有。`reading`、`note`、`speak`、`audio`、`verified` 可選。`audio` 可以係 repo 入面嘅相對路徑，或者 `https://` 網址。唔好用 `javascript:`。
+
+`verified` 係 boolean。`false` 表示呢句例句未核對，課堂例句、生詞例句、卡片背面、同題目解釋下面嘅例句都會顯示細字「待核對」。冇呢個欄，或者係 `true`，就唔顯示。
+
+```json
+{
+  "type": "example",
+  "jp": "水を飲む。",
+  "reading": "みずを のむ。",
+  "zh": "飲水。",
+  "verified": false
+}
+```
 
 讀音行仍然寫助詞「は」，唔好寫成讀音「わ」。讀音另用 `note` 講。
 
@@ -408,7 +420,7 @@ App 路徑：生詞 → 揀級別 → 揀分類。可以搜尋日文、讀音或
 | `meaning` | 係 | 繁體中文意思 |
 | `level` | 係 | 同檔案級別一樣 |
 | `category` | 係 | 同所屬分類 `id` 一樣 |
-| `example` | 否 | `jp`、`reading`、`zh` 三樣都要有 |
+| `example` | 否 | `jp`、`reading`、`zh` 三樣都要有。可選 `verified`（boolean）。`false` 先顯示「待核對」 |
 | `tags` | 否 | 至少一個字串。而家只係資料，畫面未用嚟篩 |
 | `speak` | 否 | 有嘅話，畫面有「讀出嚟」「慢速」「再聽」三個大掣 |
 | `verbGroup` | 否 | 只係動詞。`一類`、`二類` 或者 `三類`。卡片背面同詞條會顯示 |

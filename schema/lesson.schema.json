@@ -88,7 +88,19 @@
         "zh": { "type": "string", "minLength": 1 },
         "note": { "type": "string" },
         "speak": { "$ref": "#/$defs/speak" },
-        "audio": { "$ref": "#/$defs/audio" }
+        "audio": { "$ref": "#/$defs/audio" },
+        "verified": { "type": "boolean" }
+      }
+    },
+    "exampleSentence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["jp", "zh"],
+      "properties": {
+        "jp": { "type": "string", "minLength": 1 },
+        "reading": { "type": "string", "minLength": 1 },
+        "zh": { "type": "string", "minLength": 1 },
+        "verified": { "type": "boolean" }
       }
     },
     "question": {
@@ -112,7 +124,8 @@
         },
         "speak": { "$ref": "#/$defs/speak" },
         "audio": { "$ref": "#/$defs/audio" },
-        "hint": { "type": "string" }
+        "hint": { "type": "string" },
+        "example": { "$ref": "#/$defs/exampleSentence" }
       },
       "required": ["id", "prompt", "explanation", "tags"]
     },
@@ -132,6 +145,7 @@
             "speak": true,
             "audio": true,
             "hint": true,
+            "example": true,
             "choices": {
               "type": "array",
               "minItems": 2,
@@ -190,6 +204,7 @@
             "speak": true,
             "audio": true,
             "hint": true,
+            "example": true,
             "accepted": {
               "type": "array",
               "minItems": 1,
@@ -216,6 +231,7 @@
             "speak": true,
             "audio": true,
             "hint": true,
+            "example": true,
             "jp": { "type": "string", "minLength": 1 },
             "reading": { "type": "string", "minLength": 1 },
             "meaning": { "type": "string", "minLength": 1 },
@@ -246,6 +262,7 @@
             "speak": true,
             "audio": true,
             "hint": true,
+            "example": true,
             "jp": { "type": "string", "minLength": 1 },
             "reading": { "type": "string", "minLength": 1 },
             "meaning": { "type": "string", "minLength": 1 },
