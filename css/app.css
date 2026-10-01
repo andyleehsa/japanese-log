@@ -213,31 +213,61 @@ a.tag.is-on { background: var(--indigo); color: #f7f3ea; }
 
 .speech-hint { margin: 12px 16px 0; }
 
-.syncbar {
-  position: fixed;
-  left: 50%;
-  transform: translateX(-50%);
-  bottom: calc(116px + env(safe-area-inset-bottom));
-  width: min(480px, 100%);
-  background: #fffdf8;
-  border-top: 1px solid var(--line);
-  padding: 8px 12px 4px;
-  z-index: 6;
+.home-sync {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 20px;
 }
 
-.sync-status, .sync-feedback { margin: 0 0 4px; font-weight: 800; }
+.home-sync .sync-status {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  font-weight: 800;
+}
 
+.home-sync .btn {
+  width: auto;
+  flex: 0 0 auto;
+  min-height: 48px;
+  margin: 0;
+  padding: 10px 14px;
+}
+
+.sync-feedback { margin: 8px 0 0; font-weight: 800; }
 .sync-feedback.is-ok { color: var(--ok); }
 .sync-feedback.is-bad { color: var(--bad); }
 
-.syncbar .btn { min-height: 52px; margin: 4px 0; }
-
-body.has-syncbar #app {
-  padding-bottom: calc(268px + env(safe-area-inset-bottom));
+.level-meter {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
 }
 
-body.has-syncbar .toast {
-  bottom: calc(248px + env(safe-area-inset-bottom));
+.level-meter-label {
+  flex: 0 0 auto;
+  font-weight: 800;
+  min-width: 5.2em;
+}
+
+.flash-jp {
+  font-size: 32px;
+  font-weight: 800;
+  line-height: 1.35;
+  margin: 8px 0;
+}
+
+.flash-reading {
+  display: block;
+  font-size: 16px;
+  margin: 0 0 12px;
+}
+
+.flash-meaning {
+  display: block;
+  margin: 12px 0;
 }
 
 .back {
@@ -290,6 +320,34 @@ progress {
   height: 10px;
   margin: 8px 0 14px;
   accent-color: var(--indigo);
+}
+
+progress.level-progress {
+  flex: 1;
+  width: auto;
+  height: 14px;
+  margin: 0;
+  border: 0;
+  border-radius: 999px;
+  overflow: hidden;
+  appearance: none;
+  -webkit-appearance: none;
+  background: var(--indigo-soft);
+}
+
+progress.level-progress::-webkit-progress-bar {
+  background: var(--indigo-soft);
+  border-radius: 999px;
+}
+
+progress.level-progress::-webkit-progress-value {
+  background: var(--indigo);
+  border-radius: 999px;
+}
+
+progress.level-progress::-moz-progress-bar {
+  background: var(--indigo);
+  border-radius: 999px;
 }
 
 .blank {

@@ -248,7 +248,22 @@
       + renderLevelBars()
       + "<h2>全部課題</h2>"
       + "<p class=\"meta\">任何課題都可以隨時再入去睇同再練，唔使按順序。</p>"
-      + (list || "<p>未有課題。</p>");
+      + (list || "<p>未有課題。</p>")
+      + renderSyncRow();
+  }
+
+  function renderSyncRow() {
+    var status = "上次同步：" + formatClock(window.JPStore.getLastSynced());
+    if (window.JPStore.isPending() && window.JPStore.getToken()) status += " · 有紀錄未同步";
+    var feedback = "";
+    if (ui.syncError) feedback = "<p class=\"sync-feedback is-bad\" role=\"status\">" + escapeHtml(ui.syncError) + "</p>";
+    else if (ui.syncOk) feedback = "<p class=\"sync-feedback is-ok\" role=\"status\">" + escapeHtml(ui.syncOk) + "</p>";
+    return "<div class=\"home-sync\">"
+      + "<p class=\"sync-status\">" + escapeHtml(status) + "</p>"
+      + "<button type=\"button\" class=\"btn secondary\" id=\"sync-button\" data-action=\"sync\"" + (syncing ? " disabled" : "") + ">"
+      + (syncing ? "同步緊……" : "同步畀老師") + "</button>"
+      + "</div>"
+      + feedback;
   }
 
   function statBox(num, label, empty) {
@@ -282,9 +297,11 @@
     return "<h2>課程進度</h2>" + report.levels.map(function (level) {
       var pct = Math.round((level.percent || 0) * 100);
       return "<a class=\"card level-card\" href=\"#/level/" + encodeURIComponent(level.level) + "\">"
-        + "<span class=\"row-title\">" + escapeHtml(level.level) + " · " + pct + "%</span>"
+        + "<span class=\"level-meter\">"
+        + "<span class=\"level-meter-label\">" + escapeHtml(level.level) + " " + pct + "%</span>"
+        + "<progress class=\"level-progress\" max=\"100\" value=\"" + pct + "\" aria-label=\"" + escapeHtml(level.level + " " + pct + "%") + "\"></progress>"
+        + "</span>"
         + "<span class=\"meta\">" + level.completeTopics + "/" + level.topicCount + " 個課題達標</span>"
-        + "<progress max=\"100\" value=\"" + pct + "\" aria-label=\"" + escapeHtml(level.level) + " 進度\"></progress>"
         + "</a>";
     }).join("")
       + "<p class=\"meta\">達標：每一題都做過，而且正確率至少 "
@@ -442,6 +459,7 @@
       + "<p class=\"prompt\">" + renderPrompt(question.prompt || "") + "</p>"
       + (question.hint && !session.locked ? "<p class=\"hint\">提示：" + inline(question.hint) + "</p>" : "")
       + "<div class=\"media\">" + audioElement(question.audio) + speakButton(question.speak) + "</div>"
+      + (question.speak || question.audio || question.type === "listening" ? "<p class=\"hint\">聽唔到聲，先檢查 iPhone 靜音掣同音量。</p>" : "")
       + answerUi
       + feedback
       + next;
@@ -609,7 +627,7 @@
       + installHint
       + "<section class=\"panel\">"
       + "<h2>同步畀老師</h2>"
-      + "<p>主頁最底有個固定嘅「同步畀老師」，同「上次同步」時間。金鑰只留喺呢部機嘅 localStorage，唔會寫入 repo，亦唔會跟匯出檔走。</p>"
+      + "<p>主頁最底有「上次同步」同「同步畀老師」。金鑰只留喺呢部機嘅 localStorage，唔會寫入 repo，亦唔會跟匯出檔走。</p>"
       + "<p class=\"meta\">" + escapeHtml(hint || "未儲存金鑰") + "</p>"
       + "<p class=\"meta\">" + escapeHtml(statusLine()) + "</p>"
       + warning
@@ -772,15 +790,15 @@
     }
     var entry = cards.entries[cards.index];
     var meaning = cards.revealed
-      ? "<p class=\"score\">" + escapeHtml(entry.meaning) + "</p>"
+      ? "<p class=\"flash-meaning score\">" + escapeHtml(entry.meaning) + "</p>"
         + (entry.example ? "<p class=\"jp\" lang=\"ja\">" + escapeHtml(entry.example.jp) + "</p><p>" + escapeHtml(entry.example.zh || "") + "</p>" : "")
         + "<button type=\"button\" class=\"btn ghost\" data-action=\"hide\">收起意思</button>"
       : "<button type=\"button\" class=\"btn secondary\" data-action=\"reveal\">睇意思</button>";
     return "<a class=\"back\" href=\"#/vocab/" + encodeURIComponent(cards.level) + (cards.category ? "/" + encodeURIComponent(cards.category) : "") + "\">離開</a>"
       + "<h1>第 " + (cards.index + 1) + " / " + cards.entries.length + " 張</h1>"
       + "<p class=\"kicker\">" + escapeHtml(entry.categoryTitle || "") + " · " + escapeHtml(markLabel(entry.id)) + "</p>"
-      + "<p class=\"prompt jp\" lang=\"ja\">" + escapeHtml(entry.japanese) + "</p>"
-      + "<p class=\"reading\" lang=\"ja\">" + escapeHtml(entry.reading) + "</p>"
+      + "<p class=\"flash-jp jp\" lang=\"ja\">" + escapeHtml(entry.japanese) + "</p>"
+      + "<p class=\"flash-reading reading\" lang=\"ja\">" + escapeHtml(entry.reading) + "</p>"
       + speakButton(entry.speak)
       + meaning
       + "<button type=\"button\" class=\"btn\" data-action=\"vocab-known\" data-id=\"" + escapeHtml(entry.id) + "\">識</button>"
@@ -868,7 +886,6 @@
     else if (route.name === "settings") html = renderSettings();
     else html = renderHome();
     app.innerHTML = html;
-    updateSyncBar(route);
     applySpeechHint();
     var fill = app.querySelector("#fill-answer");
     if (fill) {
@@ -986,37 +1003,6 @@
       lessonMap: lessonMap(),
       vocabBanks: state.vocabBanks
     };
-  }
-
-  function updateSyncBar(route) {
-    var bar = document.getElementById("syncbar");
-    if (!bar) return;
-    var onHome = !route || route.name === "home";
-    bar.hidden = !onHome;
-    document.body.classList.toggle("has-syncbar", onHome);
-    var status = document.getElementById("sync-status");
-    if (status) status.textContent = "上次同步：" + formatClock(window.JPStore.getLastSynced())
-      + (window.JPStore.isPending() && window.JPStore.getToken() ? " · 有紀錄未同步" : "");
-    var feedback = document.getElementById("sync-feedback");
-    if (feedback) {
-      if (ui.syncError) {
-        feedback.hidden = false;
-        feedback.className = "sync-feedback is-bad";
-        feedback.textContent = ui.syncError;
-      } else if (ui.syncOk) {
-        feedback.hidden = false;
-        feedback.className = "sync-feedback is-ok";
-        feedback.textContent = ui.syncOk;
-      } else {
-        feedback.hidden = true;
-        feedback.textContent = "";
-      }
-    }
-    var button = document.getElementById("sync-button");
-    if (button) {
-      button.textContent = syncing ? "同步緊……" : "同步畀老師";
-      button.disabled = !!syncing;
-    }
   }
 
   function applySpeechHint() {
