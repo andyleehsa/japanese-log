@@ -1,0 +1,142 @@
+{
+  "schemaVersion": 1,
+  "sample": true,
+  "completionAccuracy": 0.8,
+  "levels": [
+    {
+      "level": "N5",
+      "topics": [
+        {
+          "id": "n5-wa-desu",
+          "title": "は同です",
+          "description": "用「は」講「我係……」。樣本課題 day-001 就係呢課。",
+          "level": "N5",
+          "lessonIds": ["day-001"],
+          "planned": 1
+        },
+        {
+          "id": "n5-kosoado",
+          "title": "これ・それ・あれ",
+          "description": "近自己、近對方、離雙方都遠。樣本課題 day-002。",
+          "level": "N5",
+          "lessonIds": ["day-002"],
+          "planned": 1
+        },
+        {
+          "id": "n5-verb-groups",
+          "title": "動詞分組",
+          "description": "一組（五段）、二組（一段）、三組（します／来ます）。樣本大綱，課題未放。",
+          "level": "N5",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n5-i-adj",
+          "title": "い形容詞",
+          "description": "い形容詞嘅現在、否定同過去。",
+          "level": "N5",
+          "lessonIds": [],
+          "planned": 1
+        },
+        {
+          "id": "n5-na-adj",
+          "title": "な形容詞",
+          "description": "な形容詞加「な」先接名詞，句尾用「です」。",
+          "level": "N5",
+          "lessonIds": [],
+          "planned": 1
+        },
+        {
+          "id": "n5-te-form",
+          "title": "て形",
+          "description": "て形點變，同埋てください、ています。",
+          "level": "N5",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n5-ta-form",
+          "title": "た形",
+          "description": "過去、做完咗。",
+          "level": "N5",
+          "lessonIds": [],
+          "planned": 1
+        },
+        {
+          "id": "n5-nai-form",
+          "title": "ない形",
+          "description": "否定形，同ないでください。",
+          "level": "N5",
+          "lessonIds": [],
+          "planned": 1
+        },
+        {
+          "id": "n5-particles",
+          "title": "助詞",
+          "description": "を、に、で、へ、と、も、の。主題「は」喺「は同です」。",
+          "level": "N5",
+          "lessonIds": [],
+          "planned": 2
+        }
+      ]
+    },
+    {
+      "level": "N4",
+      "topics": [
+        {
+          "id": "n4-potential",
+          "title": "可能形",
+          "description": "做得唔做到。樣本大綱，課題未放。",
+          "level": "N4",
+          "lessonIds": [],
+          "planned": 1
+        },
+        {
+          "id": "n4-conditional",
+          "title": "條件形",
+          "description": "たら、ば、と。",
+          "level": "N4",
+          "lessonIds": [],
+          "planned": 2
+        },
+        {
+          "id": "n4-volitional",
+          "title": "意向形",
+          "description": "ようと思う、ましょう。",
+          "level": "N4",
+          "lessonIds": [],
+          "planned": 1
+        }
+      ]
+    },
+    {
+      "level": "N3",
+      "topics": [
+        {
+          "id": "n3-passive",
+          "title": "受身",
+          "description": "被人做咗啲咩。樣本大綱，課題未放。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 1
+        },
+        {
+          "id": "n3-causative",
+          "title": "使役",
+          "description": "叫人做、俾人做。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 1
+        },
+        {
+          "id": "n3-keigo",
+          "title": "敬語",
+          "description": "尊敬語同謙讓語入門。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 2
+        }
+      ]
+    }
+  ]
+}

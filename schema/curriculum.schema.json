@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://andyleehsa.github.io/japanese-log/schema/curriculum.schema.json",
+  "title": "JLPT curriculum",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "completionAccuracy", "levels"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "sample": { "type": "boolean" },
+    "completionAccuracy": { "const": 0.8 },
+    "levels": {
+      "type": "array",
+      "minItems": 3,
+      "items": { "$ref": "#/$defs/level" }
+    }
+  },
+  "$defs": {
+    "level": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["level", "topics"],
+      "properties": {
+        "level": { "enum": ["N5", "N4", "N3"] },
+        "topics": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/topic" }
+        }
+      }
+    },
+    "topic": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "title", "description", "level", "lessonIds", "planned"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+        "title": { "type": "string", "minLength": 1 },
+        "description": { "type": "string", "minLength": 1 },
+        "level": { "enum": ["N5", "N4", "N3"] },
+        "lessonIds": {
+          "type": "array",
+          "items": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" }
+        },
+        "planned": { "type": "integer", "minimum": 1 }
+      }
+    }
+  }
+}

@@ -64,7 +64,7 @@ function validateContent(rootDir) {
     if (/^\s*javascript:/i.test(url) || url.includes("..")) fail(label + " is not a safe audio URL");
   }
 
-  ["schema/lesson.schema.json", "schema/index.schema.json", "schema/attempts.schema.json", "schema/summary.schema.json"].forEach((rel) => {
+  ["schema/lesson.schema.json", "schema/index.schema.json", "schema/attempts.schema.json", "schema/summary.schema.json", "schema/curriculum.schema.json", "schema/vocab.schema.json", "schema/vocab-log.schema.json"].forEach((rel) => {
     readJson(rel);
   });
 
@@ -83,6 +83,7 @@ function validateContent(rootDir) {
 
   const seenIds = new Set();
   const seenQuestionIds = new Set();
+  const lessonTopics = new Map();
   const lessonsDir = path.resolve(rootDir, "content", "lessons");
 
   index.lessons.forEach((item, indexNo) => {
@@ -91,7 +92,7 @@ function validateContent(rootDir) {
       fail(label + " must be an object");
       return;
     }
-    assertKeys(item, ["id", "title", "date", "file", "tags", "sample"], label);
+    assertKeys(item, ["id", "title", "date", "file", "tags", "topics", "sample"], label);
     assertString(item.id, label + ".id");
     if (item.id && !ID_RE.test(item.id)) fail(label + ".id must match " + ID_RE);
     assertString(item.title, label + ".title");
@@ -101,6 +102,7 @@ function validateContent(rootDir) {
       fail(label + ".file must be lessons/" + item.id + ".json");
     }
     assertTags(item.tags, label + ".tags");
+    lessonTopics.set(item.id, assertIdList(item.topics, label + ".topics", true));
     if (item.sample != null && typeof item.sample !== "boolean") fail(label + ".sample must be boolean");
     if (item.id && seenIds.has(item.id)) fail(label + " duplicate lesson id " + item.id);
     if (item.id) seenIds.add(item.id);
@@ -125,13 +127,17 @@ function validateContent(rootDir) {
       fail(rel + " must be an object");
       return;
     }
-    assertKeys(lesson, ["id", "title", "date", "level", "tags", "teaching", "questions", "sample", "sampleNote"], rel);
+    assertKeys(lesson, ["id", "title", "date", "level", "tags", "topics", "teaching", "questions", "sample", "sampleNote"], rel);
     if (lesson.id !== item.id) fail(rel + ".id must match index id " + item.id);
     if (lesson.title !== item.title) fail(rel + ".title must match index title");
     if (lesson.date !== item.date) fail(rel + ".date must match index date");
     assertString(lesson.level, rel + ".level");
     const tags = assertTags(lesson.tags, rel + ".tags");
     if (sortedTags(tags) !== sortedTags(item.tags)) fail(rel + ".tags must match index tags");
+    const lessonTopicIds = assertIdList(lesson.topics, rel + ".topics", true);
+    if (sortedTags(lessonTopicIds) !== sortedTags(lessonTopics.get(item.id) || [])) {
+      fail(rel + ".topics must match index topics");
+    }
     if (lesson.sample != null && typeof lesson.sample !== "boolean") fail(rel + ".sample must be boolean");
     if (item.sample != null && lesson.sample !== item.sample) fail(rel + ".sample must match index");
     optionalString(lesson, "sampleNote", rel);
@@ -236,6 +242,158 @@ function validateContent(rootDir) {
       fail(label + ".answer must be an index into choices");
     }
   }
+
+  function assertIdList(value, label, optional) {
+    if (value == null && optional) return [];
+    if (!Array.isArray(value)) {
+      fail(label + " must be an array of ids");
+      return [];
+    }
+    value.forEach((id, index) => {
+      if (typeof id !== "string" || !ID_RE.test(id)) fail(label + "[" + index + "] must be an id");
+    });
+    return value;
+  }
+
+  function checkCurriculum() {
+    const curriculum = readJson("content/curriculum.json");
+    if (!curriculum || !isObject(curriculum)) return;
+    assertKeys(curriculum, ["schemaVersion", "sample", "completionAccuracy", "levels"], "content/curriculum.json");
+    if (curriculum.schemaVersion !== 1) fail("content/curriculum.json schemaVersion must be 1");
+    if (curriculum.sample != null && typeof curriculum.sample !== "boolean") fail("content/curriculum.json sample must be boolean");
+    if (curriculum.completionAccuracy !== 0.8) fail("content/curriculum.json completionAccuracy must be 0.8");
+    if (!Array.isArray(curriculum.levels)) {
+      fail("content/curriculum.json levels must be an array");
+      return;
+    }
+    const levelOrder = curriculum.levels.map((level) => level && level.level);
+    if (JSON.stringify(levelOrder) !== JSON.stringify(["N5", "N4", "N3"])) {
+      fail("content/curriculum.json levels must be N5, N4, N3 in that order");
+    }
+    const topicIds = new Set();
+    const topicLessons = new Map();
+    curriculum.levels.forEach((level, levelNo) => {
+      const label = "content/curriculum.json levels[" + levelNo + "]";
+      if (!isObject(level)) {
+        fail(label + " must be an object");
+        return;
+      }
+      assertKeys(level, ["level", "topics"], label);
+      if (!["N5", "N4", "N3"].includes(level.level)) fail(label + ".level must be N5, N4, or N3");
+      if (!Array.isArray(level.topics) || level.topics.length === 0) fail(label + ".topics must be a non-empty array");
+      (level.topics || []).forEach((topic, topicNo) => {
+        const topicLabel = label + ".topics[" + topicNo + "]";
+        if (!isObject(topic)) {
+          fail(topicLabel + " must be an object");
+          return;
+        }
+        assertKeys(topic, ["id", "title", "description", "level", "lessonIds", "planned"], topicLabel);
+        assertString(topic.id, topicLabel + ".id");
+        if (topic.id && !ID_RE.test(topic.id)) fail(topicLabel + ".id must match " + ID_RE);
+        if (topic.id && topicIds.has(topic.id)) fail(topicLabel + " duplicate topic id " + topic.id);
+        if (topic.id) topicIds.add(topic.id);
+        assertString(topic.title, topicLabel + ".title");
+        assertString(topic.description, topicLabel + ".description");
+        if (topic.level !== level.level) fail(topicLabel + ".level must match parent level");
+        const lessonIds = assertIdList(topic.lessonIds, topicLabel + ".lessonIds", false);
+        lessonIds.forEach((lessonId) => {
+          if (!seenIds.has(lessonId)) fail(topicLabel + " lesson " + lessonId + " is not in content/index.json");
+          if (!topicLessons.has(lessonId)) topicLessons.set(lessonId, []);
+          topicLessons.get(lessonId).push(topic.id);
+        });
+        if (!Number.isInteger(topic.planned) || topic.planned < 1) fail(topicLabel + ".planned must be an integer >= 1");
+        if (Number.isInteger(topic.planned) && topic.planned < lessonIds.length) {
+          fail(topicLabel + ".planned must be at least the number of linked lessons");
+        }
+      });
+    });
+    seenIds.forEach((lessonId) => {
+      const fromLesson = (lessonTopics.get(lessonId) || []).slice().sort();
+      const fromCurriculum = (topicLessons.get(lessonId) || []).slice().sort();
+      fromLesson.forEach((topicId) => {
+        if (!topicIds.has(topicId)) fail("lesson " + lessonId + " topics includes unknown topic " + topicId);
+      });
+      if (JSON.stringify(fromLesson) !== JSON.stringify(fromCurriculum)) {
+        fail("lesson " + lessonId + " topics must match curriculum lessonIds both ways");
+      }
+    });
+  }
+
+  const HIRAGANA_RE = /^[\u3040-\u309f\u30fc\s]+$/;
+  const READING_RE = /^[\u3040-\u30ff\u30fc\s、。！？]+$/;
+
+  function checkVocab() {
+    const entryIds = new Set();
+    const categoryIds = new Set();
+    ["n5", "n4", "n3"].forEach((slug) => {
+      const rel = "content/vocab/" + slug + ".json";
+      const bank = readJson(rel);
+      if (!bank || !isObject(bank)) return;
+      const level = slug.toUpperCase();
+      assertKeys(bank, ["schemaVersion", "level", "sample", "categories"], rel);
+      if (bank.schemaVersion !== 1) fail(rel + " schemaVersion must be 1");
+      if (bank.level !== level) fail(rel + ".level must be " + level);
+      if (bank.sample != null && typeof bank.sample !== "boolean") fail(rel + ".sample must be boolean");
+      if (!Array.isArray(bank.categories)) {
+        fail(rel + ".categories must be an array");
+        return;
+      }
+      bank.categories.forEach((category, categoryNo) => {
+        const label = rel + " categories[" + categoryNo + "]";
+        if (!isObject(category)) {
+          fail(label + " must be an object");
+          return;
+        }
+        assertKeys(category, ["id", "title", "entries"], label);
+        assertString(category.id, label + ".id");
+        if (category.id && !ID_RE.test(category.id)) fail(label + ".id must match " + ID_RE);
+        if (category.id && categoryIds.has(category.id)) fail(label + " duplicate category id " + category.id);
+        if (category.id) categoryIds.add(category.id);
+        assertString(category.title, label + ".title");
+        if (!Array.isArray(category.entries)) {
+          fail(label + ".entries must be an array");
+          return;
+        }
+        category.entries.forEach((entry, entryNo) => {
+          const entryLabel = label + ".entries[" + entryNo + "]";
+          if (!isObject(entry)) {
+            fail(entryLabel + " must be an object");
+            return;
+          }
+          assertKeys(entry, ["id", "japanese", "reading", "meaning", "level", "category", "example", "tags", "speak"], entryLabel);
+          assertString(entry.id, entryLabel + ".id");
+          if (entry.id && !ID_RE.test(entry.id)) fail(entryLabel + ".id must match " + ID_RE);
+          if (entry.id && entryIds.has(entry.id)) fail(entryLabel + " duplicate vocab id " + entry.id);
+          if (entry.id) entryIds.add(entry.id);
+          assertString(entry.japanese, entryLabel + ".japanese");
+          assertString(entry.reading, entryLabel + ".reading");
+          if (typeof entry.reading === "string" && !HIRAGANA_RE.test(entry.reading)) {
+            fail(entryLabel + ".reading must be hiragana");
+          }
+          assertString(entry.meaning, entryLabel + ".meaning");
+          if (entry.level !== level) fail(entryLabel + ".level must be " + level);
+          if (entry.category !== category.id) fail(entryLabel + ".category must match parent category id");
+          optionalString(entry, "speak", entryLabel);
+          if (entry.tags != null) assertTags(entry.tags, entryLabel + ".tags");
+          if (entry.example != null) {
+            if (!isObject(entry.example)) fail(entryLabel + ".example must be an object");
+            else {
+              assertKeys(entry.example, ["jp", "reading", "zh"], entryLabel + ".example");
+              assertString(entry.example.jp, entryLabel + ".example.jp");
+              assertString(entry.example.reading, entryLabel + ".example.reading");
+              if (typeof entry.example.reading === "string" && !READING_RE.test(entry.example.reading)) {
+                fail(entryLabel + ".example.reading must be kana");
+              }
+              assertString(entry.example.zh, entryLabel + ".example.zh");
+            }
+          }
+        });
+      });
+    });
+  }
+
+  checkCurriculum();
+  checkVocab();
 
   function checkAccepted(question, label) {
     if (!Array.isArray(question.accepted) || question.accepted.length === 0) {

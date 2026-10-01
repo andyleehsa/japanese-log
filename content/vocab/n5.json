@@ -1,0 +1,210 @@
+{
+  "schemaVersion": 1,
+  "level": "N5",
+  "sample": true,
+  "categories": [
+    {
+      "id": "n5-verb",
+      "title": "動詞",
+      "entries": [
+        {
+          "id": "n5-ikimasu",
+          "japanese": "行きます",
+          "reading": "いきます",
+          "meaning": "去",
+          "level": "N5",
+          "category": "n5-verb",
+          "example": { "jp": "学校へ行きます。", "reading": "がっこうへ いきます。", "zh": "去學校。" },
+          "tags": ["一組"],
+          "speak": "いきます"
+        },
+        {
+          "id": "n5-tabemasu",
+          "japanese": "食べます",
+          "reading": "たべます",
+          "meaning": "食",
+          "level": "N5",
+          "category": "n5-verb",
+          "example": { "jp": "パンを食べます。", "reading": "パンを たべます。", "zh": "食麵包。" },
+          "tags": ["二組"],
+          "speak": "たべます"
+        }
+      ]
+    },
+    {
+      "id": "n5-i-adj",
+      "title": "い形容詞",
+      "entries": [
+        {
+          "id": "n5-ookii",
+          "japanese": "大きい",
+          "reading": "おおきい",
+          "meaning": "大",
+          "level": "N5",
+          "category": "n5-i-adj",
+          "example": { "jp": "この家は大きいです。", "reading": "この いえは おおきいです。", "zh": "呢間屋好大。" },
+          "tags": ["い形容詞"],
+          "speak": "おおきい"
+        },
+        {
+          "id": "n5-atarashii",
+          "japanese": "新しい",
+          "reading": "あたらしい",
+          "meaning": "新",
+          "level": "N5",
+          "category": "n5-i-adj",
+          "speak": "あたらしい"
+        }
+      ]
+    },
+    {
+      "id": "n5-na-adj",
+      "title": "な形容詞",
+      "entries": [
+        {
+          "id": "n5-shizuka",
+          "japanese": "静か",
+          "reading": "しずか",
+          "meaning": "靜",
+          "level": "N5",
+          "category": "n5-na-adj",
+          "example": { "jp": "この町は静かです。", "reading": "この まちは しずかです。", "zh": "呢條街好靜。" },
+          "tags": ["な形容詞"],
+          "speak": "しずか"
+        },
+        {
+          "id": "n5-benri",
+          "japanese": "便利",
+          "reading": "べんり",
+          "meaning": "方便",
+          "level": "N5",
+          "category": "n5-na-adj",
+          "speak": "べんり"
+        }
+      ]
+    },
+    {
+      "id": "n5-noun-food",
+      "title": "名詞・飲食",
+      "entries": [
+        {
+          "id": "n5-mizu",
+          "japanese": "水",
+          "reading": "みず",
+          "meaning": "水",
+          "level": "N5",
+          "category": "n5-noun-food",
+          "example": { "jp": "水を飲みます。", "reading": "みずを のみます。", "zh": "飲水。" },
+          "tags": ["名詞"],
+          "speak": "みず"
+        },
+        {
+          "id": "n5-gohan",
+          "japanese": "ご飯",
+          "reading": "ごはん",
+          "meaning": "飯",
+          "level": "N5",
+          "category": "n5-noun-food",
+          "speak": "ごはん"
+        }
+      ]
+    },
+    {
+      "id": "n5-noun-transport",
+      "title": "名詞・交通",
+      "entries": [
+        {
+          "id": "n5-densha",
+          "japanese": "電車",
+          "reading": "でんしゃ",
+          "meaning": "火車",
+          "level": "N5",
+          "category": "n5-noun-transport",
+          "speak": "でんしゃ"
+        },
+        {
+          "id": "n5-eki",
+          "japanese": "駅",
+          "reading": "えき",
+          "meaning": "車站",
+          "level": "N5",
+          "category": "n5-noun-transport",
+          "speak": "えき"
+        }
+      ]
+    },
+    {
+      "id": "n5-noun-home",
+      "title": "名詞・家庭",
+      "entries": [
+        {
+          "id": "n5-ie",
+          "japanese": "家",
+          "reading": "いえ",
+          "meaning": "屋",
+          "level": "N5",
+          "category": "n5-noun-home",
+          "speak": "いえ"
+        },
+        {
+          "id": "n5-heya",
+          "japanese": "部屋",
+          "reading": "へや",
+          "meaning": "房間",
+          "level": "N5",
+          "category": "n5-noun-home",
+          "speak": "へや"
+        }
+      ]
+    },
+    {
+      "id": "n5-noun-time",
+      "title": "名詞・時間數字",
+      "entries": [
+        {
+          "id": "n5-kyou",
+          "japanese": "今日",
+          "reading": "きょう",
+          "meaning": "今日",
+          "level": "N5",
+          "category": "n5-noun-time",
+          "speak": "きょう"
+        },
+        {
+          "id": "n5-ichiji",
+          "japanese": "一時",
+          "reading": "いちじ",
+          "meaning": "一點",
+          "level": "N5",
+          "category": "n5-noun-time",
+          "speak": "いちじ"
+        }
+      ]
+    },
+    {
+      "id": "n5-adverb",
+      "title": "副詞",
+      "entries": [
+        {
+          "id": "n5-sukoshi",
+          "japanese": "少し",
+          "reading": "すこし",
+          "meaning": "少少",
+          "level": "N5",
+          "category": "n5-adverb",
+          "speak": "すこし"
+        },
+        {
+          "id": "n5-mou",
+          "japanese": "もう",
+          "reading": "もう",
+          "meaning": "已經、再",
+          "level": "N5",
+          "category": "n5-adverb",
+          "example": { "jp": "もう一度お願いします。", "reading": "もう いちど おねがいします。", "zh": "唔該再講一次。" },
+          "speak": "もう"
+        }
+      ]
+    }
+  ]
+}

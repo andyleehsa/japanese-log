@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "level": "N4",
+  "sample": true,
+  "categories": [
+    {
+      "id": "n4-verb",
+      "title": "動詞",
+      "entries": [
+        {
+          "id": "n4-shirabemasu",
+          "japanese": "調べます",
+          "reading": "しらべます",
+          "meaning": "查",
+          "level": "N4",
+          "category": "n4-verb",
+          "example": { "jp": "辞書で調べます。", "reading": "じしょで しらべます。", "zh": "用字典查。" },
+          "tags": ["動詞"],
+          "speak": "しらべます"
+        }
+      ]
+    },
+    {
+      "id": "n4-noun",
+      "title": "名詞",
+      "entries": [
+        {
+          "id": "n4-shumi",
+          "japanese": "趣味",
+          "reading": "しゅみ",
+          "meaning": "興趣",
+          "level": "N4",
+          "category": "n4-noun",
+          "speak": "しゅみ"
+        },
+        {
+          "id": "n4-tsugou",
+          "japanese": "都合",
+          "reading": "つごう",
+          "meaning": "時間安排",
+          "level": "N4",
+          "category": "n4-noun",
+          "speak": "つごう"
+        }
+      ]
+    }
+  ]
+}

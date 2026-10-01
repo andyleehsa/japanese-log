@@ -12,6 +12,7 @@ Andy 唔會打內容。老師每次推一課上 `main`，Andy 喺 app 撳「重�
 2. 喺 `content/index.json` 嘅 `lessons` 加一項，順序就係 app 嘅順序。
 3. `id`、`title`、`date`、`tags` 要同課題檔一致。`tags` 次序可以唔同，但成員要一樣。
 4. `file` 一定係 `lessons/<id>.json`。
+5. 如果呢課屬於課程大綱某個課題，`topics` 要同 `content/curriculum.json` 入面嗰個課題嘅 `lessonIds` 對得上。兩邊都要寫，檢查會對照。
 
 `id` 用小寫英數同連字號，建議 `day-001` 呢款。題目 `id` 要穩定：Andy 答過之後唔好改同一個 `id` 嘅題意。改題就用新 `id`。
 
@@ -27,6 +28,7 @@ Andy 唔會打內容。老師每次推一課上 `main`，Andy 喺 app 撳「重�
       "date": "2026-10-01",
       "file": "lessons/day-001.json",
       "tags": ["です", "は", "自我介紹"],
+      "topics": ["n5-wa-desu"],
       "sample": true
     }
   ]
@@ -41,6 +43,7 @@ Andy 唔會打內容。老師每次推一課上 `main`，Andy 喺 app 撳「重�
 | `date` | 係 | `YYYY-MM-DD`。同今日一樣嘅日期會變成「今日課題」。未來日期唔會鎖住，Andy 仍然入到 |
 | `file` | 係 | `lessons/<id>.json` |
 | `tags` | 係 | 至少一個。同課題檔 `tags` 成員一致 |
+| `topics` | 否 | 課題 id 陣列，對應 `content/curriculum.json`。同課題檔 `topics` 要一樣。唔屬於任何課題就唔寫 |
 | `sample` | 否 | `true` 會顯示「樣本」 |
 
 ## 課題檔
@@ -56,7 +59,8 @@ Andy 唔會打內容。老師每次推一課上 `main`，Andy 喺 app 撳「重�
   "date": "2026-10-03",
   "level": "N5",
   "sample": false,
-  "tags": ["を"]
+  "tags": ["を"],
+  "topics": ["n5-particles"]
 }
 ```
 
@@ -65,6 +69,7 @@ Andy 唔會打內容。老師每次推一課上 `main`，Andy 喺 app 撳「重�
 | `level` | 係 | 例如 `N5`、`N4`、`N3` |
 | `teaching` | 係 | 至少一段 |
 | `questions` | 係 | 至少一題 |
+| `topics` | 否 | 同 `content/index.json` 嗰課嘅 `topics` 一樣 |
 | `sampleNote` | 否 | 只係畀人睇嘅備註，app 唔顯示 |
 
 唔好加表以外嘅欄，檢查會當係錯。
@@ -192,6 +197,155 @@ App 會先做 Unicode NFKC（全形轉半形），再刪走所有空白，先至
 - `content/lessons/day-002.json`（これ・それ・あれ）
 
 兩課都係 N5，而且標咗 `sample: true`。
+
+## 課程大綱 content/curriculum.json
+
+App 主頁會為 **N5、N4、N3 每一級** 顯示一條進度列同百分比。課題列表喺 `#/level/N5`（N4、N3 同樣）。Andy 可以隨時開任何課題、任何課，**唔使按順序做完先至開下一課**。重練會繼續寫新嘅作答紀錄，錯題本仍然用「最近一次答錯」。
+
+而家 repo 入面嘅 `content/curriculum.json` 標咗 `sample: true`。N5 有九個課題（は同です、これ・それ・あれ、動詞分組、い形容詞、な形容詞、て形、た形、ない形、助詞），N4 同 N3 各有幾個樣本課題。只有 `n5-wa-desu` → `day-001`、`n5-kosoado` → `day-002` 已經連住課。其餘課題 `lessonIds` 係空陣列，`planned` 仍然要寫，代表老師計劃之後放幾多課。
+
+Schema：`schema/curriculum.schema.json`。`levels` 一定要係 N5、N4、N3，而且就係呢個次序。課題 `id` 全檔唔可以重複。
+
+### 點樣先算完成
+
+`completionAccuracy` 而家固定係 `0.8`。
+
+1. **一課達標**：每一題都至少做過一次，而且嗰課正確率（答對次數 ÷ 全部作答次數，包括重練）至少 80%。
+2. **課題百分比** = 已達標嘅課數 ÷ `planned`。`planned` 係整數，至少 1，而且唔可以少過已經連住嘅課數。未連課、`planned` 係 2，百分比就係 0%。
+3. **課題達標**：已達標課數 ≥ `planned`。
+4. **一級百分比** = 呢級每一個課題百分比嘅平均（每個課題一樣權重）。所以做完一課、但課題仲計劃多課，主頁百分比會升，唔使等成個課題達標。
+
+### 完整例子
+
+下面係可以通過檢查嘅最小大綱。正式內容請以 `content/curriculum.json` 做樣，將 `sample` 改做 `false`，同埋把 `lessonIds` 連去真課題。
+
+```json
+{
+  "schemaVersion": 1,
+  "sample": true,
+  "completionAccuracy": 0.8,
+  "levels": [
+    {
+      "level": "N5",
+      "topics": [
+        {
+          "id": "n5-wa-desu",
+          "title": "は同です",
+          "description": "用「は」講「我係……」。",
+          "level": "N5",
+          "lessonIds": ["day-001"],
+          "planned": 1
+        },
+        {
+          "id": "n5-te-form",
+          "title": "て形",
+          "description": "て形點變。樣本大綱，課題未放。",
+          "level": "N5",
+          "lessonIds": [],
+          "planned": 2
+        }
+      ]
+    },
+    {
+      "level": "N4",
+      "topics": [
+        {
+          "id": "n4-potential",
+          "title": "可能形",
+          "description": "做得唔做到。",
+          "level": "N4",
+          "lessonIds": [],
+          "planned": 1
+        }
+      ]
+    },
+    {
+      "level": "N3",
+      "topics": [
+        {
+          "id": "n3-passive",
+          "title": "受身",
+          "description": "被人做咗啲咩。",
+          "level": "N3",
+          "lessonIds": [],
+          "planned": 1
+        }
+      ]
+    }
+  ]
+}
+```
+
+| 欄 | 必須 | 說明 |
+| --- | --- | --- |
+| `id` | 係 | 小寫英數同連字號，全大綱唯一 |
+| `title` | 係 | 繁體中文課題名，例如「て形」 |
+| `description` | 係 | 一句短說明 |
+| `level` | 係 | 要同所屬級別一樣：`N5`、`N4` 或 `N3` |
+| `lessonIds` | 係 | 已放上嚟嘅課題 id。可以係 `[]`。每個 id 要喺 `content/index.json` |
+| `planned` | 係 | 計劃總課數。至少 1，而且 ≥ `lessonIds` 長度 |
+
+加新課嘅時候：課題檔同 index 都寫 `topics`，大綱嗰個課題嘅 `lessonIds` 加同一個 id。如果 `planned` 細過新嘅課數，要一齊改大。
+
+## 生詞庫 content/vocab/
+
+三個檔，每個級別一個：
+
+- `content/vocab/n5.json`
+- `content/vocab/n4.json`
+- `content/vocab/n3.json`
+
+Schema：`schema/vocab.schema.json`。而家三個檔都係 `sample: true`。N5 樣本有動詞、い形容詞、な形容詞、名詞（飲食、交通、家庭、時間數字）、副詞，每個分類幾個詞。N4、N3 各有動詞同名詞幾個詞，方便試進度。
+
+App 路徑：生詞 → 揀級別 → 揀分類。可以搜尋日文、讀音或者意思。每個分類有「卡片溫習」：先顯示日文同讀音，撳「睇意思」先顯示中文，可以「收起意思」。撳「識」或「唔識」會記喺部機，同步時寫入 `logs/vocab.json`，老師喺 `summary.json` 睇到唔識嘅詞。
+
+**一級生詞進度** = 標咗「識」嘅詞數 ÷ 呢級總詞數。未標記同「唔識」都唔計入百分比。
+
+詞 `id` 全三個檔加埋唔可以重複。分類 `id` 都唔可以重複。`reading` 用平假名（可以有長音 `ー` 同空白）。例句讀音可以有片假名同標點。
+
+```json
+{
+  "schemaVersion": 1,
+  "level": "N5",
+  "sample": true,
+  "categories": [
+    {
+      "id": "n5-verb",
+      "title": "動詞",
+      "entries": [
+        {
+          "id": "n5-ikimasu",
+          "japanese": "行きます",
+          "reading": "いきます",
+          "meaning": "去",
+          "level": "N5",
+          "category": "n5-verb",
+          "example": {
+            "jp": "学校へ行きます。",
+            "reading": "がっこうへ いきます。",
+            "zh": "去學校。"
+          },
+          "tags": ["一組"],
+          "speak": "いきます"
+        }
+      ]
+    }
+  ]
+}
+```
+
+| 欄 | 必須 | 說明 |
+| --- | --- | --- |
+| `japanese` | 係 | 漢字或假名，畫面顯示用 |
+| `reading` | 係 | 平假名讀音 |
+| `meaning` | 係 | 繁體中文意思 |
+| `level` | 係 | 同檔案級別一樣 |
+| `category` | 係 | 同所屬分類 `id` 一樣 |
+| `example` | 否 | `jp`、`reading`、`zh` 三樣都要有 |
+| `tags` | 否 | 至少一個字串。而家只係資料，畫面未用嚟篩 |
+| `speak` | 否 | 有嘅話，支援語音嘅手機會顯示「讀出嚟」 |
+
+分類同生詞都可以隨時再開，唔使做完先至入下一組。
 
 ## 本地檢查
 

@@ -6,6 +6,7 @@
   "sample": true,
   "sampleNote": "樣本課題，老師可以成個檔換走。正式課題請刪走 sample，或者設做 false。",
   "tags": ["あれ", "この", "これ", "それ", "は"],
+  "topics": ["n5-kosoado"],
   "teaching": [
     {
       "type": "tip",

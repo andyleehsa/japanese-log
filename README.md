@@ -20,8 +20,10 @@ Andy 用嚟自學日文嘅單人網頁 app。每日一課同練習由老師寫 J
 | 路徑 | 用途 |
 | --- | --- |
 | `index.html`、`js/`、`css/`、`sw.js`、`manifest.json` | 網頁同離線用 |
-| `content/index.json`、`content/lessons/` | 課題 |
-| `logs/summary.json`、`logs/attempts/` | Andy 同步之後先出現 |
+| `content/index.json`、`content/lessons/` | 課題。每課可以選填 `topics` |
+| `content/curriculum.json` | N5／N4／N3 課題大綱同進度計法 |
+| `content/vocab/` | 每級生詞庫 |
+| `logs/summary.json`、`logs/attempts/`、`logs/vocab.json` | Andy 同步之後先出現 |
 | `docs/` | 課題格式、進度格式、Andy 設定 |
 | `schema/` | JSON Schema |
 | `scripts/validate-content.js` | 檢查課題，冇第三方套件 |
@@ -35,4 +37,4 @@ node scripts/validate-content.js
 node scripts/test-logic.js
 ```
 
-`day-001` 同 `day-002` 係樣本，可以換走。
+`day-001`、`day-002`、課程大綱同三級生詞都標咗樣本，可以換走。主頁每一級有進度列。課題、課、生詞分類都可以隨時再開，唔使按順序。

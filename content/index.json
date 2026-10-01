@@ -7,6 +7,7 @@
       "date": "2026-10-01",
       "file": "lessons/day-001.json",
       "tags": ["です", "は", "自我介紹"],
+      "topics": ["n5-wa-desu"],
       "sample": true
     },
     {
@@ -15,6 +16,7 @@
       "date": "2026-10-02",
       "file": "lessons/day-002.json",
       "tags": ["あれ", "この", "これ", "それ", "は"],
+      "topics": ["n5-kosoado"],
       "sample": true
     }
   ]

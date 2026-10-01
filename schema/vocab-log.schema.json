@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://andyleehsa.github.io/japanese-log/schema/vocab-log.schema.json",
+  "title": "Vocabulary marks",
+  "description": "logs/vocab.json. Merged by id; the later updatedAt wins.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "marks"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "marks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "level", "category", "status", "updatedAt"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "level": { "type": "string" },
+          "category": { "type": "string" },
+          "status": { "enum": ["known", "unknown"] },
+          "updatedAt": { "type": "string" }
+        }
+      }
+    }
+  }
+}

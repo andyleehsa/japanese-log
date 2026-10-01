@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "level": "N3",
+  "sample": true,
+  "categories": [
+    {
+      "id": "n3-verb",
+      "title": "動詞",
+      "entries": [
+        {
+          "id": "n3-tsutaemasu",
+          "japanese": "伝えます",
+          "reading": "つたえます",
+          "meaning": "話俾人知",
+          "level": "N3",
+          "category": "n3-verb",
+          "example": { "jp": "先生に伝えます。", "reading": "せんせいに つたえます。", "zh": "話俾老師知。" },
+          "tags": ["動詞"],
+          "speak": "つたえます"
+        }
+      ]
+    },
+    {
+      "id": "n3-noun",
+      "title": "名詞",
+      "entries": [
+        {
+          "id": "n3-kankyou",
+          "japanese": "環境",
+          "reading": "かんきょう",
+          "meaning": "環境",
+          "level": "N3",
+          "category": "n3-noun",
+          "speak": "かんきょう"
+        },
+        {
+          "id": "n3-eikyou",
+          "japanese": "影響",
+          "reading": "えいきょう",
+          "meaning": "影響",
+          "level": "N3",
+          "category": "n3-noun",
+          "speak": "えいきょう"
+        }
+      ]
+    }
+  ]
+}

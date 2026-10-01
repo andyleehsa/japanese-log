@@ -167,15 +167,41 @@
       mergedAll = mergedAll.concat(written.attempts || []);
     }
     var finalAttempts = window.JPLogic.mergeAttempts([mergedAll, local]);
+    var storedMarks = window.JPStore.loadVocabMarks();
+    var localMarks = Object.keys(storedMarks).map(function (id) { return storedMarks[id]; });
+    var vocabFile = await putJson(token, "logs/vocab.json", function (remoteJson) {
+      var remoteMarks = remoteJson && Array.isArray(remoteJson.marks) ? remoteJson.marks : [];
+      return {
+        schemaVersion: 1,
+        marks: window.JPLogic.mergeVocabMarks([remoteMarks, localMarks])
+      };
+    }, "sync: vocab");
+    var finalMarks = vocabFile.marks || [];
+    var markMap = {};
+    finalMarks.forEach(function (mark) { markMap[mark.id] = mark; });
+    window.JPStore.saveVocabMarks(markMap);
     var now = new Date().toISOString();
     var stats = window.JPLogic.computeStats(finalAttempts, {
       lessonTitles: (opts && opts.titles) || {}
+    });
+    var curriculum = window.JPLogic.curriculumReport(opts.curriculum, opts.lessonMap || {}, finalAttempts);
+    var vocabStats = window.JPLogic.vocabReport(opts.vocabBanks || [], finalMarks);
+    vocabStats.marks = finalMarks.map(function (mark) {
+      return {
+        id: mark.id,
+        level: mark.level,
+        category: mark.category,
+        status: mark.status,
+        updatedAt: mark.updatedAt
+      };
     });
     var summary = window.JPLogic.buildSummary(stats, {
       lookup: opts.lookup,
       titles: opts.titles || {},
       generatedAt: now,
-      lastSyncedAt: now
+      lastSyncedAt: now,
+      curriculum: curriculum,
+      vocab: vocabStats
     });
     await putJson(token, "logs/summary.json", function () { return summary; }, "sync: summary");
     window.JPStore.saveAttempts(finalAttempts);

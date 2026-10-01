@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://andyleehsa.github.io/japanese-log/schema/vocab.schema.json",
+  "title": "Vocabulary bank for one JLPT level",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "level", "categories"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "level": { "enum": ["N5", "N4", "N3"] },
+    "sample": { "type": "boolean" },
+    "categories": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/category" }
+    }
+  },
+  "$defs": {
+    "category": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "title", "entries"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+        "title": { "type": "string", "minLength": 1 },
+        "entries": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/entry" }
+        }
+      }
+    },
+    "entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "japanese", "reading", "meaning", "level", "category"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+        "japanese": { "type": "string", "minLength": 1 },
+        "reading": { "type": "string", "minLength": 1 },
+        "meaning": { "type": "string", "minLength": 1 },
+        "level": { "enum": ["N5", "N4", "N3"] },
+        "category": { "type": "string" },
+        "example": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["jp", "reading", "zh"],
+          "properties": {
+            "jp": { "type": "string", "minLength": 1 },
+            "reading": { "type": "string", "minLength": 1 },
+            "zh": { "type": "string", "minLength": 1 }
+          }
+        },
+        "tags": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "speak": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

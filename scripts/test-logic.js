@@ -80,5 +80,78 @@ const summary = logic.buildSummary(stats, {
 assert.strictEqual(summary.mistakes[0].prompt, "題目");
 assert.strictEqual(summary.weakThreshold, 0.8);
 assert.strictEqual(summary.lastStudyDate, "2026-10-02");
+assert.strictEqual(summary.curriculum, null);
+assert.strictEqual(summary.vocab, null);
+
+const doneLesson = {
+  id: "day-001",
+  title: "は",
+  questions: [{ id: "q1" }, { id: "q2" }]
+};
+const perfect = [
+  { questionId: "q1", lessonId: "day-001", correct: true },
+  { questionId: "q2", lessonId: "day-001", correct: true }
+];
+const mixed = [
+  { questionId: "q1", lessonId: "day-001", correct: true },
+  { questionId: "q1", lessonId: "day-001", correct: false },
+  { questionId: "q2", lessonId: "day-001", correct: true }
+];
+assert.strictEqual(logic.lessonIsDone(logic.lessonProgress(doneLesson, perfect)), true);
+assert.strictEqual(logic.lessonIsDone(logic.lessonProgress(doneLesson, mixed)), false);
+assert.strictEqual(logic.lessonIsDone(logic.lessonProgress(doneLesson, perfect.slice(0, 1))), false);
+
+const curriculum = {
+  completionAccuracy: 0.8,
+  levels: [
+    {
+      level: "N5",
+      topics: [
+        { id: "n5-a", title: "甲", description: "甲", level: "N5", lessonIds: ["day-001"], planned: 2 },
+        { id: "n5-b", title: "乙", description: "乙", level: "N5", lessonIds: [], planned: 1 }
+      ]
+    }
+  ]
+};
+const report = logic.curriculumReport(curriculum, { "day-001": doneLesson }, perfect);
+assert.strictEqual(report.levels[0].topics[0].doneCount, 1);
+assert.strictEqual(report.levels[0].topics[0].percent, 0.5);
+assert.strictEqual(report.levels[0].topics[0].complete, false);
+assert.strictEqual(report.levels[0].topics[1].percent, 0);
+assert.strictEqual(report.levels[0].percent, 0.25);
+const finished = logic.curriculumReport({
+  levels: [{
+    level: "N5",
+    topics: [{ id: "n5-a", title: "甲", level: "N5", lessonIds: ["day-001"], planned: 1 }]
+  }]
+}, { "day-001": doneLesson }, perfect);
+assert.strictEqual(finished.levels[0].topics[0].complete, true);
+assert.strictEqual(finished.levels[0].percent, 1);
+
+const older = { id: "w1", status: "unknown", updatedAt: "2026-10-01T10:00:00+08:00", level: "N5", category: "n5-verb" };
+const newer = { id: "w1", status: "known", updatedAt: "2026-10-02T10:00:00+08:00", level: "N5", category: "n5-verb" };
+const marks = logic.mergeVocabMarks([[newer], [older, { id: "w2", status: "unknown", updatedAt: "2026-10-01T09:00:00+08:00" }]]);
+assert.strictEqual(marks.length, 2);
+assert.strictEqual(marks[0].status, "known");
+assert.strictEqual(logic.mergeVocabMarks([[{ id: "bad", status: "maybe" }]]).length, 0);
+
+const vocab = logic.vocabReport([
+  {
+    level: "N5",
+    categories: [{
+      id: "n5-verb",
+      title: "動詞",
+      entries: [
+        { id: "w1", japanese: "行く", reading: "いく", meaning: "去", level: "N5", category: "n5-verb" },
+        { id: "w2", japanese: "食べる", reading: "たべる", meaning: "食", level: "N5", category: "n5-verb" }
+      ]
+    }]
+  }
+], marks);
+assert.strictEqual(vocab.byLevel[0].known, 1);
+assert.strictEqual(vocab.byLevel[0].unknown, 1);
+assert.strictEqual(vocab.byLevel[0].percent, 0.5);
+assert.strictEqual(vocab.unknown[0].id, "w2");
+assert.strictEqual(vocab.unknown[0].meaning, "食");
 
 console.log("logic tests ok");

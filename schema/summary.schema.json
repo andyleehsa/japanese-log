@@ -28,7 +28,9 @@
     "weakThreshold": { "type": "number" },
     "weakTags": { "type": "array", "items": { "$ref": "#/$defs/tagRow" } },
     "weakQuestions": { "type": "array", "items": { "$ref": "#/$defs/questionRow" } },
-    "mistakes": { "type": "array", "items": { "$ref": "#/$defs/questionRow" } }
+    "mistakes": { "type": "array", "items": { "$ref": "#/$defs/questionRow" } },
+    "curriculum": { "type": ["object", "null"] },
+    "vocab": { "type": ["object", "null"] }
   },
   "$defs": {
     "tally": {

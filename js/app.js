@@ -2,10 +2,14 @@
   var state = {
     index: null,
     lessons: [],
+    curriculum: null,
+    vocabBanks: [],
     error: "",
     loading: true
   };
   var session = null;
+  var cards = null;
+  var vocabQuery = "";
   var syncing = false;
   var ui = { syncError: "" };
 
@@ -123,7 +127,14 @@
       try { return decodeURIComponent(part); } catch (err) { return part; }
     });
     var name = parts[0] || "home";
-    if (name === "lesson" || name === "practice") return { name: name, id: parts[1] || "" };
+    if (name === "lesson" || name === "practice" || name === "level" || name === "topic") {
+      return { name: name, id: parts[1] || "" };
+    }
+    if (name === "vocab") {
+      if (parts[1] === "review") return { name: "vocab-review", level: parts[2] || "N5", category: parts[3] || "" };
+      if (parts[1]) return { name: "vocab-level", level: parts[1], category: parts[2] || "" };
+      return { name: "vocab" };
+    }
     if (name === "log" || name === "mistakes" || name === "settings") return { name: name };
     return { name: "home" };
   }
@@ -232,7 +243,9 @@
       + "<button type=\"button\" class=\"btn secondary\" data-action=\"sync\"" + (syncing ? " disabled" : "") + ">"
       + (syncing ? "同步緊……" : "同步畀老師") + "</button>"
       + "<button type=\"button\" class=\"btn ghost\" data-action=\"reload\">重新載入課題</button>"
+      + renderLevelBars()
       + "<h2>全部課題</h2>"
+      + "<p class=\"meta\">任何課題都可以隨時再入去睇同再練，唔使按順序。</p>"
       + (list || "<p>未有課題。</p>");
   }
 
@@ -243,8 +256,103 @@
   function progressText(progress) {
     if (!progress || !progress.total) return "未有練習";
     if (!progress.attempts) return "未開始 · " + progress.total + " 題";
-    var done = progress.completed ? "已完成" : (progress.answered + "/" + progress.total + " 題做過");
-    return done + " · 正確率 " + window.JPLogic.formatPercent(progress.accuracy);
+    var pct = window.JPLogic.formatPercent(progress.accuracy);
+    if (window.JPLogic.lessonIsDone(progress)) return "已達標 · 正確率 " + pct;
+    if (progress.completed) return "做齊題目，未達 " + Math.round(window.JPLogic.COMPLETION_ACCURACY * 100) + "% · 正確率 " + pct;
+    return progress.answered + "/" + progress.total + " 題做過 · 正確率 " + pct;
+  }
+
+  function lessonMap() {
+    var map = {};
+    state.lessons.forEach(function (lesson) {
+      if (lesson && lesson.id && !lesson.loadError) map[lesson.id] = lesson;
+    });
+    return map;
+  }
+
+  function currentCurriculum() {
+    return window.JPLogic.curriculumReport(state.curriculum, lessonMap(), window.JPStore.loadAttempts());
+  }
+
+  function renderLevelBars() {
+    var report = currentCurriculum();
+    if (!report.levels.length) return "<h2>課程進度</h2><p>未有課程大綱。</p>";
+    return "<h2>課程進度</h2>" + report.levels.map(function (level) {
+      var pct = Math.round((level.percent || 0) * 100);
+      return "<a class=\"card level-card\" href=\"#/level/" + encodeURIComponent(level.level) + "\">"
+        + "<span class=\"row-title\">" + escapeHtml(level.level) + " · " + pct + "%</span>"
+        + "<span class=\"meta\">" + level.completeTopics + "/" + level.topicCount + " 個課題達標</span>"
+        + "<progress max=\"100\" value=\"" + pct + "\" aria-label=\"" + escapeHtml(level.level) + " 進度\"></progress>"
+        + "</a>";
+    }).join("")
+      + "<p class=\"meta\">達標：每一題都做過，而且正確率至少 "
+      + Math.round(window.JPLogic.COMPLETION_ACCURACY * 100)
+      + "%。未達標都可以隨時重溫。</p>"
+      + "<a class=\"btn secondary\" href=\"#/vocab\">去生詞庫</a>";
+  }
+
+  function findTopic(id) {
+    var report = currentCurriculum();
+    for (var i = 0; i < report.levels.length; i++) {
+      var topics = report.levels[i].topics;
+      for (var j = 0; j < topics.length; j++) {
+        if (topics[j].id === id) return topics[j];
+      }
+    }
+    return null;
+  }
+
+  function topicStatus(topic) {
+    if (!topic.lessonIds.length) return "未有課題";
+    if (topic.complete) return "達標";
+    if (topic.lessons.some(function (lesson) { return lesson.attempts > 0; })) return "進行中";
+    return "未開始";
+  }
+
+  function renderLevel(levelId) {
+    var report = currentCurriculum();
+    var level = null;
+    report.levels.forEach(function (item) { if (item.level === levelId) level = item; });
+    if (!level) return "<h1>搵唔到呢級</h1><a class=\"btn\" href=\"#/\">返回主頁</a>";
+    var pct = Math.round((level.percent || 0) * 100);
+    var list = level.topics.map(function (topic) {
+      return "<a class=\"card lesson-row\" href=\"#/topic/" + encodeURIComponent(topic.id) + "\">"
+        + "<span class=\"row-title\">" + escapeHtml(topic.title) + "</span>"
+        + "<span class=\"meta\">" + escapeHtml(topicStatus(topic)) + " · " + topic.doneCount + "/" + topic.planned + " 課達標</span>"
+        + "<span class=\"meta\">正確率 " + escapeHtml(window.JPLogic.formatPercent(topic.accuracy)) + "</span>"
+        + "<progress max=\"100\" value=\"" + Math.round(topic.percent * 100) + "\"></progress>"
+        + "</a>";
+    }).join("");
+    var switcher = ["N5", "N4", "N3"].map(function (id) {
+      return "<a class=\"tag" + (id === level.level ? " is-on" : "") + "\" href=\"#/level/" + id + "\">" + id + "</a>";
+    }).join("");
+    return banner() + "<a class=\"back\" href=\"#/\">返回</a>"
+      + "<h1>" + escapeHtml(level.level) + "</h1>"
+      + "<p class=\"tags\">" + switcher + "</p>"
+      + "<p class=\"score\">" + pct + "%</p>"
+      + "<p class=\"meta\">" + level.completeTopics + "/" + level.topicCount + " 個課題達標。全部課題都可以隨時重溫。</p>"
+      + "<progress max=\"100\" value=\"" + pct + "\"></progress>"
+      + list;
+  }
+
+  function renderTopic(id) {
+    var topic = findTopic(id);
+    if (!topic) return "<h1>搵唔到呢個課題</h1><a class=\"btn\" href=\"#/\">返回主頁</a>";
+    var lessons = topic.lessons.map(function (lesson) {
+      var label = lesson.done ? "已達標" : (lesson.attempts ? "未達標" : "未開始");
+      return "<a class=\"card lesson-row\" href=\"#/lesson/" + encodeURIComponent(lesson.lessonId) + "\">"
+        + "<span class=\"row-title jp\" lang=\"ja\">" + escapeHtml(lesson.title) + "</span>"
+        + "<span class=\"meta\">" + label + " · 正確率 " + escapeHtml(window.JPLogic.formatPercent(lesson.accuracy)) + "</span>"
+        + "<span class=\"btn\">再睇、再練</span>"
+        + "</a>";
+    }).join("");
+    return "<a class=\"back\" href=\"#/level/" + encodeURIComponent(topic.level) + "\">返回 " + escapeHtml(topic.level) + "</a>"
+      + "<p class=\"kicker\">" + escapeHtml(topic.level) + " · " + escapeHtml(topicStatus(topic)) + "</p>"
+      + "<h1>" + escapeHtml(topic.title) + "</h1>"
+      + "<p>" + escapeHtml(topic.description) + "</p>"
+      + "<p class=\"meta\">" + topic.doneCount + "/" + topic.planned + " 課達標 · 正確率 "
+      + escapeHtml(window.JPLogic.formatPercent(topic.accuracy)) + "</p>"
+      + (lessons || "<section class=\"card\"><p>老師未放呢個課題嘅課。放咗之後可以隨時入嚟，唔使等前面做完。</p></section>");
   }
 
   function isSample(lesson, item) {
@@ -280,13 +388,22 @@
     }
     var blocks = ((lesson && lesson.teaching) || []).map(renderBlock).join("");
     var count = lesson && lesson.questions ? lesson.questions.length : 0;
+    var attempts = window.JPStore.loadAttempts();
+    var progress = lesson ? window.JPLogic.lessonProgress(lesson, attempts) : null;
+    var practiceLabel = progress && progress.attempts ? "再練一次" : "開始練習";
+    var topicLinks = ((lesson && lesson.topics) || []).map(function (topicId) {
+      var topic = findTopic(topicId);
+      var title = topic ? topic.title : topicId;
+      return "<a class=\"tag\" href=\"#/topic/" + encodeURIComponent(topicId) + "\">" + escapeHtml(title) + "</a>";
+    }).join("");
     return "<a class=\"back\" href=\"#/\">返回</a>"
       + "<p class=\"kicker\">" + escapeHtml(level ? level + " · " : "") + escapeHtml(window.JPLogic.formatDateLabel(date))
       + (isSample(lesson, item) ? " · 樣本課題" : "") + "</p>"
       + "<h1 class=\"jp\" lang=\"ja\">" + escapeHtml(title) + "</h1>"
       + "<div class=\"tags\">" + renderTags((lesson && lesson.tags) || (item && item.tags) || []) + "</div>"
+      + (topicLinks ? "<p class=\"tags\">" + topicLinks + "</p>" : "")
       + "<article class=\"teaching\">" + blocks + "</article>"
-      + (count ? "<a class=\"btn\" href=\"#/practice/" + encodeURIComponent(lesson.id) + "\">開始練習（" + count + " 題）</a>" : "<p>呢課未有練習。</p>");
+      + (count ? "<a class=\"btn\" href=\"#/practice/" + encodeURIComponent(lesson.id) + "\">" + practiceLabel + "（" + count + " 題）</a><p class=\"meta\">隨時可以再睇同再練。新作答會繼續記低。</p>" : "<p>呢課未有練習。</p>");
   }
 
   function renderPractice() {
@@ -503,21 +620,203 @@
       + "</section>"
       + "<details class=\"panel\">"
       + "<summary>進階：清除呢部機嘅練習紀錄</summary>"
-      + "<p>唔會刪 GitHub 上面已經同步嘅紀錄，亦唔會清金鑰。</p>"
+      + "<p>會清練習紀錄同生詞嘅識／唔識。唔會刪 GitHub 上面已經同步嘅紀錄，亦唔會清金鑰。</p>"
       + "<button type=\"button\" class=\"btn danger\" data-action=\"clear-progress\">清除練習紀錄</button>"
       + "</details>"
       + "<p class=\"meta\">日文日誌 v1 · 單人用</p>";
+  }
+
+  function vocabBank(level) {
+    for (var i = 0; i < state.vocabBanks.length; i++) {
+      if (state.vocabBanks[i] && state.vocabBanks[i].level === level) return state.vocabBanks[i];
+    }
+    return null;
+  }
+
+  function vocabEntries(level, categoryId) {
+    var bank = vocabBank(level);
+    if (!bank) return [];
+    var entries = [];
+    (bank.categories || []).forEach(function (category) {
+      if (categoryId && category.id !== categoryId) return;
+      (category.entries || []).forEach(function (entry) {
+        entries.push(Object.assign({ categoryTitle: category.title }, entry));
+      });
+    });
+    return entries;
+  }
+
+  function findVocab(id) {
+    for (var i = 0; i < state.vocabBanks.length; i++) {
+      var categories = state.vocabBanks[i].categories || [];
+      for (var j = 0; j < categories.length; j++) {
+        var entries = categories[j].entries || [];
+        for (var k = 0; k < entries.length; k++) {
+          if (entries[k].id === id) return entries[k];
+        }
+      }
+    }
+    return null;
+  }
+
+  function markLabel(id) {
+    var mark = window.JPStore.loadVocabMarks()[id];
+    if (!mark) return "未標記";
+    return mark.status === "known" ? "識" : "唔識";
+  }
+
+  function vocabLevelStats(level) {
+    var report = window.JPLogic.vocabReport(state.vocabBanks, Object.keys(window.JPStore.loadVocabMarks()).map(function (id) {
+      return window.JPStore.loadVocabMarks()[id];
+    }));
+    for (var i = 0; i < report.byLevel.length; i++) {
+      if (report.byLevel[i].level === level) return report.byLevel[i];
+    }
+    return { level: level, total: 0, known: 0, unknown: 0, unmarked: 0, percent: null };
+  }
+
+  function renderVocabHome() {
+    var cardsHtml = ["N5", "N4", "N3"].map(function (level) {
+      var stats = vocabLevelStats(level);
+      var pct = stats.percent == null ? 0 : Math.round(stats.percent * 100);
+      return "<a class=\"card level-card\" href=\"#/vocab/" + level + "\">"
+        + "<span class=\"row-title\">" + level + " 生詞 · " + (stats.total ? pct + "%" : "未有") + "</span>"
+        + "<span class=\"meta\">識 " + stats.known + " · 唔識 " + stats.unknown + " · 共 " + stats.total + "</span>"
+        + "<progress max=\"100\" value=\"" + pct + "\"></progress>"
+        + "</a>";
+    }).join("");
+    return banner() + "<h1>生詞庫</h1><p>按級別同分類睇，隨時可以再溫。識定唔識會同步畀老師。</p>" + cardsHtml;
+  }
+
+  function matchesQuery(entry, query) {
+    var needle = String(query || "").trim().toLowerCase();
+    if (!needle) return true;
+    return [entry.japanese, entry.reading, entry.meaning, entry.categoryTitle].join(" ").toLowerCase().indexOf(needle) !== -1;
+  }
+
+  function renderWord(entry) {
+    var example = entry.example ? "<p class=\"jp\" lang=\"ja\">" + escapeHtml(entry.example.jp) + "</p>"
+      + (entry.example.reading ? "<p class=\"reading\" lang=\"ja\">" + escapeHtml(entry.example.reading) + "</p>" : "")
+      + "<p>" + escapeHtml(entry.example.zh || "") + "</p>" : "";
+    return "<article class=\"card\">"
+      + "<p class=\"jp\" lang=\"ja\">" + escapeHtml(entry.japanese) + "</p>"
+      + "<p class=\"reading\" lang=\"ja\">" + escapeHtml(entry.reading) + "</p>"
+      + "<p>" + escapeHtml(entry.meaning) + "</p>"
+      + example
+      + speakButton(entry.speak)
+      + "<p class=\"meta\">" + escapeHtml(markLabel(entry.id)) + "</p>"
+      + "<button type=\"button\" class=\"btn\" data-action=\"vocab-known\" data-id=\"" + escapeHtml(entry.id) + "\">識</button>"
+      + "<button type=\"button\" class=\"btn secondary\" data-action=\"vocab-unknown\" data-id=\"" + escapeHtml(entry.id) + "\">唔識</button>"
+      + "</article>";
+  }
+
+  function renderVocabLevel(level, categoryId) {
+    var bank = vocabBank(level);
+    if (!bank) return "<h1>未有 " + escapeHtml(level) + " 生詞</h1><a class=\"btn\" href=\"#/vocab\">返回</a>";
+    var stats = vocabLevelStats(level);
+    var pct = stats.percent == null ? 0 : Math.round(stats.percent * 100);
+    if (!categoryId) {
+      var categories = (bank.categories || []).map(function (category) {
+        var count = (category.entries || []).length;
+        return "<a class=\"card lesson-row\" href=\"#/vocab/" + encodeURIComponent(level) + "/" + encodeURIComponent(category.id) + "\">"
+          + "<span class=\"row-title\">" + escapeHtml(category.title) + "</span>"
+          + "<span class=\"meta\">" + count + " 個</span>"
+          + "</a>";
+      }).join("");
+      var found = vocabEntries(level, "").filter(function (entry) { return matchesQuery(entry, vocabQuery); });
+      return banner() + "<a class=\"back\" href=\"#/vocab\">返回生詞庫</a>"
+        + "<h1>" + escapeHtml(level) + " 生詞</h1>"
+        + (bank.sample ? "<p class=\"kicker\">樣本生詞</p>" : "")
+        + "<p class=\"meta\">識 " + stats.known + "/" + stats.total + " · " + pct + "%</p>"
+        + "<progress max=\"100\" value=\"" + pct + "\"></progress>"
+        + "<a class=\"btn\" href=\"#/vocab/review/" + encodeURIComponent(level) + "\">溫全部</a>"
+        + "<label for=\"vocab-search\">搜尋</label>"
+        + "<input id=\"vocab-search\" value=\"" + escapeHtml(vocabQuery) + "\" placeholder=\"日文、讀音或者意思\" autocomplete=\"off\">"
+        + "<div id=\"vocab-results\">" + (vocabQuery ? found.map(renderWord).join("") || "<p>搵唔到。</p>" : "") + "</div>"
+        + "<h2>分類</h2>"
+        + categories;
+    }
+    var category = null;
+    (bank.categories || []).forEach(function (item) { if (item.id === categoryId) category = item; });
+    if (!category) return "<h1>搵唔到呢個分類</h1><a class=\"btn\" href=\"#/vocab/" + encodeURIComponent(level) + "\">返回</a>";
+    var words = (category.entries || []).map(renderWord).join("");
+    return banner() + "<a class=\"back\" href=\"#/vocab/" + encodeURIComponent(level) + "\">返回 " + escapeHtml(level) + "</a>"
+      + "<h1>" + escapeHtml(category.title) + "</h1>"
+      + "<p class=\"meta\">隨時可以再入嚟睇。</p>"
+      + "<a class=\"btn\" href=\"#/vocab/review/" + encodeURIComponent(level) + "/" + encodeURIComponent(category.id) + "\">卡片溫習</a>"
+      + (words || "<p>未有生詞。</p>");
+  }
+
+  function renderVocabReview() {
+    if (!cards || cards.phase === "empty") {
+      return "<h1>未有卡片</h1><a class=\"btn\" href=\"#/vocab\">返回生詞庫</a>";
+    }
+    if (cards.phase === "done") {
+      return "<section class=\"panel\"><h1>溫完呢組</h1>"
+        + "<p>呢輪標記咗 " + cards.marked + " 個。可以再嚟，舊標記會被新一次覆蓋。</p>"
+        + "<a class=\"btn\" href=\"#/vocab/" + encodeURIComponent(cards.level) + "\">返回生詞</a></section>";
+    }
+    var entry = cards.entries[cards.index];
+    var meaning = cards.revealed
+      ? "<p class=\"score\">" + escapeHtml(entry.meaning) + "</p>"
+        + (entry.example ? "<p class=\"jp\" lang=\"ja\">" + escapeHtml(entry.example.jp) + "</p><p>" + escapeHtml(entry.example.zh || "") + "</p>" : "")
+        + "<button type=\"button\" class=\"btn ghost\" data-action=\"hide\">收起意思</button>"
+      : "<button type=\"button\" class=\"btn secondary\" data-action=\"reveal\">睇意思</button>";
+    return "<a class=\"back\" href=\"#/vocab/" + encodeURIComponent(cards.level) + (cards.category ? "/" + encodeURIComponent(cards.category) : "") + "\">離開</a>"
+      + "<h1>第 " + (cards.index + 1) + " / " + cards.entries.length + " 張</h1>"
+      + "<p class=\"kicker\">" + escapeHtml(entry.categoryTitle || "") + " · " + escapeHtml(markLabel(entry.id)) + "</p>"
+      + "<p class=\"prompt jp\" lang=\"ja\">" + escapeHtml(entry.japanese) + "</p>"
+      + "<p class=\"reading\" lang=\"ja\">" + escapeHtml(entry.reading) + "</p>"
+      + speakButton(entry.speak)
+      + meaning
+      + "<button type=\"button\" class=\"btn\" data-action=\"vocab-known\" data-id=\"" + escapeHtml(entry.id) + "\">識</button>"
+      + "<button type=\"button\" class=\"btn secondary\" data-action=\"vocab-unknown\" data-id=\"" + escapeHtml(entry.id) + "\">唔識</button>";
+  }
+
+  function createCards(route) {
+    var entries = vocabEntries(route.level, route.category);
+    return {
+      key: route.level + "/" + (route.category || ""),
+      level: route.level,
+      category: route.category,
+      entries: entries,
+      index: 0,
+      revealed: false,
+      marked: 0,
+      phase: entries.length ? "card" : "empty"
+    };
+  }
+
+  function markVocab(id, status) {
+    var entry = findVocab(id);
+    if (!entry) return;
+    window.JPStore.setVocabMark(entry, status);
+    if (cards && cards.phase === "card") {
+      cards.marked += 1;
+      cards.revealed = false;
+      cards.index += 1;
+      if (cards.index >= cards.entries.length) cards.phase = "done";
+    }
+    showToast(status === "known" ? "記低：識" : "記低：唔識");
+    render();
   }
 
   function render() {
     var route = parseRoute();
     if (route.name !== "practice") session = null;
     else if (!session || session.key !== route.id) session = createSession(route.id);
+    if (route.name !== "vocab-review") cards = null;
+    else if (!cards || cards.key !== route.level + "/" + (route.category || "")) cards = createCards(route);
 
     var taglines = {
       home: "Andy，今日 10 分鐘就得。",
-      lesson: "先睇教學，再做練習。",
+      lesson: "先睇教學，再做練習。隨時可以再入嚟。",
       practice: "一題一題嚟。",
+      level: "每一級嘅課題，唔使按順序。",
+      topic: "呢個課題入面嘅課，隨時可以再練。",
+      vocab: "生詞庫：睇、搜、再溫。",
+      "vocab-level": "分類入面嘅詞可以隨時再睇。",
+      "vocab-review": "睇到意思先再決定識定唔識。",
       log: "睇下自己邊度穩，邊度要再練。",
       mistakes: "錯過嘅題，可以再練一次。",
       settings: "金鑰留喺呢部機，同步先至畀老師。"
@@ -525,9 +824,12 @@
     var tagline = document.getElementById("tagline");
     if (tagline) tagline.textContent = taglines[route.name] || taglines.home;
 
-    document.body.classList.toggle("in-practice", route.name === "practice" && session && session.phase === "question");
+    document.body.classList.toggle("in-practice", (route.name === "practice" && session && session.phase === "question") || route.name === "vocab-review");
     document.querySelectorAll("#tabbar a").forEach(function (link) {
-      var tab = route.name === "lesson" || route.name === "practice" ? "home" : route.name;
+      var tab = route.name;
+      if (route.name === "lesson" || route.name === "practice") tab = "home";
+      if (route.name === "level" || route.name === "topic") tab = "level";
+      if (route.name === "vocab-level" || route.name === "vocab-review") tab = "vocab";
       var on = link.getAttribute("data-tab") === tab;
       link.classList.toggle("is-active", on);
       if (on) link.setAttribute("aria-current", "page");
@@ -542,12 +844,16 @@
     var html = "";
     if (route.name === "lesson") html = renderLesson(route.id);
     else if (route.name === "practice") html = renderPractice();
+    else if (route.name === "level") html = renderLevel(route.id);
+    else if (route.name === "topic") html = renderTopic(route.id);
+    else if (route.name === "vocab") html = renderVocabHome();
+    else if (route.name === "vocab-level") html = renderVocabLevel(route.level, route.category);
+    else if (route.name === "vocab-review") html = renderVocabReview();
     else if (route.name === "log") html = renderLog();
     else if (route.name === "mistakes") html = renderMistakes();
     else if (route.name === "settings") html = renderSettings();
     else html = renderHome();
     app.innerHTML = html;
-    var fill = app.querySelector("#fill-answer");
     var fill = app.querySelector("#fill-answer");
     if (fill) {
       try { fill.focus({ preventScroll: true }); } catch (err) { fill.focus(); }
@@ -657,7 +963,13 @@
   }
 
   function syncPayload() {
-    return { titles: lessonTitles(), lookup: lookupQuestion };
+    return {
+      titles: lessonTitles(),
+      lookup: lookupQuestion,
+      curriculum: state.curriculum,
+      lessonMap: lessonMap(),
+      vocabBanks: state.vocabBanks
+    };
   }
 
   async function manualSync() {
@@ -759,15 +1071,23 @@
   async function exportJson() {
     var attempts = window.JPStore.loadAttempts();
     var stats = window.JPLogic.computeStats(attempts, { lessonTitles: lessonTitles() });
+    var markMap = window.JPStore.loadVocabMarks();
+    var markList = Object.keys(markMap).map(function (id) { return markMap[id]; });
+    var curriculum = window.JPLogic.curriculumReport(state.curriculum, lessonMap(), attempts);
+    var vocab = window.JPLogic.vocabReport(state.vocabBanks, markList);
+    vocab.marks = markList;
     var summary = window.JPLogic.buildSummary(stats, {
       lookup: lookupQuestion,
       titles: lessonTitles(),
-      exportedAt: new Date().toISOString()
+      exportedAt: new Date().toISOString(),
+      curriculum: curriculum,
+      vocab: vocab
     });
     var payload = {
       schemaVersion: 1,
       exportedAt: new Date().toISOString(),
       attempts: attempts,
+      vocabMarks: markList,
       summary: summary
     };
     var text = JSON.stringify(payload, null, 2);
@@ -830,6 +1150,16 @@
     if (name === "export") exportJson();
     if (name === "clear-progress") clearProgress();
     if (name === "reload") location.reload();
+    if (name === "reveal" && cards) {
+      cards.revealed = true;
+      render();
+    }
+    if (name === "hide" && cards) {
+      cards.revealed = false;
+      render();
+    }
+    if (name === "vocab-known") markVocab(action.getAttribute("data-id"), "known");
+    if (name === "vocab-unknown") markVocab(action.getAttribute("data-id"), "unknown");
   }
 
   function onSubmit(event) {
@@ -847,6 +1177,16 @@
     if (active && (active.tagName === "INPUT" || active.tagName === "TEXTAREA")) return;
     render();
     if (navigator.onLine && window.JPStore.isPending() && window.JPStore.getToken()) tryAutoSync();
+  }
+
+  async function loadOptionalJson(url) {
+    try {
+      var response = await fetch(url, { cache: "no-cache" });
+      if (!response.ok) return null;
+      return await response.json();
+    } catch (err) {
+      return null;
+    }
   }
 
   async function reloadContent() {
@@ -876,6 +1216,10 @@
       }));
       state.index = index;
       state.lessons = lessons;
+      state.curriculum = await loadOptionalJson("content/curriculum.json");
+      state.vocabBanks = (await Promise.all(["n5", "n4", "n3"].map(function (slug) {
+        return loadOptionalJson("content/vocab/" + slug + ".json");
+      }))).filter(Boolean);
       state.error = "";
     } catch (err) {
       if (!state.index) state.index = { lessons: [] };
@@ -895,6 +1239,15 @@
   function bind() {
     document.body.addEventListener("click", onClick);
     document.body.addEventListener("submit", onSubmit);
+    document.body.addEventListener("input", function (event) {
+      if (!event.target || event.target.id !== "vocab-search") return;
+      vocabQuery = event.target.value;
+      var box = document.getElementById("vocab-results");
+      if (!box) return;
+      var route = parseRoute();
+      var found = vocabEntries(route.level || "N5", "").filter(function (entry) { return matchesQuery(entry, vocabQuery); });
+      box.innerHTML = vocabQuery ? (found.map(renderWord).join("") || "<p>搵唔到。</p>") : "";
+    });
     window.addEventListener("hashchange", function () {
       window.JPSpeech.cancel();
       render();

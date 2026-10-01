@@ -1,4 +1,4 @@
-var CACHE = "jp-log-v1";
+var CACHE = "jp-log-v2";
 var SHELL = [
   "index.html",
   "css/app.css",
@@ -46,6 +46,16 @@ async function precache() {
     var index = await indexResponse.json();
     await cache.put("content/index.json", new Response(JSON.stringify(index), {
       headers: { "Content-Type": "application/json" }
+    }));
+    var extra = [
+      "content/curriculum.json",
+      "content/vocab/n5.json",
+      "content/vocab/n4.json",
+      "content/vocab/n3.json"
+    ];
+    await Promise.all(extra.map(async function (url) {
+      var extraResponse = await fetch(url, { cache: "no-cache" });
+      if (extraResponse.ok) await cache.put(url, extraResponse);
     }));
     var lessons = Array.isArray(index.lessons) ? index.lessons : [];
     await Promise.all(lessons.map(async function (lesson) {

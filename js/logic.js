@@ -4,6 +4,7 @@
   root.JPLogic = api;
 })(typeof globalThis !== "undefined" ? globalThis : this, function () {
   var WEAK_THRESHOLD = 0.8;
+  var COMPLETION_ACCURACY = 0.8;
 
   function normalizeAnswer(value) {
     return String(value == null ? "" : value)
@@ -324,6 +325,128 @@
     return count + 1;
   }
 
+  function lessonIsDone(progress, threshold) {
+    var limit = threshold == null ? COMPLETION_ACCURACY : threshold;
+    return !!(progress && progress.total > 0 && progress.completed && progress.accuracy != null && progress.accuracy >= limit);
+  }
+
+  function curriculumReport(curriculum, lessonMap, attempts) {
+    var source = curriculum && Array.isArray(curriculum.levels) ? curriculum : { levels: [] };
+    var threshold = typeof source.completionAccuracy === "number" ? source.completionAccuracy : COMPLETION_ACCURACY;
+    var levels = source.levels.map(function (level) {
+      var topics = (level.topics || []).map(function (topic) {
+        var lessonIds = Array.isArray(topic.lessonIds) ? topic.lessonIds : [];
+        var planned = topic.planned == null ? lessonIds.length : topic.planned;
+        var lessons = lessonIds.map(function (lessonId) {
+          var lesson = lessonMap && lessonMap[lessonId];
+          var progress = lesson ? lessonProgress(lesson, attempts) : { attempts: 0, correct: 0, accuracy: null, completed: false, total: 0 };
+          return {
+            lessonId: lessonId,
+            title: (lesson && lesson.title) || lessonId,
+            done: lessonIsDone(progress, threshold),
+            completed: !!progress.completed,
+            attempts: progress.attempts,
+            correct: progress.correct,
+            accuracy: progress.accuracy
+          };
+        });
+        var doneCount = lessons.filter(function (lesson) { return lesson.done; }).length;
+        var related = (attempts || []).filter(function (attempt) {
+          return lessonIds.indexOf(attempt.lessonId) !== -1;
+        });
+        var accuracy = tally(related).accuracy;
+        return {
+          id: topic.id,
+          title: topic.title,
+          description: topic.description || "",
+          level: topic.level || level.level,
+          planned: planned,
+          lessonIds: lessonIds,
+          lessons: lessons,
+          doneCount: doneCount,
+          percent: planned > 0 ? doneCount / planned : 0,
+          complete: planned > 0 && doneCount >= planned,
+          accuracy: accuracy
+        };
+      });
+      var percent = topics.length ? topics.reduce(function (sum, topic) { return sum + topic.percent; }, 0) / topics.length : 0;
+      return {
+        level: level.level,
+        percent: percent,
+        topicCount: topics.length,
+        completeTopics: topics.filter(function (topic) { return topic.complete; }).length,
+        topics: topics
+      };
+    });
+    return {
+      completionAccuracy: threshold,
+      rule: "A lesson is done when every question has at least one attempt and accuracy is at least completionAccuracy. Topic percent = done lessons / planned (planned defaults to linked lesson count). A topic is complete when done lessons reach planned. Level percent is the average of topic percents. Review is never blocked by order.",
+      levels: levels
+    };
+  }
+
+  function mergeVocabMarks(lists) {
+    var map = new Map();
+    (lists || []).forEach(function (list) {
+      (list || []).forEach(function (mark) {
+        if (!mark || !mark.id || (mark.status !== "known" && mark.status !== "unknown")) return;
+        var prev = map.get(mark.id);
+        if (!prev || String(mark.updatedAt || "") > String(prev.updatedAt || "")) map.set(mark.id, mark);
+      });
+    });
+    return Array.from(map.values()).sort(function (a, b) {
+      return String(a.id).localeCompare(String(b.id));
+    });
+  }
+
+  function vocabReport(banks, marks) {
+    var byId = {};
+    (marks || []).forEach(function (mark) {
+      if (mark && mark.id) byId[mark.id] = mark;
+    });
+    var byLevel = [];
+    var unknown = [];
+    (banks || []).forEach(function (bank) {
+      var knownCount = 0;
+      var unknownCount = 0;
+      var total = 0;
+      (bank.categories || []).forEach(function (category) {
+        (category.entries || []).forEach(function (entry) {
+          total += 1;
+          var mark = byId[entry.id];
+          if (!mark) return;
+          if (mark.status === "known") knownCount += 1;
+          if (mark.status === "unknown") {
+            unknownCount += 1;
+            unknown.push({
+              id: entry.id,
+              level: entry.level || bank.level,
+              category: entry.category || category.id,
+              categoryTitle: category.title || "",
+              japanese: entry.japanese || "",
+              reading: entry.reading || "",
+              meaning: entry.meaning || "",
+              status: "unknown",
+              updatedAt: mark.updatedAt || ""
+            });
+          }
+        });
+      });
+      byLevel.push({
+        level: bank.level,
+        total: total,
+        known: knownCount,
+        unknown: unknownCount,
+        unmarked: total - knownCount - unknownCount,
+        percent: total ? knownCount / total : null
+      });
+    });
+    unknown.sort(function (a, b) {
+      return String(b.updatedAt).localeCompare(String(a.updatedAt)) || String(a.id).localeCompare(String(b.id));
+    });
+    return { byLevel: byLevel, unknown: unknown };
+  }
+
   function buildSummary(stats, extras) {
     var info = extras || {};
     var lookup = info.lookup || function () { return null; };
@@ -358,7 +481,9 @@
       weakThreshold: stats.weakThreshold,
       weakTags: stats.weakTags,
       weakQuestions: stats.weakQuestions.map(enrich),
-      mistakes: stats.mistakes.map(enrich)
+      mistakes: stats.mistakes.map(enrich),
+      curriculum: info.curriculum || null,
+      vocab: info.vocab || null
     };
   }
 
@@ -375,6 +500,11 @@
 
   return {
     WEAK_THRESHOLD: WEAK_THRESHOLD,
+    COMPLETION_ACCURACY: COMPLETION_ACCURACY,
+    lessonIsDone: lessonIsDone,
+    curriculumReport: curriculumReport,
+    mergeVocabMarks: mergeVocabMarks,
+    vocabReport: vocabReport,
     normalizeAnswer: normalizeAnswer,
     answersMatch: answersMatch,
     grade: grade,

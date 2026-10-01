@@ -59,7 +59,7 @@ button, a, input, textarea, summary { touch-action: manipulation; }
 }
 
 #app {
-  padding: 16px 16px calc(108px + env(safe-area-inset-bottom));
+  padding: 16px 16px calc(148px + env(safe-area-inset-bottom));
 }
 
 body.in-practice #app {
@@ -130,6 +130,9 @@ a.card:active, .btn:active { transform: translateY(1px); }
   padding: 4px 10px;
   font-weight: 700;
 }
+
+a.tag { text-decoration: none; }
+a.tag.is-on { background: var(--indigo); color: #f7f3ea; }
 
 .stats {
   display: grid;
@@ -360,7 +363,8 @@ details summary {
   transform: translateX(-50%);
   bottom: 0;
   width: min(480px, 100%);
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   background: #fffdf8;
   border-top: 1px solid var(--line);
   z-index: 5;
@@ -386,7 +390,7 @@ body.in-practice .tabbar { display: none; }
   position: fixed;
   left: 50%;
   transform: translateX(-50%);
-  bottom: calc(84px + env(safe-area-inset-bottom));
+  bottom: calc(132px + env(safe-area-inset-bottom));
   width: min(440px, calc(100% - 24px));
   background: var(--ink);
   color: #f7f3ea;

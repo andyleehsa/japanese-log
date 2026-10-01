@@ -3,6 +3,7 @@
   var TOKEN = "jp-log-token";
   var LAST = "jp-log-last-synced";
   var PENDING = "jp-log-pending-sync";
+  var VOCAB = "jp-log-vocab-v1";
   var memory = {};
   var persistent = true;
 
@@ -98,7 +99,35 @@
     },
     clearProgress: function () {
       writeRaw(ATTEMPTS, "[]");
+      writeRaw(VOCAB, "{}");
       writeRaw(PENDING, "0");
+    },
+    loadVocabMarks: function () {
+      var raw = readRaw(VOCAB);
+      if (!raw) return {};
+      try {
+        var parsed = JSON.parse(raw);
+        return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {};
+      } catch (err) {
+        return {};
+      }
+    },
+    saveVocabMarks: function (marks) {
+      writeRaw(VOCAB, JSON.stringify(marks || {}));
+    },
+    setVocabMark: function (entry, status) {
+      var marks = this.loadVocabMarks();
+      var when = window.JPLogic.formatLocalTimestamp(new Date());
+      marks[entry.id] = {
+        id: entry.id,
+        level: entry.level,
+        category: entry.category,
+        status: status,
+        updatedAt: when.timestamp
+      };
+      this.saveVocabMarks(marks);
+      writeRaw(PENDING, "1");
+      return marks[entry.id];
     }
   };
 })();
