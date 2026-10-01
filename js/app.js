@@ -586,6 +586,16 @@
       + cards;
   }
 
+  function isStandalone() {
+    var nav = window.navigator || {};
+    if (nav.standalone === true) return true;
+    try {
+      if (window.matchMedia("(display-mode: standalone)").matches) return true;
+      if (window.matchMedia("(display-mode: fullscreen)").matches) return true;
+    } catch (err) { /* matchMedia can be missing in old webviews. */ }
+    return false;
+  }
+
   function renderSettings() {
     var hint = window.JPStore.tokenHint();
     var warning = "";
@@ -593,8 +603,10 @@
     if (token && token.indexOf("github_pat_") !== 0) {
       warning = "<p class=\"banner\">已儲存嘅金鑰唔似 fine-grained token（開頭應係 github_pat_）。建議跟教學重新產生一條。</p>";
     }
+    var installHint = isStandalone() ? "" : "<div class=\"banner\" role=\"status\">你而家喺 Safari 分頁開。請加入主畫面，之後每次都用個「日文日誌」圖示開。Safari 同圖示嘅練習紀錄、金鑰係分開儲存，唔會互通。貼金鑰同第一次同步都要喺圖示入面做。如果紀錄分咗開，撳下面「匯出 JSON」留底。</div>";
     return banner()
       + "<h1>設定</h1>"
+      + installHint
       + "<section class=\"panel\">"
       + "<h2>同步畀老師</h2>"
       + "<p>主頁最底有個固定嘅「同步畀老師」，同「上次同步」時間。金鑰只留喺呢部機嘅 localStorage，唔會寫入 repo，亦唔會跟匯出檔走。</p>"
@@ -611,7 +623,7 @@
       + "</section>"
       + "<section class=\"panel\">"
       + "<h2>匯出 JSON</h2>"
-      + "<p>同步唔到嘅時候，可以用呢個檔留底，或者傳畀老師。iPhone 會優先開分享畫面。</p>"
+      + "<p>同步唔到，或者 Safari 同主畫面圖示嘅紀錄分咗開，就撳呢個留底。iPhone 會優先開分享畫面。檔案冇金鑰。</p>"
       + "<button type=\"button\" class=\"btn\" data-action=\"export\">匯出 JSON</button>"
       + "</section>"
       + "<section class=\"panel\">"
