@@ -450,7 +450,7 @@
         var planned = topic.planned == null ? lessonIds.length : topic.planned;
         var lessons = lessonIds.map(function (lessonId) {
           var lesson = lessonMap && lessonMap[lessonId];
-          var standing = lesson ? lessonStanding(lesson, attempts, threshold) : { done: false, complete: false, attempts: 0, correct: 0, accuracy: null };
+          var standing = lesson ? lessonStanding(lesson, attempts, threshold) : { done: false, complete: false, attempts: 0, correct: 0, accuracy: null, total: 0 };
           return {
             lessonId: lessonId,
             title: (lesson && lesson.title) || lessonId,
@@ -458,14 +458,19 @@
             completed: !!standing.complete,
             attempts: standing.attempts,
             correct: standing.correct,
+            questionTotal: standing.complete ? standing.total : 0,
             accuracy: standing.accuracy
           };
         });
         var doneCount = lessons.filter(function (lesson) { return lesson.done; }).length;
-        var related = (attempts || []).filter(function (attempt) {
-          return lessonIds.indexOf(attempt.lessonId) !== -1;
+        var poolCorrect = 0;
+        var poolTotal = 0;
+        lessons.forEach(function (lesson) {
+          if (!lesson.completed || !(lesson.questionTotal > 0)) return;
+          poolCorrect += lesson.correct;
+          poolTotal += lesson.questionTotal;
         });
-        var accuracy = tally(related).accuracy;
+        var accuracy = poolTotal > 0 ? poolCorrect / poolTotal : null;
         return {
           id: topic.id,
           title: topic.title,
@@ -491,7 +496,7 @@
     });
     return {
       completionAccuracy: threshold,
-      rule: "A lesson is done when the latest complete pass (every question answered once in that pass; an unfinished pass does not replace it) has accuracy of at least completionAccuracy. Topic percent = done lessons / planned (planned defaults to linked lesson count). A topic is complete when done lessons reach planned. Level percent is the average of topic percents. Review is never blocked by order.",
+      rule: "A lesson is done when the latest complete pass (every question answered once in that pass; an unfinished pass does not replace it) has accuracy of at least completionAccuracy. Topic accuracy pools each linked lesson's latest complete pass (sum of correct answers ÷ sum of question counts; lessons with no complete pass are omitted; null if none). Topic percent = done lessons / planned (planned defaults to linked lesson count). A topic is complete when done lessons reach planned. Level percent is the average of topic percents. Review is never blocked by order.",
       levels: levels
     };
   }
@@ -660,6 +665,236 @@
     return Number(parts[0]) + "年" + Number(parts[1]) + "月" + Number(parts[2]) + "日";
   }
 
+  var FONT_STEPS = ["standard", "large", "xlarge"];
+  var FONT_LABELS = { standard: "標準", large: "大", xlarge: "特大" };
+  var CHOICE_GRID_MAX = 6;
+  var MIN_JP = { flash: 32, practice: 24 };
+  var COLORS = {
+    brand: "#F5A623",
+    brandInk: "#3A2600",
+    bg: "#FAF7F2",
+    paper: "#FFFFFF",
+    ink: "#222222",
+    muted: "#6B6B6B",
+    accent: "#A85600",
+    ok: "#2E9E5B",
+    okText: "#1F7A43",
+    okBg: "#E5F6EC",
+    okTick: "#0E2416",
+    bad: "#D64545",
+    badText: "#C13B3B",
+    badBg: "#FDECEC",
+    example: "#C0392B",
+    codeBg: "#FFF8EE",
+    disabled: "#E6E2DA",
+    tableHead: "#9A3412",
+    tableHeadText: "#FFFFFF",
+    line: "#E4DFD6"
+  };
+
+  function normalizeFontSize(value) {
+    return FONT_STEPS.indexOf(value) === -1 ? "standard" : value;
+  }
+
+  function stepFontSize(value, delta) {
+    var index = FONT_STEPS.indexOf(normalizeFontSize(value));
+    var next = index + (Number(delta) || 0);
+    if (next < 0) next = 0;
+    if (next >= FONT_STEPS.length) next = FONT_STEPS.length - 1;
+    return FONT_STEPS[next];
+  }
+
+  function choiceLayout(choices) {
+    var list = Array.isArray(choices) ? choices : [];
+    if (list.length < 2) return "stack";
+    var long = list.some(function (choice) {
+      return String(choice == null ? "" : choice).trim().length > CHOICE_GRID_MAX;
+    });
+    return long ? "stack" : "grid";
+  }
+
+  function confirmReady(state) {
+    var current = state || {};
+    if (current.locked) return false;
+    if (current.mode === "choice") return typeof current.picked === "number" && current.picked >= 0;
+    if (current.mode === "fill") return String(current.text == null ? "" : current.text).trim().length > 0;
+    return false;
+  }
+
+  function hasKanji(text) {
+    return /[\u3400-\u9fff]/.test(String(text || ""));
+  }
+
+  function hasJapaneseScript(text) {
+    return /[\u3040-\u30ff\u3400-\u9fff]/.test(String(text || ""));
+  }
+
+  function isKanaPhrase(text) {
+    var value = String(text || "").trim();
+    return !!value && !hasKanji(value) && /[\u3040-\u30ff]/.test(value);
+  }
+
+  function parenReading(text) {
+    var match = String(text || "").match(/[（(]([^）)]+)[）)]/);
+    if (!match) return "";
+    var inside = match[1].trim();
+    if (inside && !hasKanji(inside) && /[\u3040-\u30ff]/.test(inside)) return inside;
+    return "";
+  }
+
+  function rememberReading(map, surface, reading) {
+    var key = normalizeAnswer(surface);
+    var value = String(reading == null ? "" : reading).trim();
+    if (!key || !value || map[key]) return;
+    map[key] = value;
+  }
+
+  function readingIndex(sources) {
+    var map = {};
+    (sources || []).forEach(function (item) {
+      if (!item) return;
+      rememberReading(map, item.japanese || item.word || item.jp, item.reading);
+      var forms = item.forms || {};
+      Object.keys(forms).forEach(function (name) {
+        var form = forms[name];
+        if (form) rememberReading(map, form.japanese, form.reading);
+      });
+    });
+    return map;
+  }
+
+  function lookupReading(index, surface) {
+    if (!index || surface == null) return "";
+    var key = normalizeAnswer(surface);
+    if (!key) return "";
+    if (typeof index === "function") return String(index(surface) || "").trim();
+    return index[key] ? String(index[key]) : "";
+  }
+
+  function looseKey(value) {
+    return normalizeAnswer(value).replace(/[。．、！？!?,，.]+/g, "");
+  }
+
+  function readingBeside(surface, text) {
+    var target = looseKey(surface);
+    if (!target) return "";
+    var source = String(text || "");
+    var pattern = /[（(]([^）)]+)[）)]/g;
+    var match;
+    while ((match = pattern.exec(source))) {
+      var inside = match[1].trim();
+      if (!isKanaPhrase(inside)) continue;
+      var before = looseKey(source.slice(0, match.index));
+      if (before === target || before.slice(-target.length) === target) return inside;
+    }
+    return "";
+  }
+
+  function answerGuide(question, index) {
+    var graded = correctAnswerText(question);
+    var empty = { answer: graded, jp: "", reading: "", extraJp: "", extraReading: "" };
+    if (!question) return empty;
+    if (question.type === "listening") {
+      var heard = String(question.jp || graded).trim();
+      var heardReading = String(question.reading || "").trim() || lookupReading(index, heard) || parenReading(heard);
+      return { answer: heard || graded, jp: heard || graded, reading: heardReading, extraJp: "", extraReading: "" };
+    }
+    if (question.kind === "verb-group") {
+      var verb = String(question.verb || "").trim();
+      var verbReading = String(question.reading || "").trim() || lookupReading(index, verb);
+      return { answer: graded, jp: verb, reading: verbReading, extraJp: "", extraReading: "" };
+    }
+    if (question.kind === "verb-form") {
+      var spoken = lookupReading(index, graded) || parenReading(graded) || readingBeside(graded, (question.explanation || "") + (question.rule || ""));
+      if (!spoken && isKanaPhrase(graded)) spoken = String(graded).trim();
+      var dict = String(question.verb || "").trim();
+      var dictReading = String(question.reading || "").trim() || lookupReading(index, dict);
+      return {
+        answer: graded,
+        jp: hasJapaneseScript(graded) ? graded : "",
+        reading: spoken,
+        extraJp: dict,
+        extraReading: dictReading
+      };
+    }
+    if (!hasJapaneseScript(graded)) return empty;
+    var found = lookupReading(index, graded) || parenReading(graded) || readingBeside(graded, (question.explanation || "") + (question.rule || ""));
+    if (!found && isKanaPhrase(graded)) found = String(graded).trim();
+    return { answer: graded, jp: graded, reading: found, extraJp: "", extraReading: "" };
+  }
+
+  function feedbackPanel(input) {
+    var data = input || {};
+    var correct = !!data.correct;
+    var answer = data.answer == null ? "" : String(data.answer);
+    var rule = String(data.rule == null ? "" : data.rule).trim();
+    var explanation = String(data.explanation == null ? "" : data.explanation).trim();
+    var reading = String(data.reading == null ? "" : data.reading).trim();
+    var jp = String(data.jp == null ? "" : data.jp).trim();
+    var extraJp = String(data.extraJp == null ? "" : data.extraJp).trim();
+    var extraReading = String(data.extraReading == null ? "" : data.extraReading).trim();
+    if (correct) {
+      return { tone: "ok", title: "正確", lines: [], detail: explanation };
+    }
+    var ruleText = rule || explanation;
+    var detail = rule && explanation && explanation !== rule ? explanation : "";
+    return {
+      tone: "bad",
+      title: "再睇下",
+      lines: [
+        { label: "正確答案", text: answer, jp: jp, reading: reading, extraJp: extraJp, extraReading: extraReading },
+        { label: "規則", text: ruleText }
+      ],
+      detail: detail
+    };
+  }
+
+  function roadmapStatus(standing, isNext) {
+    if (standing && standing.done) return "passed";
+    if (isNext) return "next";
+    return "todo";
+  }
+
+  function roadmapMarks(lessons, attempts, threshold) {
+    var list = Array.isArray(lessons) ? lessons : [];
+    var limit = threshold == null ? COMPLETION_ACCURACY : threshold;
+    var rows = list.map(function (lesson) {
+      var standing = lessonStanding(lesson, attempts || [], limit);
+      return { id: lesson && lesson.id, done: !!standing.done };
+    }).filter(function (row) { return row.id; });
+    var nextId = null;
+    for (var i = 0; i < rows.length; i++) {
+      if (!rows[i].done) {
+        nextId = rows[i].id;
+        break;
+      }
+    }
+    return rows.map(function (row) {
+      return { id: row.id, status: roadmapStatus({ done: row.done }, row.id === nextId) };
+    });
+  }
+
+  function channelLuma(value) {
+    var s = value / 255;
+    return s <= 0.03928 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4);
+  }
+
+  function hexLuminance(hex) {
+    var h = String(hex || "").replace("#", "");
+    if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+    var n = parseInt(h, 16);
+    if (!isFinite(n) || h.length !== 6) return 0;
+    return 0.2126 * channelLuma((n >> 16) & 255) + 0.7152 * channelLuma((n >> 8) & 255) + 0.0722 * channelLuma(n & 255);
+  }
+
+  function contrastRatio(foreground, background) {
+    var a = hexLuminance(foreground);
+    var b = hexLuminance(background);
+    var hi = Math.max(a, b);
+    var lo = Math.min(a, b);
+    return (hi + 0.05) / (lo + 0.05);
+  }
+
   return {
     WEAK_THRESHOLD: WEAK_THRESHOLD,
     COMPLETION_ACCURACY: COMPLETION_ACCURACY,
@@ -695,6 +930,22 @@
     formatDateLabel: formatDateLabel,
     studyDates: studyDates,
     currentStreak: currentStreak,
-    longestStreak: longestStreak
+    longestStreak: longestStreak,
+    FONT_STEPS: FONT_STEPS,
+    FONT_LABELS: FONT_LABELS,
+    CHOICE_GRID_MAX: CHOICE_GRID_MAX,
+    MIN_JP: MIN_JP,
+    COLORS: COLORS,
+    normalizeFontSize: normalizeFontSize,
+    stepFontSize: stepFontSize,
+    choiceLayout: choiceLayout,
+    confirmReady: confirmReady,
+    readingIndex: readingIndex,
+    lookupReading: lookupReading,
+    answerGuide: answerGuide,
+    feedbackPanel: feedbackPanel,
+    roadmapStatus: roadmapStatus,
+    roadmapMarks: roadmapMarks,
+    contrastRatio: contrastRatio
   };
 });

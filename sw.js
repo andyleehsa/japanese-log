@@ -1,4 +1,4 @@
-var CACHE = "jp-log-v12";
+var CACHE = "jp-log-v15";
 var SHELL = [
   "index.html",
   "css/app.css",
@@ -37,11 +37,19 @@ self.addEventListener("fetch", function (event) {
   event.respondWith(networkFirst(request));
 });
 
+function fresh(url) {
+  return fetch(url, { cache: "reload" });
+}
+
 async function precache() {
   var cache = await caches.open(CACHE);
-  await cache.addAll(SHELL);
+  await Promise.all(SHELL.map(async function (url) {
+    var response = await fresh(url);
+    if (!response.ok) throw new Error(url);
+    await cache.put(url, response);
+  }));
   try {
-    var indexResponse = await fetch("content/index.json", { cache: "no-cache" });
+    var indexResponse = await fresh("content/index.json");
     if (!indexResponse.ok) return;
     var index = await indexResponse.json();
     await cache.put("content/index.json", new Response(JSON.stringify(index), {
@@ -54,14 +62,14 @@ async function precache() {
       "content/vocab/n3.json"
     ];
     await Promise.all(extra.map(async function (url) {
-      var extraResponse = await fetch(url, { cache: "no-cache" });
+      var extraResponse = await fresh(url);
       if (extraResponse.ok) await cache.put(url, extraResponse);
     }));
     var lessons = Array.isArray(index.lessons) ? index.lessons : [];
     await Promise.all(lessons.map(async function (lesson) {
       if (!lesson || !/^lessons\/[A-Za-z0-9._-]+\.json$/.test(lesson.file || "")) return;
       var lessonUrl = "content/" + lesson.file;
-      var response = await fetch(lessonUrl, { cache: "no-cache" });
+      var response = await fresh(lessonUrl);
       if (response.ok) await cache.put(lessonUrl, response);
     }));
   } catch (err) {
@@ -81,11 +89,11 @@ async function precache() {
 async function networkFirst(request) {
   var cache = await caches.open(CACHE);
   try {
-    var fresh = await fetch(request);
-    if (fresh && fresh.ok && fresh.type === "basic") {
-      await cache.put(request, fresh.clone());
+    var freshResponse = await fresh(request.url);
+    if (freshResponse && freshResponse.ok && freshResponse.type === "basic") {
+      await cache.put(request, freshResponse.clone());
     }
-    return fresh;
+    return freshResponse;
   } catch (err) {
     var cached = await cache.match(request);
     if (cached) return cached;

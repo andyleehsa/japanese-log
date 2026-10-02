@@ -5,6 +5,7 @@
   var PENDING = "jp-log-pending-sync";
   var VOCAB = "jp-log-vocab-v1";
   var HOME_SKIP = "jp-log-home-skip-v1";
+  var FONT = "jp-log-font-size";
   var memory = {};
   var persistent = true;
 
@@ -132,6 +133,15 @@
     },
     saveVocabMarks: function (marks) {
       writeRaw(VOCAB, JSON.stringify(marks || {}));
+    },
+    getFontSize: function () {
+      var value = readRaw(FONT) || "";
+      return window.JPLogic && window.JPLogic.normalizeFontSize ? window.JPLogic.normalizeFontSize(value) : (value || "standard");
+    },
+    setFontSize: function (value) {
+      var next = window.JPLogic && window.JPLogic.normalizeFontSize ? window.JPLogic.normalizeFontSize(value) : value;
+      writeRaw(FONT, next);
+      return next;
     },
     setVocabMark: function (entry, status) {
       var marks = this.loadVocabMarks();
