@@ -347,4 +347,115 @@ const report69 = logic.curriculumReport({
 assert.strictEqual(report69.levels[0].topics[0].doneCount, 0);
 assert.strictEqual(report69.levels[0].percent, 0);
 
+assert.deepStrictEqual(logic.FONT_STEPS, ["standard", "large", "xlarge"]);
+assert.strictEqual(logic.FONT_LABELS.standard, "標準");
+assert.strictEqual(logic.FONT_LABELS.large, "大");
+assert.strictEqual(logic.FONT_LABELS.xlarge, "特大");
+assert.strictEqual(logic.normalizeFontSize("large"), "large");
+assert.strictEqual(logic.normalizeFontSize("nope"), "standard");
+assert.strictEqual(logic.normalizeFontSize(""), "standard");
+assert.strictEqual(logic.stepFontSize("standard", 1), "large");
+assert.strictEqual(logic.stepFontSize("large", 1), "xlarge");
+assert.strictEqual(logic.stepFontSize("xlarge", 1), "xlarge");
+assert.strictEqual(logic.stepFontSize("standard", -1), "standard");
+assert.strictEqual(logic.stepFontSize("xlarge", -1), "large");
+assert.strictEqual(logic.MIN_JP.flash, 32);
+assert.strictEqual(logic.MIN_JP.practice, 24);
+
+assert.strictEqual(logic.confirmReady({ mode: "choice", picked: null, locked: false }), false);
+assert.strictEqual(logic.confirmReady({ mode: "choice", picked: 0, locked: false }), true);
+assert.strictEqual(logic.confirmReady({ mode: "choice", picked: 2, locked: false }), true);
+assert.strictEqual(logic.confirmReady({ mode: "choice", picked: 1, locked: true }), false);
+assert.strictEqual(logic.confirmReady({ mode: "fill", text: "  ", locked: false }), false);
+assert.strictEqual(logic.confirmReady({ mode: "fill", text: "", locked: false }), false);
+assert.strictEqual(logic.confirmReady({ mode: "fill", text: "は", locked: false }), true);
+assert.strictEqual(logic.confirmReady({ mode: "fill", text: "は", locked: true }), false);
+assert.strictEqual(logic.confirmReady({ mode: "other", text: "は" }), false);
+
+assert.strictEqual(logic.choiceLayout(["ば", "ぱ", "わ", "ほ"]), "grid");
+assert.strictEqual(logic.choiceLayout(["3 拍", "4 拍", "5 拍", "6 拍"]), "grid");
+assert.strictEqual(logic.choiceLayout(["安くなかったです", "安くないです", "安かったです", "いです"]), "stack");
+assert.strictEqual(logic.choiceLayout(["只有一個"]), "stack");
+assert.strictEqual(logic.choiceLayout([]), "stack");
+
+const wrongPanel = logic.feedbackPanel({ correct: false, answer: "ぱ", rule: "半濁音加圈。", explanation: "「ば」先係濁音。" });
+assert.strictEqual(wrongPanel.tone, "bad");
+assert.strictEqual(wrongPanel.title, "再睇下");
+assert.strictEqual(wrongPanel.lines.length, 2);
+assert.strictEqual(wrongPanel.lines[0].label, "正確答案");
+assert.strictEqual(wrongPanel.lines[0].text, "ぱ");
+assert.strictEqual(wrongPanel.lines[1].label, "規則");
+assert.strictEqual(wrongPanel.lines[1].text, "半濁音加圈。");
+assert.strictEqual(wrongPanel.detail, "「ば」先係濁音。");
+const wrongRuleOnly = logic.feedbackPanel({ correct: false, answer: "で", rule: "", explanation: "第一個音係濁音。" });
+assert.strictEqual(wrongRuleOnly.lines[1].text, "第一個音係濁音。");
+assert.strictEqual(wrongRuleOnly.detail, "");
+const rightPanel = logic.feedbackPanel({ correct: true, answer: "ぱ", rule: "唔顯示", explanation: "啱。" });
+assert.strictEqual(rightPanel.tone, "ok");
+assert.strictEqual(rightPanel.title, "正確");
+assert.strictEqual(rightPanel.lines.length, 0);
+assert.strictEqual(rightPanel.detail, "啱。");
+
+assert.strictEqual(logic.roadmapStatus({ done: true }, false), "passed");
+assert.strictEqual(logic.roadmapStatus({ done: true }, true), "passed");
+assert.strictEqual(logic.roadmapStatus({ done: false }, true), "next");
+assert.strictEqual(logic.roadmapStatus({ done: false }, false), "todo");
+const roadLessons = [
+  { id: "n5w1-d1", questions: [{ id: "q1" }] },
+  { id: "n5w1-d1v", questions: [{ id: "q2" }] },
+  { id: "n5w1-d2", questions: [{ id: "q3" }] }
+];
+const roadAttempts = [{ questionId: "q1", lessonId: "n5w1-d1", correct: true }];
+assert.deepStrictEqual(logic.roadmapMarks(roadLessons, roadAttempts), [
+  { id: "n5w1-d1", status: "passed" },
+  { id: "n5w1-d1v", status: "next" },
+  { id: "n5w1-d2", status: "todo" }
+]);
+const lowPass = [{ questionId: "q1", lessonId: "n5w1-d1", correct: false }];
+assert.strictEqual(logic.roadmapMarks(roadLessons, lowPass)[0].status, "next");
+
+const colors = logic.COLORS;
+function atLeast(fg, bg, name) {
+  const ratio = logic.contrastRatio(fg, bg);
+  assert.ok(ratio >= 4.5, name + " " + ratio.toFixed(2));
+}
+atLeast(colors.brandInk, colors.brand, "button text");
+atLeast(colors.accent, colors.paper, "accent on card");
+atLeast(colors.accent, colors.bg, "accent on page");
+atLeast(colors.accent, colors.okBg, "accent on correct sheet");
+atLeast(colors.accent, colors.badBg, "accent on wrong sheet");
+atLeast(colors.accent, colors.codeBg, "accent on code chip");
+atLeast(colors.ink, colors.bg, "body on page");
+atLeast(colors.ink, colors.paper, "body on card");
+atLeast(colors.muted, colors.bg, "secondary on page");
+atLeast(colors.muted, colors.paper, "secondary on card");
+atLeast(colors.okText, colors.paper, "correct text on card");
+atLeast(colors.okText, colors.okBg, "correct text on sheet");
+atLeast(colors.okText, colors.bg, "correct text on page");
+atLeast(colors.okTick, colors.ok, "tick on green node");
+atLeast(colors.badText, colors.paper, "wrong text on card");
+atLeast(colors.badText, colors.badBg, "wrong text on sheet");
+atLeast(colors.badText, colors.bg, "wrong text on page");
+atLeast(colors.example, colors.paper, "example on card");
+atLeast(colors.example, colors.bg, "example on page");
+atLeast(colors.example, colors.badBg, "example on wrong sheet");
+atLeast(colors.brandInk, colors.disabled, "disabled button");
+atLeast(colors.tableHeadText, colors.tableHead, "table header");
+atLeast(colors.ink, colors.codeBg, "code chip");
+atLeast(colors.brandInk, colors.paper, "brown on white");
+assert.ok(logic.contrastRatio(colors.brand, colors.paper) < 4.5, "amber is a fill, not body text");
+assert.ok(logic.contrastRatio("#B45F00", colors.bg) < 4.5, "#B45F00 is too light on the page background");
+
+const fs = require("fs");
+const css = fs.readFileSync(require("path").join(__dirname, "../css/app.css"), "utf8");
+Object.keys(colors).forEach((key) => {
+  assert.ok(css.indexOf(colors[key]) !== -1, "css missing " + key + " " + colors[key]);
+});
+assert.ok(css.indexOf("--jp-flash: 32px") !== -1);
+assert.ok(css.indexOf("--jp-practice: 24px") !== -1);
+assert.ok(css.indexOf("prefers-reduced-motion") !== -1);
+const sw = fs.readFileSync(require("path").join(__dirname, "../sw.js"), "utf8");
+assert.ok(sw.indexOf("jp-log-v13") !== -1);
+assert.ok(sw.indexOf("jp-log-v12") === -1);
+
 console.log("logic tests ok");

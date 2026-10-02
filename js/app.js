@@ -21,6 +21,26 @@
     });
   }
 
+  function icon(name) {
+    var svg = "<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\" focusable=\"false\">";
+    if (name === "speaker") {
+      return svg + "<path fill=\"currentColor\" d=\"M3 9h4l5-4v14l-5-4H3z\"/><path fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" d=\"M16.5 8.5a4.8 4.8 0 0 1 0 7\"/></svg>";
+    }
+    if (name === "turtle") {
+      return svg + "<ellipse cx=\"13\" cy=\"14\" rx=\"6.5\" ry=\"4.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"/><circle cx=\"6.2\" cy=\"13\" r=\"1.7\" fill=\"currentColor\"/><path fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" d=\"M9 18.2 7.2 21M14 18.2l1.2 2.8M18.2 15.5 21 17.2M10 10.2 8.8 7.4\"/></svg>";
+    }
+    if (name === "check") {
+      return svg + "<path fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M5 12.5 9.5 17 19 7\"/></svg>";
+    }
+    if (name === "cross") {
+      return svg + "<path fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" d=\"M6 6l12 12M18 6 6 18\"/></svg>";
+    }
+    if (name === "bulb") {
+      return svg + "<path fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" d=\"M9 18h6M10 21h4\"/><path fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" d=\"M8 14a5 5 0 1 1 8 0c-.8.8-1.4 1.5-1.6 2.5H9.6C9.4 15.5 8.8 14.8 8 14z\"/></svg>";
+    }
+    return "";
+  }
+
   function inline(value) {
     return escapeHtml(value)
       .replace(/\r\n/g, "\n")
@@ -48,8 +68,8 @@
     if (!text) return "";
     var value = escapeHtml(text);
     return "<div class=\"speak-row\">"
-      + "<button type=\"button\" class=\"speak\" data-speak=\"" + value + "\" data-speech=\"play\">讀出嚟</button>"
-      + "<button type=\"button\" class=\"speak\" data-speak=\"" + value + "\" data-speech=\"slow\">慢速</button>"
+      + "<button type=\"button\" class=\"speak\" data-speak=\"" + value + "\" data-speech=\"play\">" + icon("speaker") + "讀出嚟</button>"
+      + "<button type=\"button\" class=\"icon-btn\" data-speak=\"" + value + "\" data-speech=\"slow\" aria-label=\"慢速\">" + icon("turtle") + "</button>"
       + "<button type=\"button\" class=\"speak\" data-speak=\"" + value + "\" data-speech=\"replay\">再聽</button>"
       + "</div>";
   }
@@ -65,13 +85,15 @@
     if (question.audio) {
       row = audioElement(question.audio, true)
         + "<div class=\"speak-row\">"
-        + "<button type=\"button\" class=\"speak\" data-action=\"listen-audio\">聽一次</button>"
+        + "<button type=\"button\" class=\"speak\" data-action=\"listen-audio\">" + icon("speaker") + "聽一次</button>"
+        + "<button type=\"button\" class=\"icon-btn\" data-action=\"listen-audio\" aria-label=\"慢速\">" + icon("turtle") + "</button>"
         + "<button type=\"button\" class=\"speak\" data-action=\"listen-audio\">再聽</button>"
         + "</div>";
     } else if (question.speak) {
       var value = escapeHtml(question.speak);
       row = "<div class=\"speak-row\">"
-        + "<button type=\"button\" class=\"speak\" data-speak=\"" + value + "\" data-speech=\"slow\">聽一次</button>"
+        + "<button type=\"button\" class=\"speak\" data-speak=\"" + value + "\" data-speech=\"slow\">" + icon("speaker") + "聽一次</button>"
+        + "<button type=\"button\" class=\"icon-btn\" data-speak=\"" + value + "\" data-speech=\"slow\" aria-label=\"慢速\">" + icon("turtle") + "</button>"
         + "<button type=\"button\" class=\"speak\" data-speak=\"" + value + "\" data-speech=\"slow\">再聽</button>"
         + "</div>";
     }
@@ -171,7 +193,7 @@
       return "<p>" + inline(block.text || "") + "</p>" + speakButton(block.speak);
     }
     if (block.type === "tip") {
-      return "<aside class=\"tip\"><p>" + inline(block.text || "") + "</p>" + speakButton(block.speak) + "</aside>";
+      return "<aside class=\"tip\"><p>" + icon("bulb") + "<span>" + inline(block.text || "") + "</span></p>" + speakButton(block.speak) + "</aside>";
     }
     if (block.type === "example") {
       return "<figure class=\"example\">"
@@ -185,9 +207,9 @@
     }
     if (block.type === "vocab") {
       var rows = (block.items || []).map(function (item) {
-        return "<li><span class=\"jp\" lang=\"ja\">" + escapeHtml(item.word || "") + "</span>"
-          + "<span class=\"reading\" lang=\"ja\">" + escapeHtml(item.reading || "") + "</span>"
-          + "<span class=\"meaning\">" + escapeHtml(item.meaning || "") + "</span>"
+        return "<li class=\"word-card\"><p class=\"flash-jp jp\" lang=\"ja\">" + escapeHtml(item.word || "") + "</p>"
+          + "<p class=\"flash-reading reading\" lang=\"ja\">" + escapeHtml(item.reading || "") + "</p>"
+          + "<p class=\"meaning\">" + escapeHtml(item.meaning || "") + "</p>"
           + speakButton(item.speak)
           + "</li>";
       }).join("");
@@ -385,13 +407,34 @@
     return "未開始";
   }
 
+  function lessonsForLevel(levelId) {
+    return listedLessons().map(function (item) {
+      var lesson = lessonById(item.id);
+      if (lesson && !lesson.loadError && lesson.level === levelId) return lesson;
+      return null;
+    }).filter(Boolean);
+  }
+
   function renderLevel(levelId) {
     var report = currentCurriculum();
     var level = null;
     report.levels.forEach(function (item) { if (item.level === levelId) level = item; });
     if (!level) return "<h1>搵唔到呢級</h1><a class=\"btn\" href=\"#/\">返回主頁</a>";
     var pct = Math.round((level.percent || 0) * 100);
-    var list = level.topics.map(function (topic) {
+    var lessons = lessonsForLevel(level.level);
+    var marks = window.JPLogic.roadmapMarks(lessons, window.JPStore.loadAttempts(), completionThreshold());
+    var statusById = {};
+    marks.forEach(function (mark) { statusById[mark.id] = mark.status; });
+    var path = lessons.map(function (lesson) {
+      var status = statusById[lesson.id] || "todo";
+      var mark = status === "passed" ? icon("check") : "";
+      return "<li class=\"path-item is-" + status + "\">"
+        + "<a class=\"path-link\" href=\"#/lesson/" + encodeURIComponent(lesson.id) + "\">"
+        + "<span class=\"node\" aria-hidden=\"true\">" + mark + "</span>"
+        + "<span class=\"path-name\">" + escapeHtml(lesson.title) + "</span>"
+        + "</a></li>";
+    }).join("");
+    var topics = level.topics.map(function (topic) {
       return "<a class=\"card lesson-row\" href=\"#/topic/" + encodeURIComponent(topic.id) + "\">"
         + "<span class=\"row-title\">" + escapeHtml(topic.title) + "</span>"
         + "<span class=\"meta\">" + escapeHtml(topicStatus(topic)) + " · " + topic.doneCount + "/" + topic.planned + " 課達標 · 正確率 " + escapeHtml(window.JPLogic.formatPercent(topic.accuracy)) + "</span>"
@@ -399,15 +442,21 @@
         + "</a>";
     }).join("");
     var switcher = ["N5", "N4", "N3"].map(function (id) {
-      return "<a class=\"tag" + (id === level.level ? " is-on" : "") + "\" href=\"#/level/" + id + "\">" + id + "</a>";
+      return "<a class=\"" + (id === level.level ? "is-on" : "") + "\" href=\"#/level/" + id + "\">" + id + "</a>";
     }).join("");
+    var emptyPath = lessons.length ? "" : "<p>呢級未有課堂。下面課題大綱全部都可以開。</p>";
     return banner() + "<a class=\"back\" href=\"#/\">返回</a>"
+      + "<div class=\"segment\" role=\"tablist\" aria-label=\"級別\">" + switcher + "</div>"
       + "<h1>" + escapeHtml(level.level) + "</h1>"
-      + "<p class=\"tags\">" + switcher + "</p>"
       + "<p class=\"score\">" + pct + "%</p>"
-      + "<p class=\"meta\">" + level.completeTopics + "/" + level.topicCount + " 個課題達標。全部課題都可以隨時重溫。</p>"
+      + "<p class=\"meta\">" + level.completeTopics + "/" + level.topicCount + " 個課題達標。每課都可以撳，唔使按順序。達標係最近一次完整作答至少 "
+      + Math.round(completionThreshold() * 100) + "%。</p>"
       + "<progress max=\"100\" value=\"" + pct + "\"></progress>"
-      + list;
+      + (path ? "<ol class=\"path\">" + path + "</ol>" : emptyPath)
+      + "<details class=\"panel\"><summary>課題大綱</summary>"
+      + "<p class=\"meta\">未連課堂嘅課題會顯示「課堂準備中」。全部課題都可以開。</p>"
+      + topics
+      + "</details>";
   }
 
   function renderTopic(id) {
@@ -481,11 +530,15 @@
     return "<a class=\"back\" href=\"#/\">返回</a>"
       + "<p class=\"kicker\">" + escapeHtml(level ? level + " · " : "") + escapeHtml(window.JPLogic.formatDateLabel(date))
       + (isSample(lesson, item) ? " · 樣本課題" : "") + "</p>"
-      + "<h1 class=\"jp\" lang=\"ja\">" + escapeHtml(title) + "</h1>"
+      + "<h1 class=\"jp lesson-title\" lang=\"ja\">" + escapeHtml(title) + "</h1>"
       + "<div class=\"tags\">" + renderTags((lesson && lesson.tags) || (item && item.tags) || []) + "</div>"
       + (topicLinks ? "<p class=\"tags\">" + topicLinks + "</p>" : "")
       + "<article class=\"teaching\">" + blocks + "</article>"
-      + (count ? "<a class=\"btn\" href=\"#/practice/" + encodeURIComponent(lesson.id) + "\">" + practiceLabel + "（" + count + " 題）</a><p class=\"meta\">隨時可以再睇同再練。新作答會繼續記低。</p>" : "<p>呢課未有練習。</p>");
+      + (count
+        ? "<p class=\"meta\">" + practiceLabel + "（" + count + " 題）。隨時可以再睇同再練。新作答會繼續記低。</p>"
+          + "<a class=\"btn\" href=\"#/practice/" + encodeURIComponent(lesson.id) + "\">繼續</a>"
+        : "<p>呢課未有練習。</p>")
+      + fontFloat();
   }
 
   function renderPractice() {
@@ -506,20 +559,6 @@
     else if (mode === "fill") answerUi = renderFill(question);
     else answerUi = "<div class=\"banner\">呢種題目（" + escapeHtml(question.type || "") + "）暫時未支援。</div>"
       + "<button type=\"button\" class=\"btn secondary\" data-action=\"skip\">跳過呢題</button>";
-    var feedback = "";
-    if (session.locked && mode !== "unsupported") {
-      var correct = session.results[session.results.length - 1].correct;
-      var right = window.JPLogic.correctAnswerText(question);
-      feedback = "<div class=\"feedback " + (correct ? "is-ok" : "is-bad") + "\" id=\"answer-feedback\" role=\"status\">"
-        + (correct ? "" : "<p class=\"feedback-answer\">正確答案：" + jaSpan(right) + "</p>")
-        + (!correct && question.rule ? "<p class=\"verb-rule\">" + escapeHtml(question.rule) + "</p>" : "")
-        + "<p class=\"feedback-title\">" + (correct ? "啱！" : "錯咗") + "</p>"
-        + "<p>" + inline(question.explanation || "") + "</p>"
-        + renderExampleSentence(question.example)
-        + "</div>";
-    }
-    var next = session.locked ? "<button type=\"button\" class=\"btn sticky-next\" data-action=\"next\">"
-      + (session.index + 1 >= total ? "完成" : "下一題") + "</button>" : "";
     var media = "";
     if (question.type === "listening") {
       media = "<div class=\"media\">" + listeningControls(question) + "</div>";
@@ -537,18 +576,55 @@
       media = "<div class=\"media\">" + audioElement(question.audio) + speakButton(question.speak) + "</div>"
         + (question.speak || question.audio ? "<p class=\"hint\">聽唔到聲，先檢查 iPhone 靜音掣同音量。</p>" : "");
     }
-    var wrong = session.locked && session.results.length && !session.results[session.results.length - 1].correct;
-    var pad = wrong ? "<div class=\"scroll-pad\" aria-hidden=\"true\"></div>" : "";
-    return "<div class=\"practice-head\"><a class=\"back\" href=\"#/\">離開</a>"
-      + "<h1>" + (session.key === "review" ? "今日要溫習 · " : "") + "第 " + (session.index + 1) + " / " + total + " 題</h1></div>"
-      + "<progress max=\"" + total + "\" value=\"" + (session.index + (session.locked ? 1 : 0)) + "\"></progress>"
+    var dock = mode === "unsupported" ? "" : (session.locked ? renderSheet(question) : renderDock(question));
+    var label = (session.key === "review" ? "今日要溫習 · " : "") + "第 " + (session.index + 1) + " / " + total + " 題";
+    return "<div class=\"practice\">"
+      + "<div class=\"practice-top\">"
+      + "<a class=\"close-btn\" href=\"#/\" aria-label=\"離開\">" + icon("cross") + "</a>"
+      + "<progress class=\"quiz-progress\" max=\"" + total + "\" value=\"" + (session.index + (session.locked ? 1 : 0)) + "\" aria-label=\"" + escapeHtml(label) + "\"></progress>"
+      + "</div>"
+      + "<p class=\"sr\">" + escapeHtml(label) + "</p>"
       + "<p class=\"prompt\">" + renderPrompt(question.prompt || "") + "</p>"
       + (question.hint && !session.locked ? "<p class=\"hint\">提示：" + inline(question.hint) + "</p>" : "")
       + media
       + answerUi
-      + feedback
-      + next
-      + pad;
+      + "<div class=\"dock-spacer\" id=\"dock-spacer\"></div>"
+      + "</div>"
+      + dock;
+  }
+
+  function renderDock(question) {
+    var mode = questionMode(question);
+    var ready = false;
+    if (mode === "choice") ready = window.JPLogic.confirmReady({ mode: "choice", picked: session.draft, locked: false });
+    return "<div class=\"dock\" id=\"answer-dock\">"
+      + "<button type=\"button\" class=\"btn\" id=\"confirm-answer\" data-action=\"confirm\"" + (ready ? "" : " disabled") + ">確認</button>"
+      + "</div>";
+  }
+
+  function renderSheet(question) {
+    var correct = session.results[session.results.length - 1].correct;
+    var panel = window.JPLogic.feedbackPanel({
+      correct: correct,
+      answer: window.JPLogic.correctAnswerText(question),
+      rule: question.rule || "",
+      explanation: question.explanation || ""
+    });
+    var lines = panel.lines.map(function (line) {
+      var cls = line.label === "規則" ? "sheet-rule" : "sheet-answer";
+      return "<p class=\"" + cls + "\">" + escapeHtml(line.label) + "：" + jaSpan(line.text) + "</p>";
+    }).join("");
+    var extra = "";
+    if (panel.detail) extra += "<p>" + inline(panel.detail) + "</p>";
+    extra += renderExampleSentence(question.example);
+    var title = "<p class=\"sheet-title\">" + (correct ? icon("check") : icon("cross")) + escapeHtml(panel.title) + "</p>";
+    var fixed = correct ? title : lines;
+    var scroll = correct ? extra : title + extra;
+    return "<aside class=\"sheet is-" + panel.tone + "\" id=\"answer-feedback\" role=\"status\">"
+      + "<div class=\"sheet-fixed\">" + fixed + "</div>"
+      + (scroll ? "<div class=\"sheet-scroll\">" + scroll + "</div>" : "")
+      + "<button type=\"button\" class=\"btn sheet-next\" data-action=\"next\">繼續</button>"
+      + "</aside>";
   }
 
   function verifyMark(example, force) {
@@ -590,7 +666,8 @@
   }
 
   function renderChoices(question) {
-    return "<div class=\"choices\">" + question.choices.map(function (choice, index) {
+    var layout = window.JPLogic.choiceLayout(question.choices);
+    return "<div class=\"choices is-" + layout + "\">" + question.choices.map(function (choice, index) {
       var cls = "choice";
       var mark = "";
       if (session.locked) {
@@ -601,6 +678,8 @@
           cls += " is-wrong";
           mark = "<em>你揀咗</em>";
         }
+      } else if (index === session.draft) {
+        cls += " is-picked";
       }
       return "<button type=\"button\" class=\"" + cls + "\" data-choice=\"" + index + "\"" + (session.locked ? " disabled" : "") + ">"
         + "<span class=\"choice-key\">" + (index + 1) + "</span>"
@@ -618,7 +697,6 @@
     return "<form data-fill-form>"
       + "<label for=\"fill-answer\">答案</label>"
       + "<input id=\"fill-answer\" name=\"answer\" lang=\"ja\" inputmode=\"text\" autocomplete=\"off\" autocapitalize=\"off\" autocorrect=\"off\" spellcheck=\"false\" placeholder=\"用平假名輸入\">"
-      + "<button class=\"btn\" type=\"submit\">提交</button>"
       + "</form>";
   }
 
@@ -748,8 +826,18 @@
       warning = "<p class=\"banner\">已儲存嘅存取碼（token）唔似細權限存取碼（fine-grained token，開頭應係 github_pat_）。建議跟教學重新產生一條。</p>";
     }
     var installHint = isStandalone() ? "" : "<div class=\"banner\" role=\"status\">你而家喺 Safari 分頁開。請加入主畫面，之後每次都用個「日文日誌」圖示開。Safari 同圖示嘅練習紀錄、金鑰係分開儲存，唔會互通。貼金鑰同第一次同步都要喺圖示入面做。如果紀錄分咗開，撳下面「匯出 JSON」留底。</div>";
+    var font = window.JPLogic.normalizeFontSize(window.JPStore.getFontSize());
+    var fontButtons = window.JPLogic.FONT_STEPS.map(function (step) {
+      return "<button type=\"button\" data-action=\"font-set\" data-font=\"" + step + "\" class=\"" + (step === font ? "is-on" : "") + "\">"
+        + escapeHtml(window.JPLogic.FONT_LABELS[step]) + "</button>";
+    }).join("");
     return banner()
       + "<h1>設定</h1>"
+      + "<section class=\"panel\">"
+      + "<h2>字體大小</h2>"
+      + "<p>標準、大、特大會套用成個 app。日文閃卡最細 32px，練習最細 24px。</p>"
+      + "<div class=\"segment\" role=\"group\" aria-label=\"字體大小\">" + fontButtons + "</div>"
+      + "</section>"
       + installHint
       + "<section class=\"panel\">"
       + "<h2>同步畀老師</h2>"
@@ -889,10 +977,10 @@
 
   function renderWord(entry) {
     var example = renderEntryExample(entry);
-    return "<article class=\"card\">"
-      + "<p class=\"jp\" lang=\"ja\">" + escapeHtml(entry.japanese) + "</p>"
-      + "<p class=\"reading\" lang=\"ja\">" + escapeHtml(entry.reading) + "</p>"
-      + "<p>" + escapeHtml(entry.meaning) + "</p>"
+    return "<article class=\"card word-card\">"
+      + "<p class=\"flash-jp jp\" lang=\"ja\">" + escapeHtml(entry.japanese) + "</p>"
+      + "<p class=\"flash-reading reading\" lang=\"ja\">" + escapeHtml(entry.reading) + "</p>"
+      + "<p class=\"meaning\">" + escapeHtml(entry.meaning) + "</p>"
       + example
       + renderVerbForms(entry)
       + speakButton(entry.speak)
@@ -955,15 +1043,30 @@
         + renderEntryExample(entry)
         + "<button type=\"button\" class=\"btn ghost\" data-action=\"hide\">收起意思</button>"
       : "<button type=\"button\" class=\"btn secondary\" data-action=\"reveal\">睇意思</button>";
-    return "<a class=\"back\" href=\"#/vocab/" + encodeURIComponent(cards.level) + (cards.category ? "/" + encodeURIComponent(cards.category) : "") + "\">離開</a>"
-      + "<h1>第 " + (cards.index + 1) + " / " + cards.entries.length + " 張</h1>"
-      + "<p class=\"kicker\">" + escapeHtml(entry.categoryTitle || "") + " · " + escapeHtml(markLabel(entry.id)) + "</p>"
+    return "<a class=\"close-btn\" href=\"#/vocab/" + encodeURIComponent(cards.level) + (cards.category ? "/" + encodeURIComponent(cards.category) : "") + "\" aria-label=\"離開\">" + icon("cross") + "</a>"
+      + "<p class=\"kicker\">第 " + (cards.index + 1) + " / " + cards.entries.length + " 張 · "
+      + escapeHtml(entry.categoryTitle || "") + " · " + escapeHtml(markLabel(entry.id)) + "</p>"
+      + "<article class=\"card flash-card\">"
       + "<p class=\"flash-jp jp\" lang=\"ja\">" + escapeHtml(entry.japanese) + "</p>"
       + "<p class=\"flash-reading reading\" lang=\"ja\">" + escapeHtml(entry.reading) + "</p>"
       + speakButton(entry.speak)
       + meaning
       + "<button type=\"button\" class=\"btn\" data-action=\"vocab-known\" data-id=\"" + escapeHtml(entry.id) + "\">識</button>"
-      + "<button type=\"button\" class=\"btn secondary\" data-action=\"vocab-unknown\" data-id=\"" + escapeHtml(entry.id) + "\">唔識</button>";
+      + "<button type=\"button\" class=\"btn secondary\" data-action=\"vocab-unknown\" data-id=\"" + escapeHtml(entry.id) + "\">唔識</button>"
+      + "</article>"
+      + "<div class=\"dock-spacer\" id=\"dock-spacer\"></div>"
+      + "<div class=\"dock\" id=\"answer-dock\"><button type=\"button\" class=\"btn\" data-action=\"card-next\">繼續</button></div>";
+  }
+
+  function fontFloat() {
+    return "<div class=\"font-float\">"
+      + "<button type=\"button\" class=\"float-btn\" data-action=\"font-step\" data-delta=\"1\" aria-label=\"加大字體\">＋</button>"
+      + "<button type=\"button\" class=\"float-btn\" data-action=\"font-step\" data-delta=\"-1\" aria-label=\"縮細字體\">－</button>"
+      + "</div>";
+  }
+
+  function applyFontSize(value) {
+    document.documentElement.setAttribute("data-font", window.JPLogic.normalizeFontSize(value));
   }
 
   function createCards(route) {
@@ -994,7 +1097,9 @@
     render();
   }
 
-  function render() {
+  function render(options) {
+    var opts = options || {};
+    var kept = opts.keepScroll ? window.scrollY : null;
     var route = parseRoute();
     if (route.name !== "practice") session = null;
     else if (!session || session.key !== route.id) session = createSession(route.id);
@@ -1018,6 +1123,7 @@
     if (tagline) tagline.textContent = taglines[route.name] || taglines.home;
 
     document.body.classList.toggle("in-practice", (route.name === "practice" && session && session.phase === "question") || route.name === "vocab-review");
+    document.body.classList.toggle("has-font-float", route.name === "lesson");
     document.querySelectorAll("#tabbar a").forEach(function (link) {
       var tab = route.name;
       if (route.name === "lesson" || route.name === "practice") tab = "home";
@@ -1047,13 +1153,20 @@
     else if (route.name === "settings") html = renderSettings();
     else html = renderHome();
     app.innerHTML = html;
+    if (kept != null) window.scrollTo(0, kept);
     applySpeechHint();
+    layoutDock();
+    fitRuleLine();
+    layoutDock();
+    if (opts.reveal || document.getElementById("answer-feedback") || document.getElementById("answer-dock")) revealAboveDock();
+    if (opts.keepScroll) return;
     var fill = app.querySelector("#fill-answer");
     if (fill) {
       try { fill.focus({ preventScroll: true }); } catch (err) { fill.focus(); }
+      revealAboveDock();
       return;
     }
-    if (app.querySelector("#answer-feedback")) return;
+    if (app.querySelector("#answer-feedback") || app.querySelector("#answer-dock")) return;
     var heading = app.querySelector("h1");
     if (heading) {
       heading.setAttribute("tabindex", "-1");
@@ -1099,6 +1212,7 @@
       phase: questions.length ? "question" : "empty",
       results: [],
       picked: null,
+      draft: null,
       syncState: "",
       score: null
     };
@@ -1125,17 +1239,10 @@
     window.JPStore.setPending(true);
     session.locked = true;
     session.picked = picked;
+    session.draft = null;
     session.results.push({ questionId: question.id, correct: correct });
-    var fill = questionMode(question) === "fill";
-    var kept = window.scrollY;
     blurAnswerField();
-    render();
-    if (correct) {
-      window.scrollTo(0, kept);
-      return;
-    }
-    scrollToFeedback();
-    if (fill) holdFeedbackAfterKeyboard();
+    render({ keepScroll: true, reveal: true });
   }
 
   function blurAnswerField() {
@@ -1145,31 +1252,88 @@
     active.blur();
   }
 
-  function prefersReducedMotion() {
-    try {
-      return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    } catch (err) {
-      return false;
+  function viewportBottomInset() {
+    var forced = document.documentElement.getAttribute("data-keyboard");
+    if (forced != null && forced !== "") {
+      var parsed = Number(forced);
+      if (isFinite(parsed) && parsed >= 0) return parsed;
+    }
+    var vv = window.visualViewport;
+    if (!vv) return 0;
+    return Math.max(0, window.innerHeight - vv.offsetTop - vv.height);
+  }
+
+  function layoutDock() {
+    var inset = viewportBottomInset();
+    document.documentElement.style.setProperty("--vv-bottom", inset + "px");
+    var panel = document.getElementById("answer-feedback") || document.getElementById("answer-dock");
+    var spacer = document.getElementById("dock-spacer");
+    var height = (panel ? panel.offsetHeight : 0) + inset;
+    document.documentElement.style.setProperty("--dock-h", height + "px");
+    if (spacer) spacer.style.height = height + "px";
+  }
+
+  function fitRuleLine() {
+    var el = document.querySelector(".sheet-rule");
+    if (!el) return;
+    el.style.fontSize = "";
+    el.style.lineHeight = "1.35";
+    function lineBox() {
+      var value = parseFloat(window.getComputedStyle(el).lineHeight);
+      return value || 32;
+    }
+    function fits() {
+      return el.scrollHeight <= lineBox() * 2 + 2;
+    }
+    if (fits()) return;
+    el.style.lineHeight = "1.25";
+    if (fits()) return;
+    var size = parseFloat(window.getComputedStyle(el).fontSize) || 24;
+    while (size > 20 && !fits()) {
+      size -= 1;
+      el.style.fontSize = size + "px";
     }
   }
 
-  function scrollToFeedback() {
-    var card = document.getElementById("answer-feedback");
-    if (!card || !card.scrollIntoView) return;
-    card.scrollIntoView({ behavior: prefersReducedMotion() ? "auto" : "smooth", block: "start" });
+  function revealAboveDock() {
+    var target = document.querySelector(".choices") || document.getElementById("fill-answer") || document.querySelector(".verb-ask");
+    var panel = document.getElementById("answer-feedback") || document.getElementById("answer-dock");
+    if (!target || !panel) return;
+    var panelTop = panel.getBoundingClientRect().top;
+    var rect = target.getBoundingClientRect();
+    if (rect.top > window.innerHeight - 8) return;
+    if (rect.bottom > panelTop - 12) window.scrollBy(0, rect.bottom - panelTop + 16);
   }
 
-  function holdFeedbackAfterKeyboard() {
-    if (!window.visualViewport) return;
-    var fix = function () {
-      window.visualViewport.removeEventListener("resize", fix);
-      var again = document.getElementById("answer-feedback");
-      if (again) again.scrollIntoView({ behavior: "auto", block: "start" });
-    };
-    window.visualViewport.addEventListener("resize", fix);
-    setTimeout(function () {
-      window.visualViewport.removeEventListener("resize", fix);
-    }, 800);
+  function selectChoice(index) {
+    if (!session || session.locked || session.phase !== "question") return;
+    var question = session.questions[session.index];
+    if (questionMode(question) !== "choice") return;
+    if (typeof index !== "number" || index < 0) return;
+    session.draft = index;
+    render({ keepScroll: true });
+  }
+
+  function confirmAnswer() {
+    if (!session || session.locked || session.phase !== "question") return;
+    var question = session.questions[session.index];
+    var mode = questionMode(question);
+    if (mode === "choice") {
+      if (!window.JPLogic.confirmReady({ mode: "choice", picked: session.draft, locked: false })) return;
+      submitChoice(session.draft);
+      return;
+    }
+    if (mode === "fill") {
+      var input = document.getElementById("fill-answer");
+      var value = input ? input.value : "";
+      if (!window.JPLogic.confirmReady({ mode: "fill", text: value, locked: false })) return;
+      submitFill(value);
+    }
+  }
+
+  function setFontSize(value) {
+    applyFontSize(window.JPStore.setFontSize(value));
+    render({ keepScroll: true });
   }
 
   function submitChoice(index) {
@@ -1201,12 +1365,14 @@
     session.index += 1;
     session.locked = false;
     session.picked = null;
+    session.draft = null;
     if (session.index >= session.questions.length) {
       finishSession();
       return;
     }
     render();
     window.scrollTo(0, 0);
+    revealAboveDock();
   }
 
   function syncPayload() {
@@ -1247,8 +1413,18 @@
     }
   }
 
+  function nextCard() {
+    if (!cards || cards.phase !== "card") return;
+    cards.revealed = false;
+    cards.index += 1;
+    if (cards.index >= cards.entries.length) cards.phase = "done";
+    render();
+    window.scrollTo(0, 0);
+  }
+
   function skipQuestion() {
     if (!session || session.phase !== "question" || session.locked) return;
+    session.draft = null;
     session.index += 1;
     if (session.index >= session.questions.length) {
       finishSession();
@@ -1256,6 +1432,7 @@
     }
     render();
     window.scrollTo(0, 0);
+    revealAboveDock();
   }
 
   function finishSession() {
@@ -1401,7 +1578,7 @@
     }
     var choice = event.target.closest && event.target.closest("[data-choice]");
     if (choice && !choice.disabled) {
-      submitChoice(Number(choice.getAttribute("data-choice")));
+      selectChoice(Number(choice.getAttribute("data-choice")));
       return;
     }
     var action = event.target.closest && event.target.closest("[data-action]");
@@ -1418,6 +1595,10 @@
       return;
     }
     if (name === "next") nextQuestion();
+    if (name === "confirm") confirmAnswer();
+    if (name === "card-next") nextCard();
+    if (name === "font-set") setFontSize(action.getAttribute("data-font"));
+    if (name === "font-step") setFontSize(window.JPLogic.stepFontSize(window.JPStore.getFontSize(), Number(action.getAttribute("data-delta"))));
     if (name === "skip") skipQuestion();
     if (name === "sync") manualSync();
     if (name === "save-token") saveToken();
@@ -1524,6 +1705,11 @@
     document.body.addEventListener("click", onClick);
     document.body.addEventListener("submit", onSubmit);
     document.body.addEventListener("input", function (event) {
+      if (event.target && event.target.id === "fill-answer") {
+        var button = document.getElementById("confirm-answer");
+        if (button) button.disabled = !window.JPLogic.confirmReady({ mode: "fill", text: event.target.value, locked: false });
+        return;
+      }
       if (!event.target || event.target.id !== "vocab-search") return;
       var nextQuery = event.target.value;
       if (nextQuery !== vocabQuery) vocabShown = VOCAB_PAGE;
@@ -1539,12 +1725,23 @@
       vocabShown = VOCAB_PAGE;
       render();
       window.scrollTo(0, 0);
+      revealAboveDock();
     });
     window.addEventListener("online", onNet);
     window.addEventListener("offline", onNet);
+    window.addEventListener("resize", layoutDock);
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener("resize", function () {
+        layoutDock();
+        var input = document.getElementById("fill-answer");
+        if ((input && document.activeElement === input) || document.getElementById("answer-feedback")) revealAboveDock();
+      });
+      window.visualViewport.addEventListener("scroll", layoutDock);
+    }
   }
 
   async function boot() {
+    applyFontSize(window.JPStore.getFontSize());
     bind();
     window.JPSpeech.onChange(function () { applySpeechHint(); });
     applySpeechHint();
