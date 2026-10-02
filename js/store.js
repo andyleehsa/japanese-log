@@ -1,17 +1,16 @@
 (function () {
-  var ATTEMPTS = "jp-log-attempts-v1";
-  var TOKEN = "jp-log-token";
-  var LAST = "jp-log-last-synced";
-  var PENDING = "jp-log-pending-sync";
-  var VOCAB = "jp-log-vocab-v1";
-  var HOME_SKIP = "jp-log-home-skip-v1";
-  var FONT = "jp-log-font-size";
+  var PREFIX = "jpn5-v1-";
+  var ATTEMPTS = PREFIX + "attempts";
+  var FONT = PREFIX + "font";
+  var VOCAB = PREFIX + "vocab";
+  var DONE = PREFIX + "completed";
+  var LEVEL = PREFIX + "level";
   var memory = {};
   var persistent = true;
 
   function storage() {
     try {
-      var key = "__jp_log_probe__";
+      var key = "__jpn5_probe__";
       localStorage.setItem(key, "1");
       localStorage.removeItem(key);
       return localStorage;
@@ -44,95 +43,64 @@
     }
   }
 
-  function loadAttempts() {
-    var raw = readRaw(ATTEMPTS);
-    if (!raw) return [];
+  function readJson(key, fallback) {
+    var raw = readRaw(key);
+    if (!raw) return fallback;
     try {
-      var parsed = JSON.parse(raw);
-      return Array.isArray(parsed) ? parsed : [];
+      return JSON.parse(raw);
     } catch (err) {
-      return [];
+      return fallback;
     }
-  }
-
-  function saveAttempts(attempts) {
-    writeRaw(ATTEMPTS, JSON.stringify(attempts || []));
-  }
-
-  function normalizeToken(value) {
-    return String(value || "").trim().replace(/^['"]|['"]$/g, "").replace(/\s+/g, "");
   }
 
   window.JPStore = {
     persistent: function () { return persistent; },
-    loadAttempts: loadAttempts,
-    saveAttempts: saveAttempts,
+    loadAttempts: function () {
+      var parsed = readJson(ATTEMPTS, []);
+      return Array.isArray(parsed) ? parsed : [];
+    },
+    saveAttempts: function (attempts) {
+      writeRaw(ATTEMPTS, JSON.stringify(attempts || []));
+    },
     addAttempt: function (attempt) {
-      var all = loadAttempts();
+      var all = this.loadAttempts();
       all.push(attempt);
-      saveAttempts(all);
+      this.saveAttempts(all);
       return all;
     },
-    getToken: function () {
-      return normalizeToken(readRaw(TOKEN) || "");
+    loadCompleted: function () {
+      var parsed = readJson(DONE, []);
+      if (!Array.isArray(parsed)) return [];
+      return parsed.filter(function (id) { return typeof id === "string" && id; });
     },
-    setToken: function (token) {
-      writeRaw(TOKEN, normalizeToken(token));
-    },
-    clearToken: function () {
-      writeRaw(TOKEN, null);
-    },
-    tokenHint: function () {
-      var token = normalizeToken(readRaw(TOKEN) || "");
-      if (!token) return "";
-      return "已儲存（尾 " + token.slice(-4) + "）";
-    },
-    getLastSynced: function () {
-      return readRaw(LAST) || "";
-    },
-    setLastSynced: function (iso) {
-      writeRaw(LAST, iso || "");
-    },
-    isPending: function () {
-      return readRaw(PENDING) === "1";
-    },
-    setPending: function (pending) {
-      writeRaw(PENDING, pending ? "1" : "0");
-    },
-    clearProgress: function () {
-      writeRaw(ATTEMPTS, "[]");
-      writeRaw(VOCAB, "{}");
-      writeRaw(PENDING, "0");
-      writeRaw(HOME_SKIP, "[]");
-    },
-    loadHomeSkips: function () {
-      var raw = readRaw(HOME_SKIP);
-      if (!raw) return [];
-      try {
-        var parsed = JSON.parse(raw);
-        return Array.isArray(parsed) ? parsed.filter(function (id) { return typeof id === "string" && id; }) : [];
-      } catch (err) {
-        return [];
-      }
-    },
-    skipHomeLesson: function (id) {
-      var list = this.loadHomeSkips();
+    completeLesson: function (id) {
+      var list = this.loadCompleted();
       if (id && list.indexOf(id) === -1) list.push(id);
-      writeRaw(HOME_SKIP, JSON.stringify(list));
+      writeRaw(DONE, JSON.stringify(list));
+      return list;
+    },
+    completeLessons: function (ids) {
+      var list = this.loadCompleted();
+      (ids || []).forEach(function (id) {
+        if (id && list.indexOf(id) === -1) list.push(id);
+      });
+      writeRaw(DONE, JSON.stringify(list));
       return list;
     },
     loadVocabMarks: function () {
-      var raw = readRaw(VOCAB);
-      if (!raw) return {};
-      try {
-        var parsed = JSON.parse(raw);
-        return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {};
-      } catch (err) {
-        return {};
-      }
+      var parsed = readJson(VOCAB, {});
+      return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {};
     },
-    saveVocabMarks: function (marks) {
-      writeRaw(VOCAB, JSON.stringify(marks || {}));
+    setVocabMark: function (entry, status) {
+      var marks = this.loadVocabMarks();
+      var when = window.JPLogic.formatLocalTimestamp(new Date());
+      marks[entry.id] = {
+        id: entry.id,
+        status: status,
+        updatedAt: when.timestamp
+      };
+      writeRaw(VOCAB, JSON.stringify(marks));
+      return marks[entry.id];
     },
     getFontSize: function () {
       var value = readRaw(FONT) || "";
@@ -143,19 +111,17 @@
       writeRaw(FONT, next);
       return next;
     },
-    setVocabMark: function (entry, status) {
-      var marks = this.loadVocabMarks();
-      var when = window.JPLogic.formatLocalTimestamp(new Date());
-      marks[entry.id] = {
-        id: entry.id,
-        level: entry.level,
-        category: entry.category,
-        status: status,
-        updatedAt: when.timestamp
-      };
-      this.saveVocabMarks(marks);
-      writeRaw(PENDING, "1");
-      return marks[entry.id];
+    getLevel: function () {
+      return readRaw(LEVEL) || "";
+    },
+    setLevel: function (id) {
+      writeRaw(LEVEL, id || "");
+      return id || "";
+    },
+    clearProgress: function () {
+      writeRaw(ATTEMPTS, "[]");
+      writeRaw(VOCAB, "{}");
+      writeRaw(DONE, "[]");
     }
   };
 })();

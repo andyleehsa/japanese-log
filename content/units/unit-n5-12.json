@@ -1,0 +1,4763 @@
+{
+  "schemaVersion": "unit-v1-pilot",
+  "id": "u-n5-12",
+  "level": "N5",
+  "number": 12,
+  "title": "動詞入門：辭書形與三類動詞",
+  "theme": "辭書形與三類",
+  "prerequisites": [
+    "u-n5-11"
+  ],
+  "ttsConvention": "tts 欄位為發音文字：助詞「は／へ／を」轉為「わ／え／お」；詞語本身的「は／へ」保持原樣；助詞位置記錄於 particles。",
+  "markup": "文字內 **粗體** 表示重點（橙色）；反引號 `…` 表示公式／標籤（淺底）。",
+  "ui": {
+    "check": "確認",
+    "continue": "繼續",
+    "correctAnswer": "正確答案",
+    "rule": "規則",
+    "correct": "答對了",
+    "incorrect": "答錯了",
+    "slow": "慢速",
+    "normal": "正常速度",
+    "showReading": "顯示讀音",
+    "tipsCard": "學習小貼士",
+    "lessonN": "第 {n} 課",
+    "storyRead": "讀",
+    "storySpeak": "說",
+    "storyListen": "聽",
+    "prerequisiteHint": "建議先完成：{name}",
+    "quiz": "小測",
+    "group1": "一類（五段）",
+    "group2": "二類（一段）",
+    "group3": "三類（不規則）",
+    "bookmark": "加入書籤",
+    "retry": "再試一次",
+    "newWords": "新詞",
+    "review": "複習"
+  },
+  "grammarIndex": [
+    "g-n5-12-01",
+    "g-n5-12-02",
+    "g-n5-12-03",
+    "g-n5-12-04",
+    "g-n5-12-05",
+    "g-n5-12-06"
+  ],
+  "lessons": [
+    {
+      "id": "l-n5-12-1",
+      "number": 1,
+      "title": "什麼是動詞：辭書形",
+      "description": "認識動詞與辭書形，並初步認識三大分類。",
+      "estimatedMinutes": 10,
+      "prerequisites": [
+        "l-n5-11-3"
+      ],
+      "vocab": [
+        {
+          "id": "w-n5-12-001",
+          "kana": "たべる",
+          "kanji": "食べる",
+          "reading": "たべる",
+          "zh": "吃",
+          "tts": "たべる",
+          "particles": [],
+          "pos": "動詞",
+          "group": "二類",
+          "groupDetail": "二類（一段）",
+          "groupNote": null,
+          "audio": null,
+          "example": {
+            "id": "e-n5-12-003",
+            "ja": "いま食べる。",
+            "reading": "いまたべる。",
+            "tts": "いまたべる。",
+            "particles": [],
+            "zh": "現在吃。"
+          },
+          "addedBeyondOutline": false
+        },
+        {
+          "id": "w-n5-12-002",
+          "kana": "のむ",
+          "kanji": "飲む",
+          "reading": "のむ",
+          "zh": "喝；飲用",
+          "tts": "のむ",
+          "particles": [],
+          "pos": "動詞",
+          "group": "一類",
+          "groupDetail": "一類（五段）",
+          "groupNote": null,
+          "audio": null,
+          "example": {
+            "id": "e-n5-12-004",
+            "ja": "いま飲む。",
+            "reading": "いまのむ。",
+            "tts": "いまのむ。",
+            "particles": [],
+            "zh": "現在喝。"
+          },
+          "addedBeyondOutline": false
+        },
+        {
+          "id": "w-n5-12-003",
+          "kana": "いく",
+          "kanji": "行く",
+          "reading": "いく",
+          "zh": "去",
+          "tts": "いく",
+          "particles": [],
+          "pos": "動詞",
+          "group": "一類",
+          "groupDetail": "一類（五段）",
+          "groupNote": null,
+          "audio": null,
+          "example": {
+            "id": "e-n5-12-005",
+            "ja": "あした行く。",
+            "reading": "あしたいく。",
+            "tts": "あしたいく。",
+            "particles": [],
+            "zh": "明天去。"
+          },
+          "addedBeyondOutline": false
+        },
+        {
+          "id": "w-n5-12-004",
+          "kana": "みる",
+          "kanji": "見る",
+          "reading": "みる",
+          "zh": "看",
+          "tts": "みる",
+          "particles": [],
+          "pos": "動詞",
+          "group": "二類",
+          "groupDetail": "二類（一段）",
+          "groupNote": null,
+          "audio": null,
+          "example": {
+            "id": "e-n5-12-006",
+            "ja": "ちょっと見る。",
+            "reading": "ちょっとみる。",
+            "tts": "ちょっとみる。",
+            "particles": [],
+            "zh": "稍微看一下。"
+          },
+          "addedBeyondOutline": false
+        },
+        {
+          "id": "w-n5-12-005",
+          "kana": "する",
+          "kanji": null,
+          "reading": "する",
+          "zh": "做；進行",
+          "tts": "する",
+          "particles": [],
+          "pos": "動詞",
+          "group": "三類",
+          "groupDetail": "三類（不規則）",
+          "groupNote": null,
+          "audio": null,
+          "example": {
+            "id": "e-n5-12-007",
+            "ja": "ちょっとする。",
+            "reading": "ちょっとする。",
+            "tts": "ちょっとする。",
+            "particles": [],
+            "zh": "稍微做一下。"
+          },
+          "addedBeyondOutline": false
+        }
+      ],
+      "reviewVocab": [],
+      "grammar": {
+        "points": [
+          {
+            "id": "g-n5-12-01",
+            "title": "動詞與辭書形（結尾為う段）",
+            "blocks": [
+              {
+                "type": "text",
+                "text": "動詞是表示**動作**的詞，例如「吃」「喝」「去」「看」。日語動詞有許多變化形，而所有變化形都從**辭書形**出發。因此學動詞，**一定先學辭書形**。"
+              },
+              {
+                "type": "term",
+                "ja": "辞書形",
+                "reading": "じしょけい",
+                "tts": "じしょけい",
+                "particles": [],
+                "zh": "辭書形（查辭典時看到的動詞原形）"
+              },
+              {
+                "type": "text",
+                "text": "辭書形的**最後一個假名，一定屬於う段**，即以下九個之一：`う・く・ぐ・す・つ・ぬ・ぶ・む・る`。"
+              },
+              {
+                "type": "text",
+                "text": "補充：五十音表中，直列稱為「段」（あ段、い段、う段、え段、お段），橫列稱為「行」（以一般橫排的五十音表而言）。例如「く」屬於か行、う段。"
+              },
+              {
+                "type": "table",
+                "title": "本課動詞的最後一個假名",
+                "headers": [
+                  "辭書形",
+                  "最後的假名",
+                  "屬於"
+                ],
+                "rows": [
+                  [
+                    {
+                      "ja": "食べる",
+                      "reading": "たべる",
+                      "tts": "たべる",
+                      "particles": [],
+                      "zh": "吃"
+                    },
+                    "る",
+                    "う段"
+                  ],
+                  [
+                    {
+                      "ja": "飲む",
+                      "reading": "のむ",
+                      "tts": "のむ",
+                      "particles": [],
+                      "zh": "喝；飲用"
+                    },
+                    "む",
+                    "う段"
+                  ],
+                  [
+                    {
+                      "ja": "行く",
+                      "reading": "いく",
+                      "tts": "いく",
+                      "particles": [],
+                      "zh": "去"
+                    },
+                    "く",
+                    "う段"
+                  ],
+                  [
+                    {
+                      "ja": "見る",
+                      "reading": "みる",
+                      "tts": "みる",
+                      "particles": [],
+                      "zh": "看"
+                    },
+                    "る",
+                    "う段"
+                  ],
+                  [
+                    {
+                      "ja": "する",
+                      "reading": "する",
+                      "tts": "する",
+                      "particles": [],
+                      "zh": "做；進行"
+                    },
+                    "る",
+                    "う段"
+                  ]
+                ]
+              },
+              {
+                "type": "text",
+                "text": "辭書形也可以**直接放在句末**，用於備忘、日記或熟人之間的簡短說話。禮貌的說法（ます形）會在單元 13 學習，本單元先不使用。"
+              },
+              {
+                "id": "e-n5-12-001",
+                "type": "example",
+                "ja": "いま食べる。",
+                "reading": "いまたべる。",
+                "tts": "いまたべる。",
+                "particles": [],
+                "zh": "現在吃。",
+                "highlight": [
+                  "る"
+                ],
+                "audio": null,
+                "note": "辭書形直接結束句子。"
+              },
+              {
+                "id": "e-n5-12-002",
+                "type": "example",
+                "ja": "わたしはあした行く。",
+                "reading": "わたしはあしたいく。",
+                "tts": "わたしわあしたいく。",
+                "particles": [
+                  {
+                    "surface": "は",
+                    "index": 3,
+                    "ttsAs": "わ",
+                    "role": "助詞（主題）"
+                  }
+                ],
+                "zh": "我明天去。",
+                "highlight": [
+                  "は",
+                  "く"
+                ],
+                "audio": null,
+                "note": "「は」作助詞時讀作「わ」；日語常省略不必要的詞語。"
+              }
+            ]
+          },
+          {
+            "id": "g-n5-12-02",
+            "title": "動詞的三大分類（總覽）",
+            "blocks": [
+              {
+                "type": "text",
+                "text": "日語動詞分為**三類**。之後學到的所有變化，都要先判斷動詞屬於哪一類，所以必須先學會分類。"
+              },
+              {
+                "type": "table",
+                "title": "三類動詞總覽",
+                "headers": [
+                  "類別",
+                  "別稱",
+                  "特徵",
+                  "本課的例子"
+                ],
+                "rows": [
+                  [
+                    "一類",
+                    "五段動詞",
+                    "二類、三類以外的所有動詞",
+                    [
+                      {
+                        "ja": "飲む",
+                        "reading": "のむ",
+                        "tts": "のむ",
+                        "particles": [],
+                        "zh": "喝；飲用"
+                      },
+                      {
+                        "ja": "行く",
+                        "reading": "いく",
+                        "tts": "いく",
+                        "particles": [],
+                        "zh": "去"
+                      }
+                    ]
+                  ],
+                  [
+                    "二類",
+                    "一段動詞",
+                    "以「る」結尾，「る」前面是い段或え段",
+                    [
+                      {
+                        "ja": "食べる",
+                        "reading": "たべる",
+                        "tts": "たべる",
+                        "particles": [],
+                        "zh": "吃"
+                      },
+                      {
+                        "ja": "見る",
+                        "reading": "みる",
+                        "tts": "みる",
+                        "particles": [],
+                        "zh": "看"
+                      }
+                    ]
+                  ],
+                  [
+                    "三類",
+                    "不規則動詞",
+                    "只有「する」和「来る」兩個",
+                    [
+                      {
+                        "ja": "する",
+                        "reading": "する",
+                        "tts": "する",
+                        "particles": [],
+                        "zh": "做；進行"
+                      }
+                    ]
+                  ]
+                ]
+              },
+              {
+                "type": "text",
+                "text": "本課先認識分類的名稱，並記住五個動詞各屬哪一類。三類與二類的判斷方法在**第 2 課**詳述，一類與例外在**第 3 課**詳述。"
+              },
+              {
+                "type": "text",
+                "text": "本課五個動詞：**二類**＝`たべる`、`みる`；**一類**＝`のむ`、`いく`；**三類**＝`する`。"
+              }
+            ]
+          }
+        ]
+      },
+      "exercises": [
+        {
+          "id": "q-n5-12-001",
+          "type": "choice",
+          "kind": "dictionary-form",
+          "lesson": 1,
+          "grammar": [
+            "g-n5-12-01"
+          ],
+          "prompt": "下列哪一個是動詞「喝」的辭書形？",
+          "stem": null,
+          "options": [
+            {
+              "id": "a",
+              "ja": "のま",
+              "reading": "のま",
+              "zh": "（不是辭書形）",
+              "tts": "のま",
+              "particles": [],
+              "nonWord": true
+            },
+            {
+              "id": "b",
+              "ja": "のみ",
+              "reading": "のみ",
+              "zh": "（不是辭書形）",
+              "tts": "のみ",
+              "particles": [],
+              "nonWord": true
+            },
+            {
+              "id": "c",
+              "ja": "飲む",
+              "reading": "のむ",
+              "zh": "喝；飲用",
+              "tts": "のむ",
+              "particles": [],
+              "wordId": "w-n5-12-002"
+            },
+            {
+              "id": "d",
+              "ja": "のめ",
+              "reading": "のめ",
+              "zh": "（不是辭書形）",
+              "tts": "のめ",
+              "particles": [],
+              "nonWord": true
+            }
+          ],
+          "shuffle": false,
+          "answer": "c",
+          "answerDisplay": "飲む（のむ）",
+          "rule": "辭書形的最後一個假名一定屬於う段。「む」屬於う段，「ま」「み」「め」不屬於。",
+          "explanation": "「の・む」最後的「む」屬於う段，所以「飲む」（のむ）是辭書形。",
+          "source": "new"
+        },
+        {
+          "id": "q-n5-12-002",
+          "type": "fill",
+          "kind": "dictionary-form-ending",
+          "lesson": 1,
+          "grammar": [
+            "g-n5-12-01"
+          ],
+          "prompt": "請選出正確的假名，補全動詞的辭書形（意思：去）。",
+          "stem": {
+            "ja": "い＿",
+            "reading": "い＿",
+            "blank": true,
+            "zh": "去",
+            "tts": null,
+            "particles": [],
+            "full": {
+              "ja": "行く",
+              "reading": "いく",
+              "tts": "いく",
+              "particles": [],
+              "zh": "去"
+            },
+            "wordId": "w-n5-12-003"
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": "か"
+            },
+            {
+              "id": "b",
+              "text": "き"
+            },
+            {
+              "id": "c",
+              "text": "く"
+            },
+            {
+              "id": "d",
+              "text": "け"
+            }
+          ],
+          "shuffle": false,
+          "answer": "c",
+          "answerDisplay": "いく（行く）",
+          "rule": "辭書形的最後一個假名一定屬於う段，而「か・き・く・け」之中屬於う段的是「く」。",
+          "explanation": "「い・く」（行く）的最後一個假名是「く」，屬於う段。",
+          "source": "new"
+        },
+        {
+          "id": "q-n5-12-003",
+          "type": "match",
+          "kind": "match-verb-meaning",
+          "lesson": 1,
+          "grammar": [
+            "g-n5-12-01"
+          ],
+          "prompt": "請把日語動詞與意思配對。",
+          "left": [
+            {
+              "ja": "食べる",
+              "reading": "たべる",
+              "zh": "吃",
+              "tts": "たべる",
+              "particles": [],
+              "wordId": "w-n5-12-001",
+              "id": "l1"
+            },
+            {
+              "ja": "飲む",
+              "reading": "のむ",
+              "zh": "喝；飲用",
+              "tts": "のむ",
+              "particles": [],
+              "wordId": "w-n5-12-002",
+              "id": "l2"
+            },
+            {
+              "ja": "行く",
+              "reading": "いく",
+              "zh": "去",
+              "tts": "いく",
+              "particles": [],
+              "wordId": "w-n5-12-003",
+              "id": "l3"
+            },
+            {
+              "ja": "見る",
+              "reading": "みる",
+              "zh": "看",
+              "tts": "みる",
+              "particles": [],
+              "wordId": "w-n5-12-004",
+              "id": "l4"
+            },
+            {
+              "ja": "する",
+              "reading": "する",
+              "zh": "做；進行",
+              "tts": "する",
+              "particles": [],
+              "wordId": "w-n5-12-005",
+              "id": "l5"
+            }
+          ],
+          "right": [
+            {
+              "id": "r1",
+              "text": "吃"
+            },
+            {
+              "id": "r2",
+              "text": "喝；飲用"
+            },
+            {
+              "id": "r3",
+              "text": "去"
+            },
+            {
+              "id": "r4",
+              "text": "看"
+            },
+            {
+              "id": "r5",
+              "text": "做；進行"
+            }
+          ],
+          "answer": {
+            "l1": "r1",
+            "l2": "r2",
+            "l3": "r3",
+            "l4": "r4",
+            "l5": "r5"
+          },
+          "answerDisplay": "食べる → 吃 ｜ 飲む → 喝；飲用 ｜ 行く → 去 ｜ 見る → 看 ｜ する → 做；進行",
+          "rule": "請記住每個動詞的辭書形與意思。",
+          "explanation": "食べる＝吃、飲む＝喝、行く＝去、見る＝看、する＝做。",
+          "source": "new"
+        },
+        {
+          "id": "q-n5-12-004",
+          "type": "choice",
+          "kind": "verb-group",
+          "lesson": 1,
+          "grammar": [
+            "g-n5-12-02"
+          ],
+          "prompt": "請判斷這個動詞屬於哪一類。",
+          "stem": {
+            "ja": "見る",
+            "reading": "みる",
+            "zh": "看",
+            "tts": "みる",
+            "particles": [],
+            "wordId": "w-n5-12-004"
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": "一類（五段）"
+            },
+            {
+              "id": "b",
+              "text": "二類（一段）"
+            },
+            {
+              "id": "c",
+              "text": "三類（不規則）"
+            }
+          ],
+          "shuffle": false,
+          "answer": "b",
+          "answerDisplay": "二類（一段）",
+          "rule": "辭書形以「る」結尾，而且「る」前面的假名屬於い段或え段（例外除外），就是二類動詞。",
+          "explanation": "「見る」（みる）以「る」結尾，「る」前面的「み」屬於い段，因此是二類動詞。",
+          "source": "reused",
+          "sourceRef": "batch1-n5-day1-7/content/lessons/n5w1-d1v.json#n5w1-d1v-q1",
+          "sourceNote": "題幹沿用舊題（見る），解說以書面中文重寫，並刪去本單元未教的例外詞。"
+        },
+        {
+          "id": "q-n5-12-005",
+          "type": "choice",
+          "kind": "verb-group",
+          "lesson": 1,
+          "grammar": [
+            "g-n5-12-02"
+          ],
+          "prompt": "這個動詞屬於哪一類？",
+          "stem": {
+            "ja": "飲む",
+            "reading": "のむ",
+            "zh": "喝；飲用",
+            "tts": "のむ",
+            "particles": [],
+            "wordId": "w-n5-12-002"
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": "一類（五段）"
+            },
+            {
+              "id": "b",
+              "text": "二類（一段）"
+            },
+            {
+              "id": "c",
+              "text": "三類（不規則）"
+            }
+          ],
+          "shuffle": false,
+          "answer": "a",
+          "answerDisplay": "一類（五段）",
+          "rule": "辭書形若不是以「る」結尾，就必定是一類動詞。",
+          "explanation": "「飲む」（のむ）以「む」結尾，不是「る」，因此是一類動詞。",
+          "source": "new"
+        },
+        {
+          "id": "q-n5-12-006",
+          "type": "choice",
+          "kind": "verb-group",
+          "lesson": 1,
+          "grammar": [
+            "g-n5-12-02"
+          ],
+          "prompt": "這個動詞屬於哪一類？",
+          "stem": {
+            "ja": "する",
+            "reading": "する",
+            "zh": "做；進行",
+            "tts": "する",
+            "particles": [],
+            "wordId": "w-n5-12-005"
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": "一類（五段）"
+            },
+            {
+              "id": "b",
+              "text": "二類（一段）"
+            },
+            {
+              "id": "c",
+              "text": "三類（不規則）"
+            }
+          ],
+          "shuffle": false,
+          "answer": "c",
+          "answerDisplay": "三類（不規則）",
+          "rule": "三類動詞只有「する」和「来る」（くる）兩個，沒有規則可循，必須逐個記住。",
+          "explanation": "「する」是三類動詞。",
+          "source": "new"
+        },
+        {
+          "id": "q-n5-12-007",
+          "type": "reorder",
+          "kind": "sentence-order",
+          "lesson": 1,
+          "grammar": [
+            "g-n5-12-01"
+          ],
+          "prompt": "請把下面的詞語排成正確的日語（意思：吃）。",
+          "pieces": [
+            {
+              "id": "p1",
+              "text": "べ",
+              "fragment": true
+            },
+            {
+              "id": "p2",
+              "text": "る",
+              "fragment": true
+            },
+            {
+              "id": "p3",
+              "text": "た",
+              "fragment": true
+            }
+          ],
+          "answerOrder": [
+            "p3",
+            "p1",
+            "p2"
+          ],
+          "target": {
+            "ja": "食べる",
+            "reading": "たべる",
+            "zh": "吃",
+            "tts": "たべる",
+            "particles": [],
+            "wordId": "w-n5-12-001"
+          },
+          "answerDisplay": "たべる",
+          "rule": "請按讀音順序排列假名，組成辭書形。",
+          "explanation": "「た・べ・る」是辭書形，最後的「る」屬於う段。",
+          "source": "new",
+          "answer": [
+            "p3",
+            "p1",
+            "p2"
+          ]
+        },
+        {
+          "id": "q-n5-12-008",
+          "type": "choice",
+          "kind": "concept",
+          "lesson": 1,
+          "grammar": [
+            "g-n5-12-01"
+          ],
+          "prompt": "學習動詞變化時，一切都應該從哪一個形式出發？",
+          "stem": null,
+          "options": [
+            {
+              "id": "a",
+              "text": "辭書形"
+            },
+            {
+              "id": "b",
+              "text": "最後一個音"
+            },
+            {
+              "id": "c",
+              "text": "隨意一個形式"
+            },
+            {
+              "id": "d",
+              "text": "漢字的筆畫"
+            }
+          ],
+          "shuffle": false,
+          "answer": "a",
+          "answerDisplay": "辭書形",
+          "rule": "動詞的所有變化形，都從辭書形出發。",
+          "explanation": "辭書形是動詞的原形，判斷類別與變形都以它為起點。",
+          "source": "new"
+        },
+        {
+          "id": "q-n5-12-009",
+          "type": "choice",
+          "kind": "dictionary-form",
+          "lesson": 1,
+          "grammar": [
+            "g-n5-12-01"
+          ],
+          "prompt": "下列哪一個詞不是動詞？",
+          "stem": null,
+          "options": [
+            {
+              "ja": "食べる",
+              "reading": "たべる",
+              "zh": "吃",
+              "tts": "たべる",
+              "particles": [],
+              "wordId": "w-n5-12-001",
+              "id": "a"
+            },
+            {
+              "ja": "行く",
+              "reading": "いく",
+              "zh": "去",
+              "tts": "いく",
+              "particles": [],
+              "wordId": "w-n5-12-003",
+              "id": "b"
+            },
+            {
+              "id": "c",
+              "ja": "わたし",
+              "reading": "わたし",
+              "zh": "我",
+              "tts": "わたし",
+              "particles": []
+            },
+            {
+              "ja": "飲む",
+              "reading": "のむ",
+              "zh": "喝；飲用",
+              "tts": "のむ",
+              "particles": [],
+              "wordId": "w-n5-12-002",
+              "id": "d"
+            }
+          ],
+          "shuffle": false,
+          "answer": "c",
+          "answerDisplay": "わたし（我）",
+          "rule": "動詞表示動作，辭書形以う段結尾；「わたし」是名詞，結尾「し」屬於い段。",
+          "explanation": "「わたし」是「我」，是名詞，不是動詞。",
+          "source": "new"
+        }
+      ],
+      "listening": [
+        {
+          "id": "q-n5-12-010",
+          "type": "listen-choice",
+          "kind": "listen-choice",
+          "lesson": 1,
+          "grammar": [
+            "g-n5-12-01"
+          ],
+          "prompt": "請聽音頻，選出你聽到的動詞。",
+          "audio": {
+            "ttsText": "のむ",
+            "engine": "ios-tts",
+            "rate": "normal",
+            "file": null
+          },
+          "showStem": false,
+          "options": [
+            {
+              "ja": "飲む",
+              "reading": "のむ",
+              "zh": "喝；飲用",
+              "tts": "のむ",
+              "particles": [],
+              "wordId": "w-n5-12-002",
+              "id": "a"
+            },
+            {
+              "ja": "見る",
+              "reading": "みる",
+              "zh": "看",
+              "tts": "みる",
+              "particles": [],
+              "wordId": "w-n5-12-004",
+              "id": "b"
+            },
+            {
+              "ja": "行く",
+              "reading": "いく",
+              "zh": "去",
+              "tts": "いく",
+              "particles": [],
+              "wordId": "w-n5-12-003",
+              "id": "c"
+            },
+            {
+              "ja": "食べる",
+              "reading": "たべる",
+              "zh": "吃",
+              "tts": "たべる",
+              "particles": [],
+              "wordId": "w-n5-12-001",
+              "id": "d"
+            }
+          ],
+          "shuffle": false,
+          "answer": "a",
+          "reveal": {
+            "ja": "飲む",
+            "reading": "のむ",
+            "zh": "喝；飲用",
+            "tts": "のむ",
+            "particles": [],
+            "wordId": "w-n5-12-002"
+          },
+          "answerDisplay": "飲む（のむ）",
+          "rule": "辭書形的最後一個假名屬於う段，注意每個動詞開頭的假名不同。",
+          "explanation": "聽到「の・む」，是「飲む」（のむ）。「みる」開頭是「み」，「いく」開頭是「い」。",
+          "source": "new",
+          "needsRealDeviceCheck": false,
+          "listeningNote": null
+        },
+        {
+          "id": "q-n5-12-011",
+          "type": "listen-choice",
+          "kind": "listen-meaning",
+          "lesson": 1,
+          "grammar": [
+            "g-n5-12-01"
+          ],
+          "prompt": "請聽音頻，選出動詞的意思。",
+          "audio": {
+            "ttsText": "たべる",
+            "engine": "ios-tts",
+            "rate": "normal",
+            "file": null
+          },
+          "showStem": false,
+          "options": [
+            {
+              "id": "a",
+              "text": "看"
+            },
+            {
+              "id": "b",
+              "text": "吃"
+            },
+            {
+              "id": "c",
+              "text": "去"
+            },
+            {
+              "id": "d",
+              "text": "喝；飲用"
+            }
+          ],
+          "shuffle": false,
+          "answer": "b",
+          "reveal": {
+            "ja": "食べる",
+            "reading": "たべる",
+            "zh": "吃",
+            "tts": "たべる",
+            "particles": [],
+            "wordId": "w-n5-12-001"
+          },
+          "answerDisplay": "食べる（たべる）",
+          "rule": "「た・べ・る」＝吃。",
+          "explanation": "聽到「たべる」，是「食べる」，意思是「吃」。",
+          "source": "new",
+          "needsRealDeviceCheck": false,
+          "listeningNote": null
+        },
+        {
+          "id": "q-n5-12-012",
+          "type": "listen-choice",
+          "kind": "listen-group",
+          "lesson": 1,
+          "grammar": [
+            "g-n5-12-02"
+          ],
+          "prompt": "請聽音頻，判斷這個動詞屬於哪一類。",
+          "audio": {
+            "ttsText": "いく",
+            "engine": "ios-tts",
+            "rate": "normal",
+            "file": null
+          },
+          "showStem": false,
+          "options": [
+            {
+              "id": "a",
+              "text": "一類（五段）"
+            },
+            {
+              "id": "b",
+              "text": "二類（一段）"
+            },
+            {
+              "id": "c",
+              "text": "三類（不規則）"
+            }
+          ],
+          "shuffle": false,
+          "answer": "a",
+          "reveal": {
+            "ja": "行く",
+            "reading": "いく",
+            "zh": "去",
+            "tts": "いく",
+            "particles": [],
+            "wordId": "w-n5-12-003"
+          },
+          "answerDisplay": "行く（いく）",
+          "rule": "辭書形不是以「る」結尾的動詞，一定是一類。",
+          "explanation": "聽到「いく」，是「行く」。最後的「く」不是「る」，所以是一類動詞。",
+          "source": "new",
+          "needsRealDeviceCheck": false,
+          "listeningNote": null
+        }
+      ]
+    },
+    {
+      "id": "l-n5-12-2",
+      "number": 2,
+      "title": "三類與二類動詞",
+      "description": "學習三類動詞（する・来る）與二類動詞的判斷方法。",
+      "estimatedMinutes": 10,
+      "prerequisites": [
+        "l-n5-12-1"
+      ],
+      "vocab": [
+        {
+          "id": "w-n5-12-006",
+          "kana": "くる",
+          "kanji": "来る",
+          "reading": "くる",
+          "zh": "來",
+          "tts": "くる",
+          "particles": [],
+          "pos": "動詞",
+          "group": "三類",
+          "groupDetail": "三類（不規則）",
+          "groupNote": null,
+          "audio": null,
+          "example": {
+            "id": "e-n5-12-012",
+            "ja": "あした来る。",
+            "reading": "あしたくる。",
+            "tts": "あしたくる。",
+            "particles": [],
+            "zh": "明天來。"
+          },
+          "addedBeyondOutline": false
+        },
+        {
+          "id": "w-n5-12-007",
+          "kana": "おきる",
+          "kanji": "起きる",
+          "reading": "おきる",
+          "zh": "起床",
+          "tts": "おきる",
+          "particles": [],
+          "pos": "動詞",
+          "group": "二類",
+          "groupDetail": "二類（一段）",
+          "groupNote": null,
+          "audio": null,
+          "example": {
+            "id": "e-n5-12-013",
+            "ja": "あさ起きる。",
+            "reading": "あさおきる。",
+            "tts": "あさおきる。",
+            "particles": [],
+            "zh": "早上起床。"
+          },
+          "addedBeyondOutline": false
+        },
+        {
+          "id": "w-n5-12-008",
+          "kana": "ねる",
+          "kanji": "寝る",
+          "reading": "ねる",
+          "zh": "睡覺",
+          "tts": "ねる",
+          "particles": [],
+          "pos": "動詞",
+          "group": "二類",
+          "groupDetail": "二類（一段）",
+          "groupNote": null,
+          "audio": null,
+          "example": {
+            "id": "e-n5-12-014",
+            "ja": "いま寝る。",
+            "reading": "いまねる。",
+            "tts": "いまねる。",
+            "particles": [],
+            "zh": "現在睡覺。"
+          },
+          "addedBeyondOutline": false
+        },
+        {
+          "id": "w-n5-12-009",
+          "kana": "おしえる",
+          "kanji": "教える",
+          "reading": "おしえる",
+          "zh": "教；告知",
+          "tts": "おしえる",
+          "particles": [],
+          "pos": "動詞",
+          "group": "二類",
+          "groupDetail": "二類（一段）",
+          "groupNote": null,
+          "audio": null,
+          "example": {
+            "id": "e-n5-12-015",
+            "ja": "あした教える。",
+            "reading": "あしたおしえる。",
+            "tts": "あしたおしえる。",
+            "particles": [],
+            "zh": "明天教（或告知）。"
+          },
+          "addedBeyondOutline": true
+        },
+        {
+          "id": "w-n5-12-010",
+          "kana": "でかける",
+          "kanji": "出かける",
+          "reading": "でかける",
+          "zh": "外出",
+          "tts": "でかける",
+          "particles": [],
+          "pos": "動詞",
+          "group": "二類",
+          "groupDetail": "二類（一段）",
+          "groupNote": null,
+          "audio": null,
+          "example": {
+            "id": "e-n5-12-016",
+            "ja": "きょう出かける。",
+            "reading": "きょうでかける。",
+            "tts": "きょうでかける。",
+            "particles": [],
+            "zh": "今天外出。"
+          },
+          "addedBeyondOutline": true
+        }
+      ],
+      "reviewVocab": [
+        "w-n5-12-004",
+        "w-n5-12-001"
+      ],
+      "grammar": {
+        "points": [
+          {
+            "id": "g-n5-12-03",
+            "title": "三類動詞：する・来る（くる）",
+            "blocks": [
+              {
+                "type": "text",
+                "text": "三類動詞**只有兩個**：`する`（做）和`来る`（來，讀作「くる」）。它們的變化不規則，沒有規則可套用，必須**逐個記住**。"
+              },
+              {
+                "type": "table",
+                "title": "三類動詞",
+                "headers": [
+                  "辭書形",
+                  "讀音",
+                  "意思",
+                  "類別"
+                ],
+                "rows": [
+                  [
+                    {
+                      "ja": "する",
+                      "reading": "する",
+                      "tts": "する",
+                      "particles": [],
+                      "zh": "做；進行"
+                    },
+                    "する",
+                    "做；進行",
+                    "三類"
+                  ],
+                  [
+                    {
+                      "ja": "来る",
+                      "reading": "くる",
+                      "tts": "くる",
+                      "particles": [],
+                      "zh": "來"
+                    },
+                    "くる",
+                    "來",
+                    "三類"
+                  ]
+                ]
+              },
+              {
+                "type": "text",
+                "text": "注意：「来る」在之後的變化中，讀音會有所改變，所以要特別留意；變化形會在單元 13 起學習，現在只需記住辭書形「くる」。"
+              },
+              {
+                "id": "e-n5-12-008",
+                "type": "example",
+                "ja": "あした来る。",
+                "reading": "あしたくる。",
+                "tts": "あしたくる。",
+                "particles": [],
+                "zh": "明天來。",
+                "highlight": [
+                  "来る"
+                ],
+                "audio": null,
+                "note": "「来る」讀作「くる」，是三類動詞。"
+              },
+              {
+                "id": "e-n5-12-009",
+                "type": "example",
+                "ja": "ちょっとする。",
+                "reading": "ちょっとする。",
+                "tts": "ちょっとする。",
+                "particles": [],
+                "zh": "稍微做一下。",
+                "highlight": [
+                  "する"
+                ],
+                "audio": null,
+                "note": "「する」是三類動詞。"
+              }
+            ]
+          },
+          {
+            "id": "g-n5-12-04",
+            "title": "二類動詞：「る」前面是い段或え段",
+            "blocks": [
+              {
+                "type": "text",
+                "text": "二類動詞（一段動詞）的判斷方法：辭書形**以「る」結尾**，而且「る」**前面的假名屬於い段或え段**。"
+              },
+              {
+                "type": "text",
+                "text": "`い段`：い・き・し・ち・に・ひ・み・り（及其濁音）　`え段`：え・け・せ・て・ね・へ・め・れ（及其濁音）"
+              },
+              {
+                "type": "table",
+                "title": "二類動詞的「る」前面",
+                "headers": [
+                  "辭書形",
+                  "讀音",
+                  "「る」前面",
+                  "屬於",
+                  "意思"
+                ],
+                "rows": [
+                  [
+                    {
+                      "ja": "食べる",
+                      "reading": "たべる",
+                      "tts": "たべる",
+                      "particles": [],
+                      "zh": "吃"
+                    },
+                    "べ",
+                    "え段",
+                    "吃"
+                  ],
+                  [
+                    {
+                      "ja": "見る",
+                      "reading": "みる",
+                      "tts": "みる",
+                      "particles": [],
+                      "zh": "看"
+                    },
+                    "み",
+                    "い段",
+                    "看"
+                  ],
+                  [
+                    {
+                      "ja": "起きる",
+                      "reading": "おきる",
+                      "tts": "おきる",
+                      "particles": [],
+                      "zh": "起床"
+                    },
+                    "き",
+                    "い段",
+                    "起床"
+                  ],
+                  [
+                    {
+                      "ja": "寝る",
+                      "reading": "ねる",
+                      "tts": "ねる",
+                      "particles": [],
+                      "zh": "睡覺"
+                    },
+                    "ね",
+                    "え段",
+                    "睡覺"
+                  ],
+                  [
+                    {
+                      "ja": "教える",
+                      "reading": "おしえる",
+                      "tts": "おしえる",
+                      "particles": [],
+                      "zh": "教；告知"
+                    },
+                    "え",
+                    "え段",
+                    "教；告知"
+                  ],
+                  [
+                    {
+                      "ja": "出かける",
+                      "reading": "でかける",
+                      "tts": "でかける",
+                      "particles": [],
+                      "zh": "外出"
+                    },
+                    "け",
+                    "え段",
+                    "外出"
+                  ]
+                ]
+              },
+              {
+                "type": "text",
+                "text": "**小心**：「る」前面是い段或え段，只是判斷的**條件**，不是百分之百準確；少數動詞形狀相同卻屬於一類，會在第 3 課學習。"
+              },
+              {
+                "id": "e-n5-12-010",
+                "type": "example",
+                "ja": "あさ起きる。",
+                "reading": "あさおきる。",
+                "tts": "あさおきる。",
+                "particles": [],
+                "zh": "早上起床。",
+                "highlight": [
+                  "き"
+                ],
+                "audio": null,
+                "note": "「き」屬於い段，所以「起きる」是二類動詞。"
+              },
+              {
+                "id": "e-n5-12-011",
+                "type": "example",
+                "ja": "わたしはいま寝る。",
+                "reading": "わたしはいまねる。",
+                "tts": "わたしわいまねる。",
+                "particles": [
+                  {
+                    "surface": "は",
+                    "index": 3,
+                    "ttsAs": "わ",
+                    "role": "助詞（主題）"
+                  }
+                ],
+                "zh": "我現在睡覺。",
+                "highlight": [
+                  "ね"
+                ],
+                "audio": null,
+                "note": "「ね」屬於え段，所以「寝る」是二類動詞。"
+              }
+            ]
+          }
+        ]
+      },
+      "exercises": [
+        {
+          "id": "q-n5-12-013",
+          "type": "choice",
+          "kind": "verb-group",
+          "lesson": 2,
+          "grammar": [
+            "g-n5-12-03"
+          ],
+          "prompt": "這個動詞屬於哪一類？",
+          "stem": {
+            "ja": "来る",
+            "reading": "くる",
+            "zh": "來",
+            "tts": "くる",
+            "particles": [],
+            "wordId": "w-n5-12-006"
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": "一類（五段）"
+            },
+            {
+              "id": "b",
+              "text": "二類（一段）"
+            },
+            {
+              "id": "c",
+              "text": "三類（不規則）"
+            }
+          ],
+          "shuffle": false,
+          "answer": "c",
+          "answerDisplay": "三類（不規則）",
+          "rule": "三類動詞只有「する」和「来る」（くる）兩個，沒有規則可循，必須逐個記住。",
+          "explanation": "「来る」（くる）是三類動詞。",
+          "source": "reused",
+          "sourceRef": "batch1-n5-day1-7/content/lessons/n5w1-d1v.json#n5w1-d1v-q3",
+          "sourceNote": "題幹沿用舊題（来る），解說以書面中文重寫。"
+        },
+        {
+          "id": "q-n5-12-014",
+          "type": "choice",
+          "kind": "concept",
+          "lesson": 2,
+          "grammar": [
+            "g-n5-12-03"
+          ],
+          "prompt": "下列哪一組兩個動詞都是三類動詞？",
+          "stem": null,
+          "options": [
+            {
+              "id": "a",
+              "ja": "する・来る",
+              "reading": "する・くる",
+              "zh": "做・來",
+              "tts": "する・くる",
+              "particles": []
+            },
+            {
+              "id": "b",
+              "ja": "食べる・見る",
+              "reading": "たべる・みる",
+              "zh": "吃・看",
+              "tts": "たべる・みる",
+              "particles": []
+            },
+            {
+              "id": "c",
+              "ja": "行く・飲む",
+              "reading": "いく・のむ",
+              "zh": "去・喝",
+              "tts": "いく・のむ",
+              "particles": []
+            },
+            {
+              "id": "d",
+              "ja": "寝る・起きる",
+              "reading": "ねる・おきる",
+              "zh": "睡覺・起床",
+              "tts": "ねる・おきる",
+              "particles": []
+            }
+          ],
+          "shuffle": false,
+          "answer": "a",
+          "answerDisplay": "する・来る（する・くる）",
+          "rule": "三類動詞只有「する」和「来る」（くる）兩個。",
+          "explanation": "其餘三組分別是二類與一類動詞。",
+          "source": "new"
+        },
+        {
+          "id": "q-n5-12-015",
+          "type": "choice",
+          "kind": "verb-group",
+          "lesson": 2,
+          "grammar": [
+            "g-n5-12-04"
+          ],
+          "prompt": "這個動詞屬於哪一類？",
+          "stem": {
+            "ja": "起きる",
+            "reading": "おきる",
+            "zh": "起床",
+            "tts": "おきる",
+            "particles": [],
+            "wordId": "w-n5-12-007"
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": "一類（五段）"
+            },
+            {
+              "id": "b",
+              "text": "二類（一段）"
+            },
+            {
+              "id": "c",
+              "text": "三類（不規則）"
+            }
+          ],
+          "shuffle": false,
+          "answer": "b",
+          "answerDisplay": "二類（一段）",
+          "rule": "辭書形以「る」結尾，而且「る」前面的假名屬於い段或え段（例外除外），就是二類動詞。",
+          "explanation": "「起きる」（おきる）以「る」結尾，「る」前面的「き」屬於い段，因此是二類動詞。",
+          "source": "new"
+        },
+        {
+          "id": "q-n5-12-016",
+          "type": "choice",
+          "kind": "dan",
+          "lesson": 2,
+          "grammar": [
+            "g-n5-12-04"
+          ],
+          "prompt": "「寝る」（ねる）的「る」前面的假名「ね」，屬於哪一段？",
+          "stem": {
+            "ja": "寝る",
+            "reading": "ねる",
+            "zh": "睡覺",
+            "tts": "ねる",
+            "particles": [],
+            "wordId": "w-n5-12-008"
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": "あ段"
+            },
+            {
+              "id": "b",
+              "text": "い段"
+            },
+            {
+              "id": "c",
+              "text": "う段"
+            },
+            {
+              "id": "d",
+              "text": "え段"
+            }
+          ],
+          "shuffle": false,
+          "answer": "d",
+          "answerDisplay": "え段",
+          "rule": "二類動詞的「る」前面是い段或え段。",
+          "explanation": "「ね」屬於な行、え段，所以「寝る」是二類動詞。",
+          "source": "new"
+        },
+        {
+          "id": "q-n5-12-017",
+          "type": "match",
+          "kind": "match-verb-group",
+          "lesson": 2,
+          "grammar": [
+            "g-n5-12-03",
+            "g-n5-12-04"
+          ],
+          "prompt": "請把動詞與它所屬的類別配對。",
+          "left": [
+            {
+              "ja": "来る",
+              "reading": "くる",
+              "zh": "來",
+              "tts": "くる",
+              "particles": [],
+              "wordId": "w-n5-12-006",
+              "id": "l1"
+            },
+            {
+              "ja": "起きる",
+              "reading": "おきる",
+              "zh": "起床",
+              "tts": "おきる",
+              "particles": [],
+              "wordId": "w-n5-12-007",
+              "id": "l2"
+            },
+            {
+              "ja": "する",
+              "reading": "する",
+              "zh": "做；進行",
+              "tts": "する",
+              "particles": [],
+              "wordId": "w-n5-12-005",
+              "id": "l3"
+            },
+            {
+              "ja": "寝る",
+              "reading": "ねる",
+              "zh": "睡覺",
+              "tts": "ねる",
+              "particles": [],
+              "wordId": "w-n5-12-008",
+              "id": "l4"
+            },
+            {
+              "ja": "見る",
+              "reading": "みる",
+              "zh": "看",
+              "tts": "みる",
+              "particles": [],
+              "wordId": "w-n5-12-004",
+              "id": "l5"
+            }
+          ],
+          "right": [
+            {
+              "id": "r1",
+              "text": "三類"
+            },
+            {
+              "id": "r2",
+              "text": "二類"
+            }
+          ],
+          "answer": {
+            "l1": "r1",
+            "l2": "r2",
+            "l3": "r1",
+            "l4": "r2",
+            "l5": "r2"
+          },
+          "answerDisplay": "来る → 三類 ｜ 起きる → 二類 ｜ する → 三類 ｜ 寝る → 二類 ｜ 見る → 二類",
+          "rule": "三類只有「する」「来る」；以「る」結尾且前面是い段或え段的，一般是二類。",
+          "explanation": "する・くる＝三類；おきる・ねる・みる＝二類。",
+          "source": "new"
+        },
+        {
+          "id": "q-n5-12-018",
+          "type": "fill",
+          "kind": "dictionary-form-ending",
+          "lesson": 2,
+          "grammar": [
+            "g-n5-12-04"
+          ],
+          "prompt": "請選出正確的假名，補全動詞的辭書形（意思：教；告知）。",
+          "stem": {
+            "ja": "おし＿る",
+            "reading": "おし＿る",
+            "blank": true,
+            "zh": "教；告知",
+            "tts": null,
+            "particles": [],
+            "full": {
+              "ja": "教える",
+              "reading": "おしえる",
+              "tts": "おしえる",
+              "particles": [],
+              "zh": "教；告知"
+            },
+            "wordId": "w-n5-12-009"
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": "え"
+            },
+            {
+              "id": "b",
+              "text": "あ"
+            },
+            {
+              "id": "c",
+              "text": "う"
+            },
+            {
+              "id": "d",
+              "text": "お"
+            }
+          ],
+          "shuffle": false,
+          "answer": "a",
+          "answerDisplay": "おしえる（教える）",
+          "rule": "二類動詞「る」前面的假名屬於い段或え段，所以應填え段的「え」。",
+          "explanation": "「お・し・え・る」（教える）的「る」前面是「え」，屬於え段。",
+          "source": "new"
+        },
+        {
+          "id": "q-n5-12-019",
+          "type": "reorder",
+          "kind": "sentence-order",
+          "lesson": 2,
+          "grammar": [
+            "g-n5-12-03",
+            "g-n5-12-04"
+          ],
+          "prompt": "請把下面的詞語排成正確的日語（意思：我今天外出）。",
+          "pieces": [
+            {
+              "id": "p1",
+              "text": "出かける",
+              "fragment": true
+            },
+            {
+              "id": "p2",
+              "text": "きょう",
+              "fragment": true
+            },
+            {
+              "id": "p3",
+              "text": "は",
+              "fragment": true,
+              "particle": true
+            },
+            {
+              "id": "p4",
+              "text": "わたし",
+              "fragment": true
+            }
+          ],
+          "answerOrder": [
+            "p4",
+            "p3",
+            "p2",
+            "p1"
+          ],
+          "target": {
+            "ja": "わたしはきょう出かける。",
+            "reading": "わたしはきょうでかける。",
+            "tts": "わたしわきょうでかける。",
+            "particles": [
+              {
+                "surface": "は",
+                "index": 3,
+                "ttsAs": "わ",
+                "role": "助詞（主題）"
+              }
+            ],
+            "zh": "我今天外出。"
+          },
+          "answerDisplay": "わたしはきょう出かける。",
+          "rule": "助詞「は」接在主題之後，動詞放在句末。",
+          "explanation": "正確順序：わたしは　きょう　出かける。",
+          "source": "new",
+          "answer": [
+            "p4",
+            "p3",
+            "p2",
+            "p1"
+          ]
+        },
+        {
+          "id": "q-n5-12-020",
+          "type": "choice",
+          "kind": "vocab-meaning",
+          "lesson": 2,
+          "grammar": [
+            "g-n5-12-04"
+          ],
+          "prompt": "這個動詞的意思是什麼？",
+          "stem": {
+            "ja": "教える",
+            "reading": "おしえる",
+            "zh": "教；告知",
+            "tts": "おしえる",
+            "particles": [],
+            "wordId": "w-n5-12-009"
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": "起床"
+            },
+            {
+              "id": "b",
+              "text": "教；告知"
+            },
+            {
+              "id": "c",
+              "text": "看"
+            },
+            {
+              "id": "d",
+              "text": "睡覺"
+            }
+          ],
+          "shuffle": false,
+          "answer": "b",
+          "answerDisplay": "教；告知",
+          "rule": "請記住「教える」（おしえる）的意思：教；告知。",
+          "explanation": "「教える」（おしえる）意思是「教；告知」，屬於二類動詞。",
+          "source": "new"
+        },
+        {
+          "id": "q-n5-12-021",
+          "type": "choice",
+          "kind": "concept",
+          "lesson": 2,
+          "grammar": [
+            "g-n5-12-04"
+          ],
+          "prompt": "「見る」（みる）和「食べる」（たべる）為什麼是二類動詞？",
+          "stem": null,
+          "options": [
+            {
+              "id": "a",
+              "text": "兩者的「る」前面分別是い段的「み」和え段的「べ」"
+            },
+            {
+              "id": "b",
+              "text": "因為它們以「く」結尾"
+            },
+            {
+              "id": "c",
+              "text": "因為它們是三類動詞"
+            },
+            {
+              "id": "d",
+              "text": "因為它們只有兩個假名"
+            }
+          ],
+          "shuffle": false,
+          "answer": "a",
+          "answerDisplay": "兩者的「る」前面分別是い段的「み」和え段的「べ」",
+          "rule": "二類動詞：辭書形以「る」結尾，而且「る」前面是い段或え段。",
+          "explanation": "「み」屬於い段，「べ」屬於え段，兩者都符合二類的條件。",
+          "source": "new"
+        }
+      ],
+      "listening": [
+        {
+          "id": "q-n5-12-022",
+          "type": "listen-choice",
+          "kind": "listen-meaning",
+          "lesson": 2,
+          "grammar": [
+            "g-n5-12-03"
+          ],
+          "prompt": "請聽音頻，選出動詞的意思。",
+          "audio": {
+            "ttsText": "くる",
+            "engine": "ios-tts",
+            "rate": "normal",
+            "file": null
+          },
+          "showStem": false,
+          "options": [
+            {
+              "id": "a",
+              "text": "去"
+            },
+            {
+              "id": "b",
+              "text": "回去；回家"
+            },
+            {
+              "id": "c",
+              "text": "來"
+            },
+            {
+              "id": "d",
+              "text": "做；進行"
+            }
+          ],
+          "shuffle": false,
+          "answer": "c",
+          "reveal": {
+            "ja": "来る",
+            "reading": "くる",
+            "zh": "來",
+            "tts": "くる",
+            "particles": [],
+            "wordId": "w-n5-12-006"
+          },
+          "answerDisplay": "来る（くる）",
+          "rule": "「く・る」＝來；注意不要與「いく」（去）混淆。",
+          "explanation": "聽到「くる」，是「来る」，意思是「來」，屬於三類動詞。",
+          "source": "new",
+          "needsRealDeviceCheck": false,
+          "listeningNote": null
+        },
+        {
+          "id": "q-n5-12-023",
+          "type": "listen-choice",
+          "kind": "listen-choice",
+          "lesson": 2,
+          "grammar": [
+            "g-n5-12-04"
+          ],
+          "prompt": "請聽音頻，選出你聽到的動詞。",
+          "audio": {
+            "ttsText": "おきる",
+            "engine": "ios-tts",
+            "rate": "normal",
+            "file": null
+          },
+          "showStem": false,
+          "options": [
+            {
+              "ja": "教える",
+              "reading": "おしえる",
+              "zh": "教；告知",
+              "tts": "おしえる",
+              "particles": [],
+              "wordId": "w-n5-12-009",
+              "id": "a"
+            },
+            {
+              "ja": "寝る",
+              "reading": "ねる",
+              "zh": "睡覺",
+              "tts": "ねる",
+              "particles": [],
+              "wordId": "w-n5-12-008",
+              "id": "b"
+            },
+            {
+              "ja": "出かける",
+              "reading": "でかける",
+              "zh": "外出",
+              "tts": "でかける",
+              "particles": [],
+              "wordId": "w-n5-12-010",
+              "id": "c"
+            },
+            {
+              "ja": "起きる",
+              "reading": "おきる",
+              "zh": "起床",
+              "tts": "おきる",
+              "particles": [],
+              "wordId": "w-n5-12-007",
+              "id": "d"
+            }
+          ],
+          "shuffle": false,
+          "answer": "d",
+          "reveal": {
+            "ja": "起きる",
+            "reading": "おきる",
+            "zh": "起床",
+            "tts": "おきる",
+            "particles": [],
+            "wordId": "w-n5-12-007"
+          },
+          "answerDisplay": "起きる（おきる）",
+          "rule": "「おきる」有三拍：お・き・る；「おしえる」有四拍。",
+          "explanation": "聽到「お・き・る」，是「起きる」。「おしえる」是「お・し・え・る」，「ねる」只有兩拍。",
+          "source": "new",
+          "needsRealDeviceCheck": false,
+          "listeningNote": null
+        },
+        {
+          "id": "q-n5-12-024",
+          "type": "listen-choice",
+          "kind": "listen-long-vowel-review",
+          "lesson": 2,
+          "grammar": [
+            "g-n5-12-02"
+          ],
+          "prompt": "（長音複習）請聽音頻，選出詞語的意思。",
+          "audio": {
+            "ttsText": "おばあさん",
+            "engine": "ios-tts",
+            "rate": "normal",
+            "file": null
+          },
+          "showStem": false,
+          "options": [
+            {
+              "id": "a",
+              "text": "祖母；老婆婆"
+            },
+            {
+              "id": "b",
+              "text": "叔伯姑姨輩的女性（阿姨）"
+            }
+          ],
+          "shuffle": false,
+          "answer": "a",
+          "reveal": {
+            "ja": "おばあさん",
+            "reading": "おばあさん",
+            "zh": "祖母；老婆婆",
+            "tts": "おばあさん",
+            "particles": []
+          },
+          "answerDisplay": "おばあさん",
+          "rule": "「おばあさん」的「あ」要拉長，比「おばさん」多一拍。",
+          "explanation": "聽到「お・ばあ・さん」，有長音，是「おばあさん」（祖母）。沒有長音的「おばさん」指阿姨。",
+          "source": "new",
+          "needsRealDeviceCheck": true,
+          "listeningNote": "檢查：（1）iPhone 語音是否把「ばあ」的「あ」拉長，與「おばさん」有明顯差別（おばあさん 共 5 拍，おばさん 共 4 拍）；（2）「ば」是否清晰的濁音，沒有讀成「ぱ」或「は」。若兩者聽起來幾乎一樣，此題需改用預錄音檔。"
+        }
+      ]
+    },
+    {
+      "id": "l-n5-12-3",
+      "number": 3,
+      "title": "一類動詞與例外",
+      "description": "學習一類動詞，以及形似二類的一類動詞。",
+      "estimatedMinutes": 10,
+      "prerequisites": [
+        "l-n5-12-2"
+      ],
+      "vocab": [
+        {
+          "id": "w-n5-12-011",
+          "kana": "かう",
+          "kanji": "買う",
+          "reading": "かう",
+          "zh": "買",
+          "tts": "かう",
+          "particles": [],
+          "pos": "動詞",
+          "group": "一類",
+          "groupDetail": "一類（五段）",
+          "groupNote": null,
+          "audio": null,
+          "example": {
+            "id": "e-n5-12-021",
+            "ja": "あした買う。",
+            "reading": "あしたかう。",
+            "tts": "あしたかう。",
+            "particles": [],
+            "zh": "明天買。"
+          },
+          "addedBeyondOutline": false
+        },
+        {
+          "id": "w-n5-12-012",
+          "kana": "まつ",
+          "kanji": "待つ",
+          "reading": "まつ",
+          "zh": "等待",
+          "tts": "まつ",
+          "particles": [],
+          "pos": "動詞",
+          "group": "一類",
+          "groupDetail": "一類（五段）",
+          "groupNote": null,
+          "audio": null,
+          "example": {
+            "id": "e-n5-12-022",
+            "ja": "ちょっと待つ。",
+            "reading": "ちょっとまつ。",
+            "tts": "ちょっとまつ。",
+            "particles": [],
+            "zh": "稍等一下。"
+          },
+          "addedBeyondOutline": false
+        },
+        {
+          "id": "w-n5-12-013",
+          "kana": "かえる",
+          "kanji": "帰る",
+          "reading": "かえる",
+          "zh": "回去；回家",
+          "tts": "かえる",
+          "particles": [],
+          "pos": "動詞",
+          "group": "一類",
+          "groupDetail": "一類（五段）",
+          "groupNote": "一類（看似二類）",
+          "audio": null,
+          "example": {
+            "id": "e-n5-12-023",
+            "ja": "きょう帰る。",
+            "reading": "きょうかえる。",
+            "tts": "きょうかえる。",
+            "particles": [],
+            "zh": "今天回去。"
+          },
+          "addedBeyondOutline": false
+        },
+        {
+          "id": "w-n5-12-014",
+          "kana": "はいる",
+          "kanji": "入る",
+          "reading": "はいる",
+          "zh": "進入",
+          "tts": "はいる",
+          "particles": [],
+          "pos": "動詞",
+          "group": "一類",
+          "groupDetail": "一類（五段）",
+          "groupNote": "一類（看似二類）",
+          "audio": null,
+          "example": {
+            "id": "e-n5-12-024",
+            "ja": "いま入る。",
+            "reading": "いまはいる。",
+            "tts": "いまはいる。",
+            "particles": [],
+            "zh": "現在進去。"
+          },
+          "addedBeyondOutline": false
+        },
+        {
+          "id": "w-n5-12-015",
+          "kana": "はなす",
+          "kanji": "話す",
+          "reading": "はなす",
+          "zh": "說話；交談",
+          "tts": "はなす",
+          "particles": [],
+          "pos": "動詞",
+          "group": "一類",
+          "groupDetail": "一類（五段）",
+          "groupNote": null,
+          "audio": null,
+          "example": {
+            "id": "e-n5-12-025",
+            "ja": "ちょっと話す。",
+            "reading": "ちょっとはなす。",
+            "tts": "ちょっとはなす。",
+            "particles": [],
+            "zh": "稍微說一下。"
+          },
+          "addedBeyondOutline": false
+        }
+      ],
+      "reviewVocab": [],
+      "grammar": {
+        "points": [
+          {
+            "id": "g-n5-12-05",
+            "title": "一類動詞：其餘全部（五段）",
+            "blocks": [
+              {
+                "type": "text",
+                "text": "一類動詞（五段動詞）就是**二類、三類以外的所有動詞**。判斷時有一條最好用的規則：**辭書形不是以「る」結尾的動詞，一定是一類**。"
+              },
+              {
+                "type": "table",
+                "title": "一類動詞的結尾（辭書形最後一個假名）",
+                "headers": [
+                  "最後的假名",
+                  "例子",
+                  "讀音",
+                  "意思"
+                ],
+                "rows": [
+                  [
+                    "う",
+                    {
+                      "ja": "買う",
+                      "reading": "かう",
+                      "tts": "かう",
+                      "particles": [],
+                      "zh": "買"
+                    },
+                    "かう",
+                    "買"
+                  ],
+                  [
+                    "く",
+                    {
+                      "ja": "行く",
+                      "reading": "いく",
+                      "tts": "いく",
+                      "particles": [],
+                      "zh": "去"
+                    },
+                    "いく",
+                    "去"
+                  ],
+                  [
+                    "す",
+                    {
+                      "ja": "話す",
+                      "reading": "はなす",
+                      "tts": "はなす",
+                      "particles": [],
+                      "zh": "說話；交談"
+                    },
+                    "はなす",
+                    "說話；交談"
+                  ],
+                  [
+                    "つ",
+                    {
+                      "ja": "待つ",
+                      "reading": "まつ",
+                      "tts": "まつ",
+                      "particles": [],
+                      "zh": "等待"
+                    },
+                    "まつ",
+                    "等待"
+                  ],
+                  [
+                    "む",
+                    {
+                      "ja": "飲む",
+                      "reading": "のむ",
+                      "tts": "のむ",
+                      "particles": [],
+                      "zh": "喝；飲用"
+                    },
+                    "のむ",
+                    "喝；飲用"
+                  ]
+                ]
+              },
+              {
+                "type": "text",
+                "text": "此外，一類動詞還可能以「ぐ・ぬ・ぶ・る」結尾；這些例子會在之後的單元學習。"
+              },
+              {
+                "type": "text",
+                "text": "**記法**：先看是否為「する」「来る」（三類）→ 再看是否以「る」結尾 → 不是「る」就是一類。"
+              },
+              {
+                "id": "e-n5-12-017",
+                "type": "example",
+                "ja": "あした買う。",
+                "reading": "あしたかう。",
+                "tts": "あしたかう。",
+                "particles": [],
+                "zh": "明天買。",
+                "highlight": [
+                  "う"
+                ],
+                "audio": null,
+                "note": "「う」結尾，不是「る」，是一類動詞。"
+              },
+              {
+                "id": "e-n5-12-018",
+                "type": "example",
+                "ja": "ちょっと待つ。",
+                "reading": "ちょっとまつ。",
+                "tts": "ちょっとまつ。",
+                "particles": [],
+                "zh": "稍等一下。",
+                "highlight": [
+                  "つ"
+                ],
+                "audio": null,
+                "note": "「つ」結尾，是一類動詞。"
+              }
+            ]
+          },
+          {
+            "id": "g-n5-12-06",
+            "title": "形似二類的一類動詞（例外）",
+            "blocks": [
+              {
+                "type": "text",
+                "text": "有少數動詞，「る」前面雖然是い段或え段，**看起來像二類，其實是一類**。這些動詞要**逐個記住**。本單元要認識的有：`帰る`、`入る`（另有`切る`，只作認識）。"
+              },
+              {
+                "type": "table",
+                "title": "形似二類的一類動詞",
+                "headers": [
+                  "辭書形",
+                  "讀音",
+                  "「る」前面",
+                  "意思",
+                  "類別"
+                ],
+                "rows": [
+                  [
+                    {
+                      "ja": "帰る",
+                      "reading": "かえる",
+                      "tts": "かえる",
+                      "particles": [],
+                      "zh": "回去；回家"
+                    },
+                    "え（え段）",
+                    "回去；回家",
+                    "一類（看似二類）"
+                  ],
+                  [
+                    {
+                      "ja": "入る",
+                      "reading": "はいる",
+                      "tts": "はいる",
+                      "particles": [],
+                      "zh": "進入"
+                    },
+                    "い（い段）",
+                    "進入",
+                    "一類（看似二類）"
+                  ],
+                  [
+                    {
+                      "ja": "切る",
+                      "reading": "きる",
+                      "tts": "きる",
+                      "particles": [],
+                      "exposureOnly": true,
+                      "zh": "切；剪"
+                    },
+                    "き（い段）",
+                    "切；剪",
+                    "一類（看似二類）"
+                  ]
+                ]
+              },
+              {
+                "type": "table",
+                "title": "對比：外形相似，類別不同",
+                "headers": [
+                  "辭書形",
+                  "讀音",
+                  "類別"
+                ],
+                "rows": [
+                  [
+                    {
+                      "ja": "食べる",
+                      "reading": "たべる",
+                      "tts": "たべる",
+                      "particles": [],
+                      "zh": "吃"
+                    },
+                    "たべる",
+                    "二類"
+                  ],
+                  [
+                    {
+                      "ja": "帰る",
+                      "reading": "かえる",
+                      "tts": "かえる",
+                      "particles": [],
+                      "zh": "回去；回家"
+                    },
+                    "かえる",
+                    "一類（看似二類）"
+                  ],
+                  [
+                    {
+                      "ja": "見る",
+                      "reading": "みる",
+                      "tts": "みる",
+                      "particles": [],
+                      "zh": "看"
+                    },
+                    "みる",
+                    "二類"
+                  ],
+                  [
+                    {
+                      "ja": "入る",
+                      "reading": "はいる",
+                      "tts": "はいる",
+                      "particles": [],
+                      "zh": "進入"
+                    },
+                    "はいる",
+                    "一類（看似二類）"
+                  ]
+                ]
+              },
+              {
+                "type": "text",
+                "text": "**重點**：看到以「る」結尾又符合「い段／え段＋る」的動詞，先想一想它是否屬於例外。之後的單元（單元 13 起）變形時，例外動詞要按一類的規則變化。"
+              },
+              {
+                "id": "e-n5-12-019",
+                "type": "example",
+                "ja": "きょう帰る。",
+                "reading": "きょうかえる。",
+                "tts": "きょうかえる。",
+                "particles": [],
+                "zh": "今天回去。",
+                "highlight": [
+                  "帰る"
+                ],
+                "audio": null,
+                "note": "「帰る」看似二類，其實是一類動詞。"
+              },
+              {
+                "id": "e-n5-12-020",
+                "type": "example",
+                "ja": "わたしはいま入る。",
+                "reading": "わたしはいまはいる。",
+                "tts": "わたしわいまはいる。",
+                "particles": [
+                  {
+                    "surface": "は",
+                    "index": 3,
+                    "ttsAs": "わ",
+                    "role": "助詞（主題）"
+                  }
+                ],
+                "zh": "我現在進去。",
+                "highlight": [
+                  "入る"
+                ],
+                "audio": null,
+                "note": "「入る」讀作「はいる」，是一類動詞（看似二類）。注意：「はいる」的「は」屬於詞語本身，讀「は」；只有助詞「は」才讀「わ」。"
+              }
+            ]
+          }
+        ]
+      },
+      "exercises": [
+        {
+          "id": "q-n5-12-025",
+          "type": "choice",
+          "kind": "verb-group",
+          "lesson": 3,
+          "grammar": [
+            "g-n5-12-05"
+          ],
+          "prompt": "這個動詞屬於哪一類？",
+          "stem": {
+            "ja": "買う",
+            "reading": "かう",
+            "zh": "買",
+            "tts": "かう",
+            "particles": [],
+            "wordId": "w-n5-12-011"
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": "一類（五段）"
+            },
+            {
+              "id": "b",
+              "text": "二類（一段）"
+            },
+            {
+              "id": "c",
+              "text": "三類（不規則）"
+            }
+          ],
+          "shuffle": false,
+          "answer": "a",
+          "answerDisplay": "一類（五段）",
+          "rule": "辭書形若不是以「る」結尾，就必定是一類動詞。",
+          "explanation": "「買う」（かう）以「う」結尾，不是「る」，因此是一類動詞。",
+          "source": "new"
+        },
+        {
+          "id": "q-n5-12-026",
+          "type": "choice",
+          "kind": "verb-group",
+          "lesson": 3,
+          "grammar": [
+            "g-n5-12-05"
+          ],
+          "prompt": "這個動詞屬於哪一類？",
+          "stem": {
+            "ja": "話す",
+            "reading": "はなす",
+            "zh": "說話；交談",
+            "tts": "はなす",
+            "particles": [],
+            "wordId": "w-n5-12-015"
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": "一類（五段）"
+            },
+            {
+              "id": "b",
+              "text": "二類（一段）"
+            },
+            {
+              "id": "c",
+              "text": "三類（不規則）"
+            }
+          ],
+          "shuffle": false,
+          "answer": "a",
+          "answerDisplay": "一類（五段）",
+          "rule": "辭書形若不是以「る」結尾，就必定是一類動詞。",
+          "explanation": "「話す」（はなす）以「す」結尾，不是「る」，因此是一類動詞。",
+          "source": "new"
+        },
+        {
+          "id": "q-n5-12-027",
+          "type": "choice",
+          "kind": "verb-group",
+          "lesson": 3,
+          "grammar": [
+            "g-n5-12-06"
+          ],
+          "prompt": "這個動詞屬於哪一類？（留意：形似二類）",
+          "stem": {
+            "ja": "帰る",
+            "reading": "かえる",
+            "zh": "回去；回家",
+            "tts": "かえる",
+            "particles": [],
+            "wordId": "w-n5-12-013"
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": "一類（五段）"
+            },
+            {
+              "id": "b",
+              "text": "二類（一段）"
+            },
+            {
+              "id": "c",
+              "text": "三類（不規則）"
+            }
+          ],
+          "shuffle": false,
+          "answer": "a",
+          "answerDisplay": "一類（五段，看似二類）",
+          "rule": "「帰る」「入る」等少數動詞，「る」前面雖是い段或え段，看似二類，其實屬於一類，必須逐個記住。",
+          "explanation": "「帰る」（かえる）的「る」前面是「え」（え段），看似二類，但屬於例外，是一類動詞。",
+          "source": "reused",
+          "sourceRef": "batch1-n5-day1-7/content/lessons/n5w1-d1v.json#n5w1-d1v-q2",
+          "sourceNote": "題幹沿用舊題（帰る），解說以書面中文重寫，並刪去本單元未教的例外詞。"
+        },
+        {
+          "id": "q-n5-12-028",
+          "type": "choice",
+          "kind": "verb-group",
+          "lesson": 3,
+          "grammar": [
+            "g-n5-12-06"
+          ],
+          "prompt": "這個動詞屬於哪一類？（留意：形似二類）",
+          "stem": {
+            "ja": "入る",
+            "reading": "はいる",
+            "zh": "進入",
+            "tts": "はいる",
+            "particles": [],
+            "wordId": "w-n5-12-014"
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": "一類（五段）"
+            },
+            {
+              "id": "b",
+              "text": "二類（一段）"
+            },
+            {
+              "id": "c",
+              "text": "三類（不規則）"
+            }
+          ],
+          "shuffle": false,
+          "answer": "a",
+          "answerDisplay": "一類（五段，看似二類）",
+          "rule": "「帰る」「入る」等少數動詞，「る」前面雖是い段或え段，看似二類，其實屬於一類，必須逐個記住。",
+          "explanation": "「入る」（はいる）的「る」前面是「い」（い段），看似二類，但屬於例外，是一類動詞。",
+          "source": "new"
+        },
+        {
+          "id": "q-n5-12-029",
+          "type": "match",
+          "kind": "match-verb-group",
+          "lesson": 3,
+          "grammar": [
+            "g-n5-12-05",
+            "g-n5-12-06"
+          ],
+          "prompt": "請把動詞與它所屬的類別配對。",
+          "left": [
+            {
+              "ja": "帰る",
+              "reading": "かえる",
+              "zh": "回去；回家",
+              "tts": "かえる",
+              "particles": [],
+              "wordId": "w-n5-12-013",
+              "id": "l1"
+            },
+            {
+              "ja": "食べる",
+              "reading": "たべる",
+              "zh": "吃",
+              "tts": "たべる",
+              "particles": [],
+              "wordId": "w-n5-12-001",
+              "id": "l2"
+            },
+            {
+              "ja": "待つ",
+              "reading": "まつ",
+              "zh": "等待",
+              "tts": "まつ",
+              "particles": [],
+              "wordId": "w-n5-12-012",
+              "id": "l3"
+            },
+            {
+              "ja": "来る",
+              "reading": "くる",
+              "zh": "來",
+              "tts": "くる",
+              "particles": [],
+              "wordId": "w-n5-12-006",
+              "id": "l4"
+            },
+            {
+              "ja": "入る",
+              "reading": "はいる",
+              "zh": "進入",
+              "tts": "はいる",
+              "particles": [],
+              "wordId": "w-n5-12-014",
+              "id": "l5"
+            }
+          ],
+          "right": [
+            {
+              "id": "r1",
+              "text": "一類"
+            },
+            {
+              "id": "r2",
+              "text": "二類"
+            },
+            {
+              "id": "r3",
+              "text": "三類"
+            }
+          ],
+          "answer": {
+            "l1": "r1",
+            "l2": "r2",
+            "l3": "r1",
+            "l4": "r3",
+            "l5": "r1"
+          },
+          "answerDisplay": "帰る → 一類 ｜ 食べる → 二類 ｜ 待つ → 一類 ｜ 来る → 三類 ｜ 入る → 一類",
+          "rule": "「帰る」「入る」是一類（看似二類）；「食べる」是二類；「来る」是三類。",
+          "explanation": "かえる・まつ・はいる＝一類；たべる＝二類；くる＝三類。",
+          "source": "new"
+        },
+        {
+          "id": "q-n5-12-030",
+          "type": "choice",
+          "kind": "concept",
+          "lesson": 3,
+          "grammar": [
+            "g-n5-12-06"
+          ],
+          "prompt": "下列哪一組兩個動詞都是「形似二類的一類動詞」？",
+          "stem": null,
+          "options": [
+            {
+              "id": "a",
+              "ja": "帰る・入る",
+              "reading": "かえる・はいる",
+              "zh": "回去・進入",
+              "tts": "かえる・はいる",
+              "particles": []
+            },
+            {
+              "id": "b",
+              "ja": "食べる・見る",
+              "reading": "たべる・みる",
+              "zh": "吃・看",
+              "tts": "たべる・みる",
+              "particles": []
+            },
+            {
+              "id": "c",
+              "ja": "する・来る",
+              "reading": "する・くる",
+              "zh": "做・來",
+              "tts": "する・くる",
+              "particles": []
+            },
+            {
+              "id": "d",
+              "ja": "飲む・行く",
+              "reading": "のむ・いく",
+              "zh": "喝・去",
+              "tts": "のむ・いく",
+              "particles": []
+            }
+          ],
+          "shuffle": false,
+          "answer": "a",
+          "answerDisplay": "帰る・入る（かえる・はいる）",
+          "rule": "「帰る」「入る」的「る」前面是え段、い段，看似二類，但屬於一類。",
+          "explanation": "「食べる・見る」是二類，「する・来る」是三類，「飲む・行く」是一般的一類（結尾不是「る」）。",
+          "source": "new"
+        },
+        {
+          "id": "q-n5-12-031",
+          "type": "fill",
+          "kind": "dictionary-form-ending",
+          "lesson": 3,
+          "grammar": [
+            "g-n5-12-05"
+          ],
+          "prompt": "請選出正確的假名，補全動詞的辭書形（意思：等待）。",
+          "stem": {
+            "ja": "ま＿",
+            "reading": "ま＿",
+            "blank": true,
+            "zh": "等待",
+            "tts": null,
+            "particles": [],
+            "full": {
+              "ja": "待つ",
+              "reading": "まつ",
+              "tts": "まつ",
+              "particles": [],
+              "zh": "等待"
+            },
+            "wordId": "w-n5-12-012"
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": "る"
+            },
+            {
+              "id": "b",
+              "text": "つ"
+            },
+            {
+              "id": "c",
+              "text": "う"
+            },
+            {
+              "id": "d",
+              "text": "く"
+            }
+          ],
+          "shuffle": false,
+          "answer": "b",
+          "answerDisplay": "まつ（待つ）",
+          "rule": "「待つ」（まつ）是一類動詞，辭書形以う段的「つ」結尾。",
+          "explanation": "「ま・つ」（待つ）的最後一個假名是「つ」。",
+          "source": "new"
+        },
+        {
+          "id": "q-n5-12-032",
+          "type": "reorder",
+          "kind": "sentence-order",
+          "lesson": 3,
+          "grammar": [
+            "g-n5-12-05"
+          ],
+          "prompt": "請把下面的詞語排成正確的日語（意思：稍等一下）。",
+          "pieces": [
+            {
+              "id": "p1",
+              "text": "待つ",
+              "fragment": true
+            },
+            {
+              "id": "p2",
+              "text": "ちょっと",
+              "fragment": true
+            }
+          ],
+          "answerOrder": [
+            "p2",
+            "p1"
+          ],
+          "target": {
+            "ja": "ちょっと待つ。",
+            "reading": "ちょっとまつ。",
+            "tts": "ちょっとまつ。",
+            "particles": [],
+            "zh": "稍等一下。"
+          },
+          "answerDisplay": "ちょっと待つ。",
+          "rule": "副詞「ちょっと」放在動詞之前。",
+          "explanation": "正確順序：ちょっと　待つ。",
+          "source": "new",
+          "answer": [
+            "p2",
+            "p1"
+          ]
+        },
+        {
+          "id": "q-n5-12-033",
+          "type": "choice",
+          "kind": "vocab-meaning",
+          "lesson": 3,
+          "grammar": [
+            "g-n5-12-06"
+          ],
+          "prompt": "這個動詞的意思是什麼？",
+          "stem": {
+            "ja": "入る",
+            "reading": "はいる",
+            "zh": "進入",
+            "tts": "はいる",
+            "particles": [],
+            "wordId": "w-n5-12-014"
+          },
+          "options": [
+            {
+              "id": "a",
+              "text": "買"
+            },
+            {
+              "id": "b",
+              "text": "等待"
+            },
+            {
+              "id": "c",
+              "text": "進入"
+            },
+            {
+              "id": "d",
+              "text": "說話；交談"
+            }
+          ],
+          "shuffle": false,
+          "answer": "c",
+          "answerDisplay": "進入",
+          "rule": "請記住「入る」（はいる）的意思：進入。",
+          "explanation": "「入る」（はいる）意思是「進入」，屬於一類動詞。",
+          "source": "new"
+        },
+        {
+          "id": "q-n5-12-034",
+          "type": "choice",
+          "kind": "concept",
+          "lesson": 3,
+          "grammar": [
+            "g-n5-12-06"
+          ],
+          "prompt": "關於「食べる」（たべる）和「帰る」（かえる），下列哪一項正確？",
+          "stem": null,
+          "options": [
+            {
+              "id": "a",
+              "text": "兩者都是二類動詞"
+            },
+            {
+              "id": "b",
+              "text": "食べる是二類，帰る是一類"
+            },
+            {
+              "id": "c",
+              "text": "食べる是一類，帰る是二類"
+            },
+            {
+              "id": "d",
+              "text": "兩者都是三類動詞"
+            }
+          ],
+          "shuffle": false,
+          "answer": "b",
+          "answerDisplay": "食べる是二類，帰る是一類",
+          "rule": "「帰る」的「る」前面雖是え段，但屬於例外，是一類動詞。",
+          "explanation": "「食べる」符合二類條件；「帰る」是形似二類的一類，須逐個記住。",
+          "source": "new"
+        }
+      ],
+      "listening": [
+        {
+          "id": "q-n5-12-035",
+          "type": "listen-choice",
+          "kind": "listen-meaning",
+          "lesson": 3,
+          "grammar": [
+            "g-n5-12-05"
+          ],
+          "prompt": "請聽音頻，選出動詞的意思。",
+          "audio": {
+            "ttsText": "かう",
+            "engine": "ios-tts",
+            "rate": "normal",
+            "file": null
+          },
+          "showStem": false,
+          "options": [
+            {
+              "id": "a",
+              "text": "吃"
+            },
+            {
+              "id": "b",
+              "text": "等待"
+            },
+            {
+              "id": "c",
+              "text": "買"
+            },
+            {
+              "id": "d",
+              "text": "說話；交談"
+            }
+          ],
+          "shuffle": false,
+          "answer": "c",
+          "reveal": {
+            "ja": "買う",
+            "reading": "かう",
+            "zh": "買",
+            "tts": "かう",
+            "particles": [],
+            "wordId": "w-n5-12-011"
+          },
+          "answerDisplay": "買う（かう）",
+          "rule": "「か・う」＝買。",
+          "explanation": "聽到「かう」，是「買う」，意思是「買」，結尾是「う」，屬於一類動詞。",
+          "source": "new",
+          "needsRealDeviceCheck": false,
+          "listeningNote": null
+        },
+        {
+          "id": "q-n5-12-036",
+          "type": "listen-choice",
+          "kind": "listen-choice",
+          "lesson": 3,
+          "grammar": [
+            "g-n5-12-06"
+          ],
+          "prompt": "請聽音頻，選出你聽到的動詞。",
+          "audio": {
+            "ttsText": "かえる",
+            "engine": "ios-tts",
+            "rate": "normal",
+            "file": null
+          },
+          "showStem": false,
+          "options": [
+            {
+              "ja": "買う",
+              "reading": "かう",
+              "zh": "買",
+              "tts": "かう",
+              "particles": [],
+              "wordId": "w-n5-12-011",
+              "id": "a"
+            },
+            {
+              "ja": "入る",
+              "reading": "はいる",
+              "zh": "進入",
+              "tts": "はいる",
+              "particles": [],
+              "wordId": "w-n5-12-014",
+              "id": "b"
+            },
+            {
+              "ja": "帰る",
+              "reading": "かえる",
+              "zh": "回去；回家",
+              "tts": "かえる",
+              "particles": [],
+              "wordId": "w-n5-12-013",
+              "id": "c"
+            },
+            {
+              "ja": "話す",
+              "reading": "はなす",
+              "zh": "說話；交談",
+              "tts": "はなす",
+              "particles": [],
+              "wordId": "w-n5-12-015",
+              "id": "d"
+            }
+          ],
+          "shuffle": false,
+          "answer": "c",
+          "reveal": {
+            "ja": "帰る",
+            "reading": "かえる",
+            "zh": "回去；回家",
+            "tts": "かえる",
+            "particles": [],
+            "wordId": "w-n5-12-013"
+          },
+          "answerDisplay": "帰る（かえる）",
+          "rule": "「かえる」有三拍：か・え・る。與「かう」（兩拍）不同。",
+          "explanation": "聽到「か・え・る」，是「帰る」。它看似二類，其實是一類動詞。",
+          "source": "new",
+          "needsRealDeviceCheck": false,
+          "listeningNote": "（非長音題）部分語音可能把「かえる」讀成「蛙」的高低音調；本題只要求辨別假名，不要求音調。"
+        },
+        {
+          "id": "q-n5-12-037",
+          "type": "listen-choice",
+          "kind": "listen-group",
+          "lesson": 3,
+          "grammar": [
+            "g-n5-12-06"
+          ],
+          "prompt": "請聽音頻，判斷這個動詞屬於哪一類。",
+          "audio": {
+            "ttsText": "はいる",
+            "engine": "ios-tts",
+            "rate": "normal",
+            "file": null
+          },
+          "showStem": false,
+          "options": [
+            {
+              "id": "a",
+              "text": "一類（五段）"
+            },
+            {
+              "id": "b",
+              "text": "二類（一段）"
+            },
+            {
+              "id": "c",
+              "text": "三類（不規則）"
+            }
+          ],
+          "shuffle": false,
+          "answer": "a",
+          "reveal": {
+            "ja": "入る",
+            "reading": "はいる",
+            "zh": "進入",
+            "tts": "はいる",
+            "particles": [],
+            "wordId": "w-n5-12-014"
+          },
+          "answerDisplay": "入る（はいる）",
+          "rule": "「はいる」看似二類，其實是一類。",
+          "explanation": "聽到「はいる」，是「入る」，屬於一類動詞（看似二類）。",
+          "source": "new",
+          "needsRealDeviceCheck": false,
+          "listeningNote": null
+        }
+      ]
+    }
+  ],
+  "tips": {
+    "sections": [
+      {
+        "id": "tip-n5-12-1",
+        "title": "核心原則：動詞一定由辭書形出發",
+        "blocks": [
+          {
+            "type": "text",
+            "text": "學動詞時，**第一步永遠是辭書形**：先認得辭書形，再判斷它屬於哪一類，之後的所有變化（單元 13 起）才能正確推導。"
+          },
+          {
+            "type": "text",
+            "text": "辭書形的**最後一個假名一定屬於う段**：`う・く・ぐ・す・つ・ぬ・ぶ・む・る`。"
+          },
+          {
+            "id": "e-n5-12-026",
+            "type": "example",
+            "ja": "いま食べる。",
+            "reading": "いまたべる。",
+            "tts": "いまたべる。",
+            "particles": [],
+            "zh": "現在吃。",
+            "highlight": [
+              "る"
+            ],
+            "audio": null,
+            "note": "辭書形可直接結束簡短的句子。"
+          }
+        ]
+      },
+      {
+        "id": "tip-n5-12-2",
+        "title": "三類動詞分類流程圖",
+        "blocks": [
+          {
+            "type": "flowchart",
+            "ref": "tip-n5-12-flow"
+          }
+        ]
+      },
+      {
+        "id": "tip-n5-12-3",
+        "title": "形似二類的一類動詞（帰る、入る、切る）",
+        "blocks": [
+          {
+            "type": "table_ref",
+            "ref": "tbl-n5-12-2"
+          },
+          {
+            "type": "text",
+            "text": "**記憶方法**：把它們當作「必須單獨記住的名單」，遇到「い段／え段＋る」的動詞時，先查這份名單。"
+          },
+          {
+            "id": "e-n5-12-027",
+            "type": "example",
+            "ja": "きょう帰る。",
+            "reading": "きょうかえる。",
+            "tts": "きょうかえる。",
+            "particles": [],
+            "zh": "今天回去。",
+            "highlight": [
+              "帰る"
+            ],
+            "audio": null,
+            "note": "一類（看似二類）。"
+          },
+          {
+            "id": "e-n5-12-028",
+            "type": "example",
+            "ja": "いま入る。",
+            "reading": "いまはいる。",
+            "tts": "いまはいる。",
+            "particles": [],
+            "zh": "現在進去。",
+            "highlight": [
+              "入る"
+            ],
+            "audio": null,
+            "note": "一類（看似二類）。"
+          }
+        ]
+      },
+      {
+        "id": "tip-n5-12-4",
+        "title": "助詞「は」的讀音提醒",
+        "blocks": [
+          {
+            "type": "text",
+            "text": "作為助詞的「は」讀作「わ」，但詞語本身的「は」維持原音。例如「わたし**は**」讀作「わたしわ」，而「**は**いる」仍讀作「はいる」。"
+          },
+          {
+            "id": "e-n5-12-029",
+            "type": "example",
+            "ja": "わたしはあした来る。",
+            "reading": "わたしはあしたくる。",
+            "tts": "わたしわあしたくる。",
+            "particles": [
+              {
+                "surface": "は",
+                "index": 3,
+                "ttsAs": "わ",
+                "role": "助詞（主題）"
+              }
+            ],
+            "zh": "我明天來。",
+            "highlight": [
+              "は"
+            ],
+            "audio": null,
+            "note": "第一個「は」是助詞，讀作「わ」；其餘詞語沒有助詞。"
+          }
+        ]
+      }
+    ],
+    "tables": [
+      {
+        "id": "tbl-n5-12-1",
+        "title": "三類動詞比較表",
+        "headers": [
+          "類別",
+          "別稱",
+          "判斷方法",
+          "例子"
+        ],
+        "rows": [
+          [
+            "一類",
+            "五段動詞",
+            "結尾不是「る」；或形似二類的例外",
+            [
+              {
+                "ja": "飲む",
+                "reading": "のむ",
+                "tts": "のむ",
+                "particles": [],
+                "zh": "喝；飲用"
+              },
+              {
+                "ja": "買う",
+                "reading": "かう",
+                "tts": "かう",
+                "particles": [],
+                "zh": "買"
+              },
+              {
+                "ja": "帰る",
+                "reading": "かえる",
+                "tts": "かえる",
+                "particles": [],
+                "zh": "回去；回家"
+              }
+            ]
+          ],
+          [
+            "二類",
+            "一段動詞",
+            "以「る」結尾，前面是い段或え段（非例外）",
+            [
+              {
+                "ja": "食べる",
+                "reading": "たべる",
+                "tts": "たべる",
+                "particles": [],
+                "zh": "吃"
+              },
+              {
+                "ja": "起きる",
+                "reading": "おきる",
+                "tts": "おきる",
+                "particles": [],
+                "zh": "起床"
+              },
+              {
+                "ja": "見る",
+                "reading": "みる",
+                "tts": "みる",
+                "particles": [],
+                "zh": "看"
+              }
+            ]
+          ],
+          [
+            "三類",
+            "不規則動詞",
+            "只有兩個",
+            [
+              {
+                "ja": "する",
+                "reading": "する",
+                "tts": "する",
+                "particles": [],
+                "zh": "做；進行"
+              },
+              {
+                "ja": "来る",
+                "reading": "くる",
+                "tts": "くる",
+                "particles": [],
+                "zh": "來"
+              }
+            ]
+          ]
+        ]
+      },
+      {
+        "id": "tbl-n5-12-2",
+        "title": "形似二類的一類動詞",
+        "headers": [
+          "辭書形",
+          "讀音",
+          "意思",
+          "類別"
+        ],
+        "rows": [
+          [
+            {
+              "ja": "帰る",
+              "reading": "かえる",
+              "tts": "かえる",
+              "particles": [],
+              "zh": "回去；回家"
+            },
+            "かえる",
+            "回去；回家",
+            "一類（看似二類）"
+          ],
+          [
+            {
+              "ja": "入る",
+              "reading": "はいる",
+              "tts": "はいる",
+              "particles": [],
+              "zh": "進入"
+            },
+            "はいる",
+            "進入",
+            "一類（看似二類）"
+          ],
+          [
+            {
+              "ja": "切る",
+              "reading": "きる",
+              "tts": "きる",
+              "particles": [],
+              "exposureOnly": true,
+              "zh": "切；剪"
+            },
+            "きる",
+            "切；剪",
+            "一類（看似二類）"
+          ]
+        ]
+      }
+    ],
+    "flowcharts": [
+      {
+        "id": "tip-n5-12-flow",
+        "type": "flowchart",
+        "title": "三類動詞分類流程圖",
+        "nodes": [
+          {
+            "id": "n1",
+            "text": "辭書形是「する」或「来る」（くる）嗎？"
+          },
+          {
+            "id": "n2",
+            "text": "辭書形是否以「る」結尾？"
+          },
+          {
+            "id": "n3",
+            "text": "「る」前面的假名是い段或え段嗎？"
+          },
+          {
+            "id": "n4",
+            "text": "是否為例外（帰る、入る、切る等）？"
+          },
+          {
+            "id": "r3",
+            "text": "三類動詞",
+            "result": "三類"
+          },
+          {
+            "id": "r1a",
+            "text": "一類動詞（結尾不是「る」）",
+            "result": "一類"
+          },
+          {
+            "id": "r1b",
+            "text": "一類動詞（「る」前面不是い段或え段）",
+            "result": "一類"
+          },
+          {
+            "id": "r1c",
+            "text": "一類動詞（看似二類）",
+            "result": "一類"
+          },
+          {
+            "id": "r2",
+            "text": "二類動詞",
+            "result": "二類"
+          }
+        ],
+        "edges": [
+          {
+            "from": "n1",
+            "to": "r3",
+            "label": "是"
+          },
+          {
+            "from": "n1",
+            "to": "n2",
+            "label": "否"
+          },
+          {
+            "from": "n2",
+            "to": "r1a",
+            "label": "否"
+          },
+          {
+            "from": "n2",
+            "to": "n3",
+            "label": "是"
+          },
+          {
+            "from": "n3",
+            "to": "r1b",
+            "label": "否"
+          },
+          {
+            "from": "n3",
+            "to": "n4",
+            "label": "是"
+          },
+          {
+            "from": "n4",
+            "to": "r1c",
+            "label": "是"
+          },
+          {
+            "from": "n4",
+            "to": "r2",
+            "label": "否"
+          }
+        ],
+        "stepsText": [
+          "第一步：是「する」或「来る」嗎？是→三類。",
+          "第二步：不以「る」結尾→一類。",
+          "第三步：以「る」結尾，但「る」前面不是い段或え段→一類。",
+          "第四步：「る」前面是い段或え段→先檢查是否為例外（帰る、入る、切る）：是→一類；否→二類。"
+        ]
+      }
+    ]
+  },
+  "story": {
+    "id": "st-n5-12",
+    "title": "分辨我的一天的動詞",
+    "intro": "以下是一份備忘錄，每一行都以動詞的辭書形結束。請逐行閱讀，找出動詞，並判斷它屬於哪一類。",
+    "reading": {
+      "id": "st-n5-12-r",
+      "title": "讀：備忘錄裡的動詞",
+      "lines": [
+        {
+          "id": "s-n5-12-001",
+          "ja": "あさ起きる。",
+          "reading": "あさおきる。",
+          "tts": "あさおきる。",
+          "particles": [],
+          "zh": "早上起床。",
+          "verbWordId": "w-n5-12-007",
+          "group": "二類",
+          "audio": null
+        },
+        {
+          "id": "s-n5-12-002",
+          "ja": "いま食べる。",
+          "reading": "いまたべる。",
+          "tts": "いまたべる。",
+          "particles": [],
+          "zh": "現在吃。",
+          "verbWordId": "w-n5-12-001",
+          "group": "二類",
+          "audio": null
+        },
+        {
+          "id": "s-n5-12-003",
+          "ja": "ちょっと飲む。",
+          "reading": "ちょっとのむ。",
+          "tts": "ちょっとのむ。",
+          "particles": [],
+          "zh": "稍微喝一點。",
+          "verbWordId": "w-n5-12-002",
+          "group": "一類",
+          "audio": null
+        },
+        {
+          "id": "s-n5-12-004",
+          "ja": "きょう出かける。",
+          "reading": "きょうでかける。",
+          "tts": "きょうでかける。",
+          "particles": [],
+          "zh": "今天外出。",
+          "verbWordId": "w-n5-12-010",
+          "group": "二類",
+          "audio": null
+        },
+        {
+          "id": "s-n5-12-005",
+          "ja": "あした行く。",
+          "reading": "あしたいく。",
+          "tts": "あしたいく。",
+          "particles": [],
+          "zh": "明天去。",
+          "verbWordId": "w-n5-12-003",
+          "group": "一類",
+          "audio": null
+        },
+        {
+          "id": "s-n5-12-006",
+          "ja": "ちょっと待つ。",
+          "reading": "ちょっとまつ。",
+          "tts": "ちょっとまつ。",
+          "particles": [],
+          "zh": "稍等一下。",
+          "verbWordId": "w-n5-12-012",
+          "group": "一類",
+          "audio": null
+        },
+        {
+          "id": "s-n5-12-007",
+          "ja": "いま入る。",
+          "reading": "いまはいる。",
+          "tts": "いまはいる。",
+          "particles": [],
+          "zh": "現在進去。",
+          "verbWordId": "w-n5-12-014",
+          "group": "一類（看似二類）",
+          "audio": null
+        },
+        {
+          "id": "s-n5-12-008",
+          "ja": "ちょっと見る。",
+          "reading": "ちょっとみる。",
+          "tts": "ちょっとみる。",
+          "particles": [],
+          "zh": "稍微看一下。",
+          "verbWordId": "w-n5-12-004",
+          "group": "二類",
+          "audio": null
+        },
+        {
+          "id": "s-n5-12-009",
+          "ja": "ちょっと話す。",
+          "reading": "ちょっとはなす。",
+          "tts": "ちょっとはなす。",
+          "particles": [],
+          "zh": "稍微說幾句。",
+          "verbWordId": "w-n5-12-015",
+          "group": "一類",
+          "audio": null
+        },
+        {
+          "id": "s-n5-12-010",
+          "ja": "あした買う。",
+          "reading": "あしたかう。",
+          "tts": "あしたかう。",
+          "particles": [],
+          "zh": "明天買。",
+          "verbWordId": "w-n5-12-011",
+          "group": "一類",
+          "audio": null
+        },
+        {
+          "id": "s-n5-12-011",
+          "ja": "わたしはあした来る。",
+          "reading": "わたしはあしたくる。",
+          "tts": "わたしわあしたくる。",
+          "particles": [
+            {
+              "surface": "は",
+              "index": 3,
+              "ttsAs": "わ",
+              "role": "助詞（主題）"
+            }
+          ],
+          "zh": "我明天會來。",
+          "verbWordId": "w-n5-12-006",
+          "group": "三類",
+          "audio": null
+        },
+        {
+          "id": "s-n5-12-012",
+          "ja": "きょう帰る。",
+          "reading": "きょうかえる。",
+          "tts": "きょうかえる。",
+          "particles": [],
+          "zh": "今天回去。",
+          "verbWordId": "w-n5-12-013",
+          "group": "一類（看似二類）",
+          "audio": null
+        },
+        {
+          "id": "s-n5-12-013",
+          "ja": "あした教える。",
+          "reading": "あしたおしえる。",
+          "tts": "あしたおしえる。",
+          "particles": [],
+          "zh": "明天教（或告知）。",
+          "verbWordId": "w-n5-12-009",
+          "group": "二類",
+          "audio": null
+        },
+        {
+          "id": "s-n5-12-014",
+          "ja": "ちょっとする。",
+          "reading": "ちょっとする。",
+          "tts": "ちょっとする。",
+          "particles": [],
+          "zh": "稍微做一下。",
+          "verbWordId": "w-n5-12-005",
+          "group": "三類",
+          "audio": null
+        },
+        {
+          "id": "s-n5-12-015",
+          "ja": "いま寝る。",
+          "reading": "いまねる。",
+          "tts": "いまねる。",
+          "particles": [],
+          "zh": "現在睡覺。",
+          "verbWordId": "w-n5-12-008",
+          "group": "二類",
+          "audio": null
+        }
+      ],
+      "questions": [
+        {
+          "id": "q-n5-12-038",
+          "type": "choice",
+          "kind": "story-reading",
+          "lesson": null,
+          "grammar": [
+            "g-n5-12-04"
+          ],
+          "prompt": "第一行「あさ起きる。」的動詞，屬於哪一類？",
+          "stem": null,
+          "options": [
+            {
+              "id": "a",
+              "text": "一類（五段）"
+            },
+            {
+              "id": "b",
+              "text": "二類（一段）"
+            },
+            {
+              "id": "c",
+              "text": "三類（不規則）"
+            }
+          ],
+          "shuffle": false,
+          "answer": "b",
+          "answerDisplay": "二類（一段）",
+          "rule": "以「る」結尾，「る」前面的「き」屬於い段，是二類動詞。",
+          "explanation": "「起きる」（おきる）是二類動詞。",
+          "source": "new"
+        },
+        {
+          "id": "q-n5-12-039",
+          "type": "choice",
+          "kind": "story-reading",
+          "lesson": null,
+          "grammar": [
+            "g-n5-12-03"
+          ],
+          "prompt": "哪一行的動詞是三類動詞，意思是「來」？",
+          "stem": null,
+          "options": [
+            {
+              "id": "a",
+              "ja": "ちょっと待つ。",
+              "reading": "ちょっとまつ。",
+              "tts": "ちょっとまつ。",
+              "particles": [],
+              "zh": "稍等一下。",
+              "verbWordId": "w-n5-12-012",
+              "group": "一類",
+              "audio": null
+            },
+            {
+              "id": "b",
+              "ja": "わたしはあした来る。",
+              "reading": "わたしはあしたくる。",
+              "tts": "わたしわあしたくる。",
+              "particles": [
+                {
+                  "surface": "は",
+                  "index": 3,
+                  "ttsAs": "わ",
+                  "role": "助詞（主題）"
+                }
+              ],
+              "zh": "我明天會來。",
+              "verbWordId": "w-n5-12-006",
+              "group": "三類",
+              "audio": null
+            },
+            {
+              "id": "c",
+              "ja": "ちょっと見る。",
+              "reading": "ちょっとみる。",
+              "tts": "ちょっとみる。",
+              "particles": [],
+              "zh": "稍微看一下。",
+              "verbWordId": "w-n5-12-004",
+              "group": "二類",
+              "audio": null
+            },
+            {
+              "id": "d",
+              "ja": "あさ起きる。",
+              "reading": "あさおきる。",
+              "tts": "あさおきる。",
+              "particles": [],
+              "zh": "早上起床。",
+              "verbWordId": "w-n5-12-007",
+              "group": "二類",
+              "audio": null
+            }
+          ],
+          "shuffle": false,
+          "answer": "b",
+          "answerDisplay": "わたしはあした来る。",
+          "rule": "三類動詞只有「する」和「来る」；「来る」的意思是「來」。",
+          "explanation": "「来る」（くる）是三類動詞，意思是「來」。",
+          "source": "new"
+        },
+        {
+          "id": "q-n5-12-040",
+          "type": "choice",
+          "kind": "story-reading",
+          "lesson": null,
+          "grammar": [
+            "g-n5-12-06"
+          ],
+          "prompt": "哪一行的動詞是「形似二類的一類動詞」？（四個選項中只有一個）",
+          "stem": null,
+          "options": [
+            {
+              "id": "a",
+              "ja": "あさ起きる。",
+              "reading": "あさおきる。",
+              "tts": "あさおきる。",
+              "particles": [],
+              "zh": "早上起床。",
+              "verbWordId": "w-n5-12-007",
+              "group": "二類",
+              "audio": null
+            },
+            {
+              "id": "b",
+              "ja": "いま食べる。",
+              "reading": "いまたべる。",
+              "tts": "いまたべる。",
+              "particles": [],
+              "zh": "現在吃。",
+              "verbWordId": "w-n5-12-001",
+              "group": "二類",
+              "audio": null
+            },
+            {
+              "id": "c",
+              "ja": "きょう帰る。",
+              "reading": "きょうかえる。",
+              "tts": "きょうかえる。",
+              "particles": [],
+              "zh": "今天回去。",
+              "verbWordId": "w-n5-12-013",
+              "group": "一類（看似二類）",
+              "audio": null
+            },
+            {
+              "id": "d",
+              "ja": "いま寝る。",
+              "reading": "いまねる。",
+              "tts": "いまねる。",
+              "particles": [],
+              "zh": "現在睡覺。",
+              "verbWordId": "w-n5-12-008",
+              "group": "二類",
+              "audio": null
+            }
+          ],
+          "shuffle": false,
+          "answer": "c",
+          "answerDisplay": "きょう帰る。",
+          "rule": "「帰る」的「る」前面是え段，看似二類，其實是一類。",
+          "explanation": "「帰る」（かえる）是一類（看似二類）。",
+          "source": "new"
+        },
+        {
+          "id": "q-n5-12-041",
+          "type": "choice",
+          "kind": "story-reading",
+          "lesson": null,
+          "grammar": [
+            "g-n5-12-06"
+          ],
+          "prompt": "第七行「いま入る。」的動詞是「入る」（はいる），它屬於哪一類？",
+          "stem": null,
+          "options": [
+            {
+              "id": "a",
+              "text": "一類（五段）"
+            },
+            {
+              "id": "b",
+              "text": "二類（一段）"
+            },
+            {
+              "id": "c",
+              "text": "三類（不規則）"
+            }
+          ],
+          "shuffle": false,
+          "answer": "a",
+          "answerDisplay": "一類（五段）",
+          "rule": "「入る」的「る」前面是い段，看似二類，但屬於例外，是一類。",
+          "explanation": "「入る」（はいる）是一類（看似二類）。",
+          "source": "new"
+        },
+        {
+          "id": "q-n5-12-042",
+          "type": "choice",
+          "kind": "story-particle",
+          "lesson": null,
+          "grammar": [
+            "g-n5-12-01"
+          ],
+          "prompt": "第十一行「わたしはあした来る。」的「は」，應該怎樣讀？",
+          "stem": null,
+          "options": [
+            {
+              "id": "a",
+              "text": "わ"
+            },
+            {
+              "id": "b",
+              "text": "は"
+            },
+            {
+              "id": "c",
+              "text": "ば"
+            },
+            {
+              "id": "d",
+              "text": "ぱ"
+            }
+          ],
+          "shuffle": false,
+          "answer": "a",
+          "answerDisplay": "わ",
+          "rule": "作為助詞的「は」讀作「わ」。",
+          "explanation": "「わたしは」讀作「わたしわ」；這個「は」是主題助詞。",
+          "source": "new"
+        },
+        {
+          "id": "q-n5-12-043",
+          "type": "match",
+          "kind": "match-verb-group",
+          "lesson": null,
+          "grammar": [
+            "g-n5-12-02"
+          ],
+          "prompt": "請把故事中的動詞與類別配對。",
+          "left": [
+            {
+              "ja": "起きる",
+              "reading": "おきる",
+              "zh": "起床",
+              "tts": "おきる",
+              "particles": [],
+              "wordId": "w-n5-12-007",
+              "id": "l1"
+            },
+            {
+              "ja": "来る",
+              "reading": "くる",
+              "zh": "來",
+              "tts": "くる",
+              "particles": [],
+              "wordId": "w-n5-12-006",
+              "id": "l2"
+            },
+            {
+              "ja": "買う",
+              "reading": "かう",
+              "zh": "買",
+              "tts": "かう",
+              "particles": [],
+              "wordId": "w-n5-12-011",
+              "id": "l3"
+            },
+            {
+              "ja": "帰る",
+              "reading": "かえる",
+              "zh": "回去；回家",
+              "tts": "かえる",
+              "particles": [],
+              "wordId": "w-n5-12-013",
+              "id": "l4"
+            }
+          ],
+          "right": [
+            {
+              "id": "r1",
+              "text": "二類"
+            },
+            {
+              "id": "r2",
+              "text": "三類"
+            },
+            {
+              "id": "r3",
+              "text": "一類"
+            }
+          ],
+          "answer": {
+            "l1": "r1",
+            "l2": "r2",
+            "l3": "r3",
+            "l4": "r3"
+          },
+          "answerDisplay": "起きる → 二類 ｜ 来る → 三類 ｜ 買う → 一類 ｜ 帰る → 一類",
+          "rule": "二類＝以「る」結尾且前面是い段或え段（非例外）；三類＝する・来る；其餘是一類。",
+          "explanation": "おきる＝二類；くる＝三類；かう＝一類；かえる＝一類（看似二類）。",
+          "source": "new"
+        }
+      ],
+      "task": "閱讀每一行，找出動詞，並判斷類別（一類／二類／三類）。"
+    },
+    "speaking": {
+      "id": "st-n5-12-s",
+      "title": "說：朗讀與分類",
+      "tasks": [
+        {
+          "id": "sp-n5-12-01",
+          "prompt": "逐行朗讀備忘錄，每行讀兩次：第一次慢讀，第二次正常速度。",
+          "targets": [
+            "s-n5-12-001",
+            "s-n5-12-002",
+            "s-n5-12-003",
+            "s-n5-12-004",
+            "s-n5-12-005",
+            "s-n5-12-006",
+            "s-n5-12-007",
+            "s-n5-12-008",
+            "s-n5-12-009",
+            "s-n5-12-010",
+            "s-n5-12-011",
+            "s-n5-12-012",
+            "s-n5-12-013",
+            "s-n5-12-014",
+            "s-n5-12-015"
+          ],
+          "selfCheck": [
+            "是否清楚讀出每個動詞的最後一拍？",
+            "「わたしは」的「は」是否讀作「わ」？"
+          ]
+        },
+        {
+          "id": "sp-n5-12-02",
+          "prompt": "看著每一行，先讀出動詞，再用中文說出它屬於哪一類。",
+          "targets": [
+            "s-n5-12-001",
+            "s-n5-12-002",
+            "s-n5-12-003",
+            "s-n5-12-004",
+            "s-n5-12-005",
+            "s-n5-12-006",
+            "s-n5-12-007",
+            "s-n5-12-008",
+            "s-n5-12-009",
+            "s-n5-12-010",
+            "s-n5-12-011",
+            "s-n5-12-012",
+            "s-n5-12-013",
+            "s-n5-12-014",
+            "s-n5-12-015"
+          ],
+          "selfCheck": [
+            "「帰る」「入る」是否說成「一類（看似二類）」？",
+            "「する」「来る」是否說成三類？"
+          ]
+        }
+      ],
+      "note": "此部分為自我練習，不自動評分。"
+    },
+    "listening": {
+      "id": "st-n5-12-l",
+      "title": "聽：辨認句子與動詞類別",
+      "questions": [
+        {
+          "id": "q-n5-12-044",
+          "type": "listen-choice",
+          "kind": "listen-sentence-meaning",
+          "lesson": null,
+          "grammar": [
+            "g-n5-12-04"
+          ],
+          "prompt": "請聽故事中的一句，選出這句話的意思。",
+          "audio": {
+            "ttsText": "ちょっとみる。",
+            "engine": "ios-tts",
+            "rate": "normal",
+            "file": null
+          },
+          "showStem": false,
+          "options": [
+            {
+              "id": "a",
+              "text": "稍微看一下。"
+            },
+            {
+              "id": "b",
+              "text": "稍等一下。"
+            },
+            {
+              "id": "c",
+              "text": "稍微說幾句。"
+            },
+            {
+              "id": "d",
+              "text": "稍微做一下。"
+            }
+          ],
+          "shuffle": false,
+          "answer": "a",
+          "reveal": {
+            "ja": "ちょっと見る。",
+            "reading": "ちょっとみる。",
+            "tts": "ちょっとみる。",
+            "particles": [],
+            "zh": "稍微看一下。",
+            "verbWordId": "w-n5-12-004",
+            "group": "二類",
+            "audio": null
+          },
+          "answerDisplay": "ちょっと見る。（ちょっとみる。）",
+          "rule": "先抓住動詞：み・る＝看。",
+          "explanation": "聽到「ちょっとみる」，意思是「稍微看一下」。",
+          "source": "new",
+          "needsRealDeviceCheck": false,
+          "listeningNote": null
+        },
+        {
+          "id": "q-n5-12-045",
+          "type": "listen-choice",
+          "kind": "listen-group",
+          "lesson": null,
+          "grammar": [
+            "g-n5-12-06"
+          ],
+          "prompt": "請聽故事中的一句，判斷句中動詞屬於哪一類。",
+          "audio": {
+            "ttsText": "きょうかえる。",
+            "engine": "ios-tts",
+            "rate": "normal",
+            "file": null
+          },
+          "showStem": false,
+          "options": [
+            {
+              "id": "a",
+              "text": "一類（五段）"
+            },
+            {
+              "id": "b",
+              "text": "二類（一段）"
+            },
+            {
+              "id": "c",
+              "text": "三類（不規則）"
+            }
+          ],
+          "shuffle": false,
+          "answer": "a",
+          "reveal": {
+            "ja": "きょう帰る。",
+            "reading": "きょうかえる。",
+            "tts": "きょうかえる。",
+            "particles": [],
+            "zh": "今天回去。",
+            "verbWordId": "w-n5-12-013",
+            "group": "一類（看似二類）",
+            "audio": null
+          },
+          "answerDisplay": "きょう帰る。（きょうかえる。）",
+          "rule": "「かえる」是一類（看似二類）。",
+          "explanation": "聽到「きょうかえる」，動詞是「帰る」，屬於一類（看似二類）。",
+          "source": "new",
+          "needsRealDeviceCheck": false,
+          "listeningNote": null
+        },
+        {
+          "id": "q-n5-12-046",
+          "type": "listen-choice",
+          "kind": "listen-sentence",
+          "lesson": null,
+          "grammar": [
+            "g-n5-12-03"
+          ],
+          "prompt": "請聽故事中的一句，選出你聽到的句子（注意助詞「は」讀作「わ」）。",
+          "audio": {
+            "ttsText": "わたしわあしたくる。",
+            "engine": "ios-tts",
+            "rate": "normal",
+            "file": null
+          },
+          "showStem": false,
+          "options": [
+            {
+              "id": "a",
+              "ja": "わたしはあした来る。",
+              "reading": "わたしはあしたくる。",
+              "tts": "わたしわあしたくる。",
+              "particles": [
+                {
+                  "surface": "は",
+                  "index": 3,
+                  "ttsAs": "わ",
+                  "role": "助詞（主題）"
+                }
+              ],
+              "zh": "我明天會來。",
+              "verbWordId": "w-n5-12-006",
+              "group": "三類",
+              "audio": null
+            },
+            {
+              "id": "b",
+              "ja": "きょう出かける。",
+              "reading": "きょうでかける。",
+              "tts": "きょうでかける。",
+              "particles": [],
+              "zh": "今天外出。",
+              "verbWordId": "w-n5-12-010",
+              "group": "二類",
+              "audio": null
+            },
+            {
+              "id": "c",
+              "ja": "きょう帰る。",
+              "reading": "きょうかえる。",
+              "tts": "きょうかえる。",
+              "particles": [],
+              "zh": "今天回去。",
+              "verbWordId": "w-n5-12-013",
+              "group": "一類（看似二類）",
+              "audio": null
+            },
+            {
+              "id": "d",
+              "ja": "ちょっと見る。",
+              "reading": "ちょっとみる。",
+              "tts": "ちょっとみる。",
+              "particles": [],
+              "zh": "稍微看一下。",
+              "verbWordId": "w-n5-12-004",
+              "group": "二類",
+              "audio": null
+            }
+          ],
+          "shuffle": false,
+          "answer": "a",
+          "reveal": {
+            "ja": "わたしはあした来る。",
+            "reading": "わたしはあしたくる。",
+            "tts": "わたしわあしたくる。",
+            "particles": [
+              {
+                "surface": "は",
+                "index": 3,
+                "ttsAs": "わ",
+                "role": "助詞（主題）"
+              }
+            ],
+            "zh": "我明天會來。",
+            "verbWordId": "w-n5-12-006",
+            "group": "三類",
+            "audio": null
+          },
+          "answerDisplay": "わたしはあした来る。（わたしはあしたくる。）",
+          "rule": "「わたしわ」的「わ」是助詞「は」的讀音。",
+          "explanation": "聽到「わたしわ　あした　くる」，是「わたしはあした来る。」",
+          "source": "new",
+          "needsRealDeviceCheck": false,
+          "listeningNote": "（非長音題）確認 TTS 把助詞「は」讀作「わ」；若 TTS 以文字「は」輸入而讀成「は」，請使用 tts 欄位（已轉為「わ」）。"
+        }
+      ]
+    }
+  },
+  "quiz": {
+    "id": "qz-n5-12",
+    "title": "單元 12 小測",
+    "passRate": 0.8,
+    "questions": [
+      {
+        "id": "q-n5-12-047",
+        "type": "choice",
+        "kind": "verb-group",
+        "lesson": null,
+        "grammar": [
+          "g-n5-12-04"
+        ],
+        "prompt": "這個動詞屬於哪一類？",
+        "stem": {
+          "ja": "食べる",
+          "reading": "たべる",
+          "zh": "吃",
+          "tts": "たべる",
+          "particles": [],
+          "wordId": "w-n5-12-001"
+        },
+        "options": [
+          {
+            "id": "a",
+            "text": "一類（五段）"
+          },
+          {
+            "id": "b",
+            "text": "二類（一段）"
+          },
+          {
+            "id": "c",
+            "text": "三類（不規則）"
+          }
+        ],
+        "shuffle": false,
+        "answer": "b",
+        "answerDisplay": "二類（一段）",
+        "rule": "辭書形以「る」結尾，而且「る」前面的假名屬於い段或え段（例外除外），就是二類動詞。",
+        "explanation": "「食べる」（たべる）以「る」結尾，「る」前面的「べ」屬於え段，因此是二類動詞。",
+        "source": "new"
+      },
+      {
+        "id": "q-n5-12-048",
+        "type": "choice",
+        "kind": "verb-group",
+        "lesson": null,
+        "grammar": [
+          "g-n5-12-05"
+        ],
+        "prompt": "這個動詞屬於哪一類？",
+        "stem": {
+          "ja": "買う",
+          "reading": "かう",
+          "zh": "買",
+          "tts": "かう",
+          "particles": [],
+          "wordId": "w-n5-12-011"
+        },
+        "options": [
+          {
+            "id": "a",
+            "text": "一類（五段）"
+          },
+          {
+            "id": "b",
+            "text": "二類（一段）"
+          },
+          {
+            "id": "c",
+            "text": "三類（不規則）"
+          }
+        ],
+        "shuffle": false,
+        "answer": "a",
+        "answerDisplay": "一類（五段）",
+        "rule": "辭書形若不是以「る」結尾，就必定是一類動詞。",
+        "explanation": "「買う」（かう）以「う」結尾，不是「る」，因此是一類動詞。",
+        "source": "new"
+      },
+      {
+        "id": "q-n5-12-049",
+        "type": "choice",
+        "kind": "verb-group",
+        "lesson": null,
+        "grammar": [
+          "g-n5-12-03"
+        ],
+        "prompt": "這個動詞屬於哪一類？",
+        "stem": {
+          "ja": "来る",
+          "reading": "くる",
+          "zh": "來",
+          "tts": "くる",
+          "particles": [],
+          "wordId": "w-n5-12-006"
+        },
+        "options": [
+          {
+            "id": "a",
+            "text": "一類（五段）"
+          },
+          {
+            "id": "b",
+            "text": "二類（一段）"
+          },
+          {
+            "id": "c",
+            "text": "三類（不規則）"
+          }
+        ],
+        "shuffle": false,
+        "answer": "c",
+        "answerDisplay": "三類（不規則）",
+        "rule": "三類動詞只有「する」和「来る」（くる）兩個，沒有規則可循，必須逐個記住。",
+        "explanation": "「来る」（くる）是三類動詞。",
+        "source": "new"
+      },
+      {
+        "id": "q-n5-12-050",
+        "type": "choice",
+        "kind": "verb-group",
+        "lesson": null,
+        "grammar": [
+          "g-n5-12-06"
+        ],
+        "prompt": "這個動詞屬於哪一類？（留意：形似二類）",
+        "stem": {
+          "ja": "入る",
+          "reading": "はいる",
+          "zh": "進入",
+          "tts": "はいる",
+          "particles": [],
+          "wordId": "w-n5-12-014"
+        },
+        "options": [
+          {
+            "id": "a",
+            "text": "一類（五段）"
+          },
+          {
+            "id": "b",
+            "text": "二類（一段）"
+          },
+          {
+            "id": "c",
+            "text": "三類（不規則）"
+          }
+        ],
+        "shuffle": false,
+        "answer": "a",
+        "answerDisplay": "一類（五段，看似二類）",
+        "rule": "「帰る」「入る」等少數動詞，「る」前面雖是い段或え段，看似二類，其實屬於一類，必須逐個記住。",
+        "explanation": "「入る」（はいる）的「る」前面是「い」（い段），看似二類，但屬於例外，是一類動詞。",
+        "source": "new"
+      },
+      {
+        "id": "q-n5-12-051",
+        "type": "match",
+        "kind": "match-verb-group",
+        "lesson": null,
+        "grammar": [
+          "g-n5-12-03",
+          "g-n5-12-05",
+          "g-n5-12-06"
+        ],
+        "prompt": "請把動詞與它所屬的類別配對。",
+        "left": [
+          {
+            "ja": "来る",
+            "reading": "くる",
+            "zh": "來",
+            "tts": "くる",
+            "particles": [],
+            "wordId": "w-n5-12-006",
+            "id": "l1"
+          },
+          {
+            "ja": "寝る",
+            "reading": "ねる",
+            "zh": "睡覺",
+            "tts": "ねる",
+            "particles": [],
+            "wordId": "w-n5-12-008",
+            "id": "l2"
+          },
+          {
+            "ja": "待つ",
+            "reading": "まつ",
+            "zh": "等待",
+            "tts": "まつ",
+            "particles": [],
+            "wordId": "w-n5-12-012",
+            "id": "l3"
+          },
+          {
+            "ja": "帰る",
+            "reading": "かえる",
+            "zh": "回去；回家",
+            "tts": "かえる",
+            "particles": [],
+            "wordId": "w-n5-12-013",
+            "id": "l4"
+          },
+          {
+            "ja": "する",
+            "reading": "する",
+            "zh": "做；進行",
+            "tts": "する",
+            "particles": [],
+            "wordId": "w-n5-12-005",
+            "id": "l5"
+          }
+        ],
+        "right": [
+          {
+            "id": "r1",
+            "text": "三類"
+          },
+          {
+            "id": "r2",
+            "text": "二類"
+          },
+          {
+            "id": "r3",
+            "text": "一類"
+          }
+        ],
+        "answer": {
+          "l1": "r1",
+          "l2": "r2",
+          "l3": "r3",
+          "l4": "r3",
+          "l5": "r1"
+        },
+        "answerDisplay": "来る → 三類 ｜ 寝る → 二類 ｜ 待つ → 一類 ｜ 帰る → 一類 ｜ する → 三類",
+        "rule": "三類只有する・来る；二類是以る結尾且前面是い段或え段（非例外）；其餘是一類。",
+        "explanation": "くる・する＝三類；ねる＝二類；まつ・かえる＝一類。",
+        "source": "new"
+      },
+      {
+        "id": "q-n5-12-052",
+        "type": "fill",
+        "kind": "dictionary-form-ending",
+        "lesson": null,
+        "grammar": [
+          "g-n5-12-04"
+        ],
+        "prompt": "請選出正確的假名，補全動詞的辭書形（意思：外出）。",
+        "stem": {
+          "ja": "でか＿る",
+          "reading": "でか＿る",
+          "blank": true,
+          "zh": "外出",
+          "tts": null,
+          "particles": [],
+          "full": {
+            "ja": "出かける",
+            "reading": "でかける",
+            "tts": "でかける",
+            "particles": [],
+            "zh": "外出"
+          },
+          "wordId": "w-n5-12-010"
+        },
+        "options": [
+          {
+            "id": "a",
+            "text": "か"
+          },
+          {
+            "id": "b",
+            "text": "け"
+          },
+          {
+            "id": "c",
+            "text": "く"
+          },
+          {
+            "id": "d",
+            "text": "こ"
+          }
+        ],
+        "shuffle": false,
+        "answer": "b",
+        "answerDisplay": "でかける（出かける）",
+        "rule": "二類動詞「る」前面是い段或え段，所以應填え段的「け」。",
+        "explanation": "「で・か・け・る」（出かける）的「る」前面是「け」，屬於え段。",
+        "source": "new"
+      },
+      {
+        "id": "q-n5-12-053",
+        "type": "reorder",
+        "kind": "sentence-order",
+        "lesson": null,
+        "grammar": [
+          "g-n5-12-01"
+        ],
+        "prompt": "請把下面的詞語排成正確的日語（意思：我明天去）。",
+        "pieces": [
+          {
+            "id": "p1",
+            "text": "行く",
+            "fragment": true
+          },
+          {
+            "id": "p2",
+            "text": "あした",
+            "fragment": true
+          },
+          {
+            "id": "p3",
+            "text": "は",
+            "fragment": true,
+            "particle": true
+          },
+          {
+            "id": "p4",
+            "text": "わたし",
+            "fragment": true
+          }
+        ],
+        "answerOrder": [
+          "p4",
+          "p3",
+          "p2",
+          "p1"
+        ],
+        "target": {
+          "ja": "わたしはあした行く。",
+          "reading": "わたしはあしたいく。",
+          "tts": "わたしわあしたいく。",
+          "particles": [
+            {
+              "surface": "は",
+              "index": 3,
+              "ttsAs": "わ",
+              "role": "助詞（主題）"
+            }
+          ],
+          "zh": "我明天去。"
+        },
+        "answerDisplay": "わたしはあした行く。",
+        "rule": "助詞「は」接在主題之後，辭書形放在句末。",
+        "explanation": "正確順序：わたしは　あした　行く。",
+        "source": "new",
+        "answer": [
+          "p4",
+          "p3",
+          "p2",
+          "p1"
+        ]
+      },
+      {
+        "id": "q-n5-12-054",
+        "type": "choice",
+        "kind": "vocab-meaning",
+        "lesson": null,
+        "grammar": [
+          "g-n5-12-05"
+        ],
+        "prompt": "這個動詞的意思是什麼？",
+        "stem": {
+          "ja": "話す",
+          "reading": "はなす",
+          "zh": "說話；交談",
+          "tts": "はなす",
+          "particles": [],
+          "wordId": "w-n5-12-015"
+        },
+        "options": [
+          {
+            "id": "a",
+            "text": "等待"
+          },
+          {
+            "id": "b",
+            "text": "說話；交談"
+          },
+          {
+            "id": "c",
+            "text": "喝；飲用"
+          },
+          {
+            "id": "d",
+            "text": "去"
+          }
+        ],
+        "shuffle": false,
+        "answer": "b",
+        "answerDisplay": "說話；交談",
+        "rule": "請記住「話す」（はなす）的意思：說話；交談。",
+        "explanation": "「話す」（はなす）意思是「說話；交談」，屬於一類動詞。",
+        "source": "new"
+      },
+      {
+        "id": "q-n5-12-055",
+        "type": "choice",
+        "kind": "concept",
+        "lesson": null,
+        "grammar": [
+          "g-n5-12-05"
+        ],
+        "prompt": "辭書形「不是以『る』結尾」的動詞，屬於哪一類？",
+        "stem": null,
+        "options": [
+          {
+            "id": "a",
+            "text": "二類"
+          },
+          {
+            "id": "b",
+            "text": "三類"
+          },
+          {
+            "id": "c",
+            "text": "一類"
+          },
+          {
+            "id": "d",
+            "text": "無法判斷"
+          }
+        ],
+        "shuffle": false,
+        "answer": "c",
+        "answerDisplay": "一類",
+        "rule": "辭書形若不是以「る」結尾，就必定是一類動詞。",
+        "explanation": "二類與三類動詞的辭書形都以「る」結尾，所以不以「る」結尾的只能是一類。",
+        "source": "new"
+      },
+      {
+        "id": "q-n5-12-056",
+        "type": "choice",
+        "kind": "dictionary-form",
+        "lesson": null,
+        "grammar": [
+          "g-n5-12-01"
+        ],
+        "prompt": "下列哪一個不是動詞的辭書形（最後一個假名不屬於う段）？",
+        "stem": null,
+        "options": [
+          {
+            "id": "a",
+            "ja": "飲む",
+            "reading": "のむ",
+            "zh": "喝；飲用",
+            "tts": "のむ",
+            "particles": [],
+            "wordId": "w-n5-12-002"
+          },
+          {
+            "id": "b",
+            "ja": "のま",
+            "reading": "のま",
+            "zh": "（不是辭書形）",
+            "tts": "のま",
+            "particles": [],
+            "nonWord": true
+          },
+          {
+            "id": "c",
+            "ja": "待つ",
+            "reading": "まつ",
+            "zh": "等待",
+            "tts": "まつ",
+            "particles": [],
+            "wordId": "w-n5-12-012"
+          },
+          {
+            "id": "d",
+            "ja": "食べる",
+            "reading": "たべる",
+            "zh": "吃",
+            "tts": "たべる",
+            "particles": [],
+            "wordId": "w-n5-12-001"
+          }
+        ],
+        "shuffle": false,
+        "answer": "b",
+        "answerDisplay": "のま",
+        "rule": "辭書形的最後一個假名一定屬於う段。",
+        "explanation": "「ま」屬於あ段，不屬於う段，所以「のま」不是辭書形。",
+        "source": "new"
+      },
+      {
+        "id": "q-n5-12-057",
+        "type": "listen-choice",
+        "kind": "listen-choice",
+        "lesson": null,
+        "grammar": [
+          "g-n5-12-05"
+        ],
+        "prompt": "請聽音頻，選出你聽到的動詞。",
+        "audio": {
+          "ttsText": "まつ",
+          "engine": "ios-tts",
+          "rate": "normal",
+          "file": null
+        },
+        "showStem": false,
+        "options": [
+          {
+            "ja": "買う",
+            "reading": "かう",
+            "zh": "買",
+            "tts": "かう",
+            "particles": [],
+            "wordId": "w-n5-12-011",
+            "id": "a"
+          },
+          {
+            "ja": "待つ",
+            "reading": "まつ",
+            "zh": "等待",
+            "tts": "まつ",
+            "particles": [],
+            "wordId": "w-n5-12-012",
+            "id": "b"
+          },
+          {
+            "ja": "話す",
+            "reading": "はなす",
+            "zh": "說話；交談",
+            "tts": "はなす",
+            "particles": [],
+            "wordId": "w-n5-12-015",
+            "id": "c"
+          },
+          {
+            "ja": "行く",
+            "reading": "いく",
+            "zh": "去",
+            "tts": "いく",
+            "particles": [],
+            "wordId": "w-n5-12-003",
+            "id": "d"
+          }
+        ],
+        "shuffle": false,
+        "answer": "b",
+        "reveal": {
+          "ja": "待つ",
+          "reading": "まつ",
+          "zh": "等待",
+          "tts": "まつ",
+          "particles": [],
+          "wordId": "w-n5-12-012"
+        },
+        "answerDisplay": "待つ（まつ）",
+        "rule": "「ま・つ」＝等待。",
+        "explanation": "聽到「まつ」，是「待つ」。「かう」「はなす」「いく」的第一個音不同。",
+        "source": "new",
+        "needsRealDeviceCheck": false,
+        "listeningNote": null
+      },
+      {
+        "id": "q-n5-12-058",
+        "type": "listen-choice",
+        "kind": "listen-long-vowel-review",
+        "lesson": null,
+        "grammar": [
+          "g-n5-12-02"
+        ],
+        "prompt": "（長音複習）請聽音頻，選出詞語的意思。",
+        "audio": {
+          "ttsText": "おばあさん",
+          "engine": "ios-tts",
+          "rate": "normal",
+          "file": null
+        },
+        "showStem": false,
+        "options": [
+          {
+            "id": "a",
+            "text": "叔伯姑姨輩的女性（阿姨）"
+          },
+          {
+            "id": "b",
+            "text": "祖母；老婆婆"
+          }
+        ],
+        "shuffle": false,
+        "answer": "b",
+        "reveal": {
+          "ja": "おばあさん",
+          "reading": "おばあさん",
+          "zh": "祖母；老婆婆",
+          "tts": "おばあさん",
+          "particles": []
+        },
+        "answerDisplay": "おばあさん",
+        "rule": "有長音「ばあ」的是「おばあさん」；沒有長音的「おばさん」指阿姨。",
+        "explanation": "聽到「お・ばあ・さん」，有長音，是「おばあさん」（祖母）。",
+        "source": "new",
+        "needsRealDeviceCheck": true,
+        "listeningNote": "檢查：（1）iPhone 語音是否把「ばあ」的「あ」拉長，與「おばさん」有明顯差別；（2）「ば」是否清晰的濁音。與第 2 課聆聽題為同一組詞，請在真機上一併測試。"
+      },
+      {
+        "id": "q-n5-12-059",
+        "type": "listen-choice",
+        "kind": "listen-group",
+        "lesson": null,
+        "grammar": [
+          "g-n5-12-02"
+        ],
+        "prompt": "請聽音頻，判斷這個動詞屬於哪一類。",
+        "audio": {
+          "ttsText": "ねる",
+          "engine": "ios-tts",
+          "rate": "normal",
+          "file": null
+        },
+        "showStem": false,
+        "options": [
+          {
+            "id": "a",
+            "text": "一類（五段）"
+          },
+          {
+            "id": "b",
+            "text": "二類（一段）"
+          },
+          {
+            "id": "c",
+            "text": "三類（不規則）"
+          }
+        ],
+        "shuffle": false,
+        "answer": "b",
+        "reveal": {
+          "ja": "寝る",
+          "reading": "ねる",
+          "zh": "睡覺",
+          "tts": "ねる",
+          "particles": [],
+          "wordId": "w-n5-12-008"
+        },
+        "answerDisplay": "寝る（ねる）",
+        "rule": "「ねる」以「る」結尾，前面的「ね」屬於え段，是二類。",
+        "explanation": "聽到「ねる」，是「寝る」，屬於二類動詞。",
+        "source": "new",
+        "needsRealDeviceCheck": false,
+        "listeningNote": null
+      }
+    ],
+    "note": "全部題目只使用單元 1–11 及本單元已教的詞彙與文法。"
+  }
+}

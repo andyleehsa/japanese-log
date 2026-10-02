@@ -431,7 +431,7 @@ assert.strictEqual(logic.choiceLayout([]), "stack");
 
 const wrongPanel = logic.feedbackPanel({ correct: false, answer: "ぱ", reading: "ぱ", jp: "ぱ", rule: "半濁音加圈。", explanation: "「ば」先係濁音。" });
 assert.strictEqual(wrongPanel.tone, "bad");
-assert.strictEqual(wrongPanel.title, "再睇下");
+assert.strictEqual(wrongPanel.title, "再看一下");
 assert.strictEqual(wrongPanel.lines.length, 2);
 assert.strictEqual(wrongPanel.lines[0].label, "正確答案");
 assert.strictEqual(wrongPanel.lines[0].text, "ぱ");
@@ -578,8 +578,9 @@ assert.ok(css.indexOf("prefers-reduced-motion") !== -1);
 assert.ok(css.indexOf("scroll-pad") === -1);
 assert.ok(/\.toast\s*\{[^}]*pointer-events:\s*none/.test(css));
 const sw = fs.readFileSync(require("path").join(__dirname, "../sw.js"), "utf8");
-assert.ok(sw.indexOf("jp-log-v15") !== -1);
-assert.ok(sw.indexOf("jp-log-v14") === -1);
+assert.ok(sw.indexOf("jpn5-shell-v1") !== -1);
+assert.ok(sw.indexOf("jp-log-v15") === -1);
+assert.ok(sw.indexOf("js/sync.js") === -1);
 assert.ok(sw.indexOf("cache.addAll") === -1);
 assert.ok(sw.indexOf('cache: "reload"') !== -1);
 const appSource = fs.readFileSync(require("path").join(__dirname, "../js/app.js"), "utf8");
@@ -589,5 +590,55 @@ assert.ok(appSource.indexOf("getBoundingClientRect().height") !== -1);
 assert.ok(appSource.indexOf("fitRuleLine") === -1);
 assert.ok(appSource.indexOf("size > 17") === -1);
 assert.ok(appSource.indexOf("answerGuide") !== -1);
+assert.ok(!/\b66\b/.test(appSource), "app must not hard-code 66");
+assert.ok(!/\b22\b/.test(appSource), "app must not hard-code 22");
+
+const indexFile = JSON.parse(fs.readFileSync(require("path").join(__dirname, "../content/units-index.json"), "utf8"));
+function specFrom(units) {
+  return units.filter((unit) => unit.level === "N5").map((unit) => ({
+    id: unit.id,
+    lessonCount: unit.lessonCount,
+    lessonIds: unit.id === "u-n5-12" ? ["l-n5-12-1", "l-n5-12-2", "l-n5-12-3"] : []
+  }));
+}
+const baseSpec = specFrom(indexFile.units);
+const oneDone = logic.levelProgress(["l-n5-12-1"], baseSpec);
+const summed = baseSpec.reduce((sum, unit) => sum + unit.lessonCount, 0);
+assert.strictEqual(oneDone.total, summed);
+assert.strictEqual(oneDone.done, 1);
+assert.strictEqual(oneDone.percent, Math.round(100 / summed));
+const grown = baseSpec.map((unit) => Object.assign({}, unit, {
+  lessonCount: unit.lessonCount + (unit.id === "u-n5-22" ? unit.lessonCount : 0)
+}));
+const grownDone = logic.levelProgress(["l-n5-12-1"], grown);
+assert.notStrictEqual(grownDone.total, oneDone.total);
+assert.notStrictEqual(grownDone.percent, oneDone.percent);
+assert.strictEqual(logic.levelProgress(["l-n5-12-1", "l-n5-12-1", "not-a-lesson"], baseSpec).done, 1);
+
+const spoken = logic.speechSource({ ja: "私は", reading: "わたしは", tts: "わたしわ", audio: { file: null } });
+assert.strictEqual(spoken.mode, "speech");
+assert.strictEqual(spoken.text, "わたしわ");
+const silent = logic.speechSource({ ja: "食べる", reading: "たべる" });
+assert.strictEqual(silent.mode, "none");
+assert.strictEqual(silent.text, "");
+const filed = logic.speechSource({ ja: "飲む", reading: "のむ", tts: "のむ", audio: { file: "audio/nomu.mp3", ttsText: "のむ" } });
+assert.strictEqual(filed.mode, "audio");
+assert.strictEqual(filed.audio, "audio/nomu.mp3");
+assert.strictEqual(filed.text, "のむ");
+const heard = logic.speechSource({ prompt: "請聽", audio: { ttsText: "のむ", file: null } });
+assert.strictEqual(heard.mode, "speech");
+assert.strictEqual(heard.text, "のむ");
+
+assert.strictEqual(logic.gradeQuestion({ type: "choice", options: [{ id: "a" }, { id: "c" }], answer: "c" }, "c"), true);
+assert.strictEqual(logic.gradeQuestion({ type: "choice", options: [{ id: "a" }, { id: "c" }], answer: "c" }, "a"), false);
+assert.strictEqual(logic.gradeQuestion({ type: "listen-choice", options: [{ id: "a" }], answer: "a" }, "a"), true);
+assert.strictEqual(logic.gradeQuestion({ type: "fill", options: [{ id: "c", text: "く" }], answer: "c" }, "c"), true);
+assert.strictEqual(logic.gradeQuestion({ type: "match", answer: { l1: "r1", l2: "r2" } }, { l2: "r2", l1: "r1" }), true);
+assert.strictEqual(logic.gradeQuestion({ type: "match", answer: { l1: "r1" } }, { l1: "r2" }), false);
+assert.strictEqual(logic.gradeQuestion({ type: "reorder", answer: ["p3", "p1", "p2"] }, ["p3", "p1", "p2"]), true);
+assert.strictEqual(logic.gradeQuestion({ type: "reorder", answer: ["p3", "p1"] }, ["p1", "p3"]), false);
+const tagged = logic.applyGrammarTags({ tags: [] }, { id: "q-n5-12-001", grammar: ["g-n5-12-01"] });
+assert.deepStrictEqual(tagged.grammar, ["g-n5-12-01"]);
+assert.deepStrictEqual(tagged.tags, ["g-n5-12-01"]);
 
 console.log("logic tests ok");

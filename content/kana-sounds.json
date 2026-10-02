@@ -1,0 +1,281 @@
+{
+  "comment": "46 basic sounds only. Hiragana and katakana of the same sound share one file later. Path is reserved; files are not included yet.",
+  "sounds": [
+    {
+      "romaji": "a",
+      "hiragana": "あ",
+      "katakana": "ア",
+      "audio": "audio/kana/a.mp3"
+    },
+    {
+      "romaji": "i",
+      "hiragana": "い",
+      "katakana": "イ",
+      "audio": "audio/kana/i.mp3"
+    },
+    {
+      "romaji": "u",
+      "hiragana": "う",
+      "katakana": "ウ",
+      "audio": "audio/kana/u.mp3"
+    },
+    {
+      "romaji": "e",
+      "hiragana": "え",
+      "katakana": "エ",
+      "audio": "audio/kana/e.mp3"
+    },
+    {
+      "romaji": "o",
+      "hiragana": "お",
+      "katakana": "オ",
+      "audio": "audio/kana/o.mp3"
+    },
+    {
+      "romaji": "ka",
+      "hiragana": "か",
+      "katakana": "カ",
+      "audio": "audio/kana/ka.mp3"
+    },
+    {
+      "romaji": "ki",
+      "hiragana": "き",
+      "katakana": "キ",
+      "audio": "audio/kana/ki.mp3"
+    },
+    {
+      "romaji": "ku",
+      "hiragana": "く",
+      "katakana": "ク",
+      "audio": "audio/kana/ku.mp3"
+    },
+    {
+      "romaji": "ke",
+      "hiragana": "け",
+      "katakana": "ケ",
+      "audio": "audio/kana/ke.mp3"
+    },
+    {
+      "romaji": "ko",
+      "hiragana": "こ",
+      "katakana": "コ",
+      "audio": "audio/kana/ko.mp3"
+    },
+    {
+      "romaji": "sa",
+      "hiragana": "さ",
+      "katakana": "サ",
+      "audio": "audio/kana/sa.mp3"
+    },
+    {
+      "romaji": "shi",
+      "hiragana": "し",
+      "katakana": "シ",
+      "audio": "audio/kana/shi.mp3"
+    },
+    {
+      "romaji": "su",
+      "hiragana": "す",
+      "katakana": "ス",
+      "audio": "audio/kana/su.mp3"
+    },
+    {
+      "romaji": "se",
+      "hiragana": "せ",
+      "katakana": "セ",
+      "audio": "audio/kana/se.mp3"
+    },
+    {
+      "romaji": "so",
+      "hiragana": "そ",
+      "katakana": "ソ",
+      "audio": "audio/kana/so.mp3"
+    },
+    {
+      "romaji": "ta",
+      "hiragana": "た",
+      "katakana": "タ",
+      "audio": "audio/kana/ta.mp3"
+    },
+    {
+      "romaji": "chi",
+      "hiragana": "ち",
+      "katakana": "チ",
+      "audio": "audio/kana/chi.mp3"
+    },
+    {
+      "romaji": "tsu",
+      "hiragana": "つ",
+      "katakana": "ツ",
+      "audio": "audio/kana/tsu.mp3"
+    },
+    {
+      "romaji": "te",
+      "hiragana": "て",
+      "katakana": "テ",
+      "audio": "audio/kana/te.mp3"
+    },
+    {
+      "romaji": "to",
+      "hiragana": "と",
+      "katakana": "ト",
+      "audio": "audio/kana/to.mp3"
+    },
+    {
+      "romaji": "na",
+      "hiragana": "な",
+      "katakana": "ナ",
+      "audio": "audio/kana/na.mp3"
+    },
+    {
+      "romaji": "ni",
+      "hiragana": "に",
+      "katakana": "ニ",
+      "audio": "audio/kana/ni.mp3"
+    },
+    {
+      "romaji": "nu",
+      "hiragana": "ぬ",
+      "katakana": "ヌ",
+      "audio": "audio/kana/nu.mp3"
+    },
+    {
+      "romaji": "ne",
+      "hiragana": "ね",
+      "katakana": "ネ",
+      "audio": "audio/kana/ne.mp3"
+    },
+    {
+      "romaji": "no",
+      "hiragana": "の",
+      "katakana": "ノ",
+      "audio": "audio/kana/no.mp3"
+    },
+    {
+      "romaji": "ha",
+      "hiragana": "は",
+      "katakana": "ハ",
+      "audio": "audio/kana/ha.mp3"
+    },
+    {
+      "romaji": "hi",
+      "hiragana": "ひ",
+      "katakana": "ヒ",
+      "audio": "audio/kana/hi.mp3"
+    },
+    {
+      "romaji": "fu",
+      "hiragana": "ふ",
+      "katakana": "フ",
+      "audio": "audio/kana/fu.mp3"
+    },
+    {
+      "romaji": "he",
+      "hiragana": "へ",
+      "katakana": "ヘ",
+      "audio": "audio/kana/he.mp3"
+    },
+    {
+      "romaji": "ho",
+      "hiragana": "ほ",
+      "katakana": "ホ",
+      "audio": "audio/kana/ho.mp3"
+    },
+    {
+      "romaji": "ma",
+      "hiragana": "ま",
+      "katakana": "マ",
+      "audio": "audio/kana/ma.mp3"
+    },
+    {
+      "romaji": "mi",
+      "hiragana": "み",
+      "katakana": "ミ",
+      "audio": "audio/kana/mi.mp3"
+    },
+    {
+      "romaji": "mu",
+      "hiragana": "む",
+      "katakana": "ム",
+      "audio": "audio/kana/mu.mp3"
+    },
+    {
+      "romaji": "me",
+      "hiragana": "め",
+      "katakana": "メ",
+      "audio": "audio/kana/me.mp3"
+    },
+    {
+      "romaji": "mo",
+      "hiragana": "も",
+      "katakana": "モ",
+      "audio": "audio/kana/mo.mp3"
+    },
+    {
+      "romaji": "ya",
+      "hiragana": "や",
+      "katakana": "ヤ",
+      "audio": "audio/kana/ya.mp3"
+    },
+    {
+      "romaji": "yu",
+      "hiragana": "ゆ",
+      "katakana": "ユ",
+      "audio": "audio/kana/yu.mp3"
+    },
+    {
+      "romaji": "yo",
+      "hiragana": "よ",
+      "katakana": "ヨ",
+      "audio": "audio/kana/yo.mp3"
+    },
+    {
+      "romaji": "ra",
+      "hiragana": "ら",
+      "katakana": "ラ",
+      "audio": "audio/kana/ra.mp3"
+    },
+    {
+      "romaji": "ri",
+      "hiragana": "り",
+      "katakana": "リ",
+      "audio": "audio/kana/ri.mp3"
+    },
+    {
+      "romaji": "ru",
+      "hiragana": "る",
+      "katakana": "ル",
+      "audio": "audio/kana/ru.mp3"
+    },
+    {
+      "romaji": "re",
+      "hiragana": "れ",
+      "katakana": "レ",
+      "audio": "audio/kana/re.mp3"
+    },
+    {
+      "romaji": "ro",
+      "hiragana": "ろ",
+      "katakana": "ロ",
+      "audio": "audio/kana/ro.mp3"
+    },
+    {
+      "romaji": "wa",
+      "hiragana": "わ",
+      "katakana": "ワ",
+      "audio": "audio/kana/wa.mp3"
+    },
+    {
+      "romaji": "wo",
+      "hiragana": "を",
+      "katakana": "ヲ",
+      "audio": "audio/kana/wo.mp3"
+    },
+    {
+      "romaji": "n",
+      "hiragana": "ん",
+      "katakana": "ン",
+      "audio": "audio/kana/n.mp3"
+    }
+  ]
+}

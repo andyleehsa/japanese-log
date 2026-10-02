@@ -23,30 +23,50 @@
     return false;
   }
 
+  function optionList(question) {
+    if (!question) return null;
+    if (Array.isArray(question.choices)) return question.choices;
+    if (Array.isArray(question.options)) return question.options;
+    return null;
+  }
+
+  function acceptedList(question) {
+    if (!question) return [];
+    if (Array.isArray(question.accepted)) return question.accepted;
+    if (question.answer != null && typeof question.answer !== "number") {
+      return Array.isArray(question.answer) ? question.answer : [question.answer];
+    }
+    return [];
+  }
+
   function grade(question, userAnswer) {
     if (!question) return false;
-    if (question.type === "choice" || (question.type === "listening" && Array.isArray(question.choices))) {
+    var options = optionList(question);
+    if (question.type === "choice" || (question.type === "listening" && options)) {
       return Number(userAnswer) === question.answer;
     }
     if (question.type === "fill" || question.type === "listening") {
-      return answersMatch(userAnswer, question.accepted);
+      return answersMatch(userAnswer, acceptedList(question));
     }
     return false;
   }
 
   function correctAnswerText(question) {
     if (!question) return "";
-    if ((question.type === "choice" || question.type === "listening") && Array.isArray(question.choices)) {
-      var choice = question.choices[question.answer];
+    var options = optionList(question);
+    if ((question.type === "choice" || question.type === "listening") && options) {
+      var choice = options[question.answer];
       return choice == null ? "" : String(choice);
     }
-    if (Array.isArray(question.accepted) && question.accepted.length) return String(question.accepted[0]);
+    var accepted = acceptedList(question);
+    if (accepted.length) return String(accepted[0]);
     return "";
   }
 
   function userAnswerText(question, userAnswer) {
-    if ((question.type === "choice" || (question.type === "listening" && Array.isArray(question.choices))) && Array.isArray(question.choices)) {
-      var choice = question.choices[Number(userAnswer)];
+    var options = optionList(question);
+    if ((question.type === "choice" || (question.type === "listening" && options)) && options) {
+      var choice = options[Number(userAnswer)];
       return choice == null ? String(userAnswer) : String(choice);
     }
     return String(userAnswer == null ? "" : userAnswer).trim();
@@ -178,6 +198,46 @@
       return String(a.due).localeCompare(String(b.due)) || String(a.questionId).localeCompare(String(b.questionId));
     });
     return due;
+  }
+
+  function mistakeNotebook(attempts, today) {
+    var day = today || todayLocalDate();
+    var byQuestion = new Map();
+    (attempts || []).forEach(function (attempt) {
+      if (!attempt || !attempt.questionId) return;
+      if (!byQuestion.has(attempt.questionId)) byQuestion.set(attempt.questionId, []);
+      byQuestion.get(attempt.questionId).push(attempt);
+    });
+    var rows = [];
+    byQuestion.forEach(function (list, questionId) {
+      var sorted = list.slice().sort(function (a, b) {
+        return String(a.timestamp || "").localeCompare(String(b.timestamp || "")) || String(a.id || "").localeCompare(String(b.id || ""));
+      });
+      var last = sorted[sorted.length - 1];
+      if (!last || last.correct) return;
+      var streak = 0;
+      for (var i = sorted.length - 1; i >= 0; i--) {
+        if (sorted[i].correct) break;
+        streak += 1;
+      }
+      var from = last.localDate || String(last.timestamp || "").slice(0, 10);
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(from)) return;
+      var interval = reviewInterval(streak);
+      var dueDate = addDays(from, interval);
+      rows.push({
+        questionId: questionId,
+        lessonId: last.lessonId || "",
+        due: dueDate,
+        dueNow: dueDate <= day,
+        interval: interval,
+        wrongStreak: streak,
+        lastAt: last.timestamp || ""
+      });
+    });
+    rows.sort(function (a, b) {
+      return String(a.due).localeCompare(String(b.due)) || String(a.questionId).localeCompare(String(b.questionId));
+    });
+    return rows;
   }
 
   function makeAttempt(options) {
@@ -791,6 +851,15 @@
   }
 
   function answerGuide(question, index) {
+    var guide = buildAnswerGuide(question, index);
+    if (question && question.pron) {
+      var pron = String(question.pron).trim();
+      if (pron) guide.reading = pron;
+    }
+    return guide;
+  }
+
+  function buildAnswerGuide(question, index) {
     var graded = correctAnswerText(question);
     var empty = { answer: graded, jp: "", reading: "", extraJp: "", extraReading: "" };
     if (!question) return empty;
@@ -840,7 +909,7 @@
     var detail = rule && explanation && explanation !== rule ? explanation : "";
     return {
       tone: "bad",
-      title: "再睇下",
+      title: "再看一下",
       lines: [
         { label: "正確答案", text: answer, jp: jp, reading: reading, extraJp: extraJp, extraReading: extraReading },
         { label: "規則", text: ruleText }
@@ -887,6 +956,99 @@
     return 0.2126 * channelLuma((n >> 16) & 255) + 0.7152 * channelLuma((n >> 8) & 255) + 0.0722 * channelLuma(n & 255);
   }
 
+  function audioFileOf(item) {
+    var audio = item && item.audio;
+    if (!audio) return "";
+    if (typeof audio === "string") return audio.trim();
+    if (audio.file) return String(audio.file).trim();
+    return "";
+  }
+
+  function speechSource(item) {
+    if (!item || typeof item !== "object") return { mode: "none", text: "", audio: "" };
+    var file = audioFileOf(item);
+    var text = "";
+    if (item.tts != null && String(item.tts).trim()) text = String(item.tts).trim();
+    else if (item.audio && typeof item.audio === "object" && item.audio.ttsText != null) text = String(item.audio.ttsText).trim();
+    if (file) return { mode: "audio", text: text, audio: file };
+    if (text) return { mode: "speech", text: text, audio: "" };
+    return { mode: "none", text: "", audio: "" };
+  }
+
+  function levelProgress(completedIds, units) {
+    var list = Array.isArray(units) ? units : [];
+    var total = 0;
+    var allowed = {};
+    list.forEach(function (unit) {
+      if (!unit || typeof unit !== "object") return;
+      var count = Number(unit.lessonCount);
+      if (isFinite(count) && count > 0) total += count;
+      (unit.lessonIds || []).forEach(function (id) {
+        if (id) allowed[String(id)] = true;
+      });
+    });
+    var doneSeen = {};
+    var done = 0;
+    (completedIds || []).forEach(function (id) {
+      var key = String(id || "");
+      if (!key || doneSeen[key] || !allowed[key]) return;
+      doneSeen[key] = true;
+      done += 1;
+    });
+    if (total && done > total) done = total;
+    var ratio = total ? done / total : 0;
+    return {
+      done: done,
+      total: total,
+      ratio: ratio,
+      percent: total ? Math.round(ratio * 100) : 0
+    };
+  }
+
+  function gradeQuestion(question, userAnswer) {
+    if (!question) return false;
+    if (question.type === "match") {
+      var expected = question.answer || {};
+      var given = userAnswer && typeof userAnswer === "object" && !Array.isArray(userAnswer) ? userAnswer : {};
+      var keys = Object.keys(expected);
+      var got = Object.keys(given);
+      if (!keys.length || got.length !== keys.length) return false;
+      for (var i = 0; i < keys.length; i++) {
+        if (String(given[keys[i]] || "") !== String(expected[keys[i]])) return false;
+      }
+      return true;
+    }
+    if (question.type === "reorder") {
+      var order = Array.isArray(question.answer) ? question.answer : (question.answerOrder || []);
+      var picked = Array.isArray(userAnswer) ? userAnswer : [];
+      if (order.length !== picked.length || !order.length) return false;
+      for (var j = 0; j < order.length; j++) {
+        if (String(picked[j]) !== String(order[j])) return false;
+      }
+      return true;
+    }
+    var options = Array.isArray(question.options) ? question.options : null;
+    var idOptions = !!(options && options.length && options.every(function (opt) { return opt && opt.id != null; }));
+    if ((question.type === "choice" || question.type === "listen-choice" || question.type === "fill") && idOptions) {
+      return String(userAnswer) === String(question.answer);
+    }
+    return grade(question, userAnswer);
+  }
+
+  function applyGrammarTags(attempt, question) {
+    var grammar = [];
+    if (question && Array.isArray(question.grammar)) {
+      question.grammar.forEach(function (id) {
+        if (typeof id === "string" && id && grammar.indexOf(id) === -1) grammar.push(id);
+      });
+    }
+    if (attempt) {
+      attempt.grammar = grammar.slice();
+      if (!attempt.tags || !attempt.tags.length) attempt.tags = grammar.slice();
+    }
+    return attempt;
+  }
+
   function contrastRatio(foreground, background) {
     var a = hexLuminance(foreground);
     var b = hexLuminance(background);
@@ -901,6 +1063,11 @@
     REVIEW_INTERVALS: REVIEW_INTERVALS,
     reviewInterval: reviewInterval,
     dueReviews: dueReviews,
+    mistakeNotebook: mistakeNotebook,
+    speechSource: speechSource,
+    levelProgress: levelProgress,
+    gradeQuestion: gradeQuestion,
+    applyGrammarTags: applyGrammarTags,
     lessonIsDone: lessonIsDone,
     lessonStanding: lessonStanding,
     curriculumReport: curriculumReport,

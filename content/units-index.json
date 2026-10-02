@@ -1,0 +1,268 @@
+{
+  "schemaVersion": "index-v1",
+  "note": "標題暫為書面語草稿；total 課數由 units 的 lessonCount 加總。其他單元內容出課時 status 改為 ready。",
+  "units": [
+    {
+      "id": "u-n5-01",
+      "level": "N5",
+      "number": 1,
+      "title": "平假名 I",
+      "lessonCount": 3,
+      "prerequisites": [],
+      "status": "planned",
+      "file": null
+    },
+    {
+      "id": "u-n5-02",
+      "level": "N5",
+      "number": 2,
+      "title": "平假名 II",
+      "lessonCount": 3,
+      "prerequisites": [
+        "u-n5-01"
+      ],
+      "status": "planned",
+      "file": null
+    },
+    {
+      "id": "u-n5-03",
+      "level": "N5",
+      "number": 3,
+      "title": "片假名",
+      "lessonCount": 3,
+      "prerequisites": [
+        "u-n5-02"
+      ],
+      "status": "planned",
+      "file": null
+    },
+    {
+      "id": "u-n5-04",
+      "level": "N5",
+      "number": 4,
+      "title": "問候與數字",
+      "lessonCount": 3,
+      "prerequisites": [
+        "u-n5-03"
+      ],
+      "status": "planned",
+      "file": null
+    },
+    {
+      "id": "u-n5-05",
+      "level": "N5",
+      "number": 5,
+      "title": "自我介紹 I",
+      "lessonCount": 3,
+      "prerequisites": [
+        "u-n5-04"
+      ],
+      "status": "planned",
+      "file": null
+    },
+    {
+      "id": "u-n5-06",
+      "level": "N5",
+      "number": 6,
+      "title": "自我介紹 II",
+      "lessonCount": 3,
+      "prerequisites": [
+        "u-n5-05"
+      ],
+      "status": "planned",
+      "file": null
+    },
+    {
+      "id": "u-n5-07",
+      "level": "N5",
+      "number": 7,
+      "title": "這是什麼",
+      "lessonCount": 3,
+      "prerequisites": [
+        "u-n5-06"
+      ],
+      "status": "planned",
+      "file": null
+    },
+    {
+      "id": "u-n5-08",
+      "level": "N5",
+      "number": 8,
+      "title": "時間與日期",
+      "lessonCount": 3,
+      "prerequisites": [
+        "u-n5-07"
+      ],
+      "status": "planned",
+      "file": null
+    },
+    {
+      "id": "u-n5-09",
+      "level": "N5",
+      "number": 9,
+      "title": "購物",
+      "lessonCount": 3,
+      "prerequisites": [
+        "u-n5-08"
+      ],
+      "status": "planned",
+      "file": null
+    },
+    {
+      "id": "u-n5-10",
+      "level": "N5",
+      "number": 10,
+      "title": "形容詞 I",
+      "lessonCount": 3,
+      "prerequisites": [
+        "u-n5-09"
+      ],
+      "status": "planned",
+      "file": null
+    },
+    {
+      "id": "u-n5-11",
+      "level": "N5",
+      "number": 11,
+      "title": "形容詞 II",
+      "lessonCount": 3,
+      "prerequisites": [
+        "u-n5-10"
+      ],
+      "status": "planned",
+      "file": null
+    },
+    {
+      "id": "u-n5-12",
+      "level": "N5",
+      "number": 12,
+      "title": "動詞入門：辭書形與三類動詞",
+      "lessonCount": 3,
+      "prerequisites": [
+        "u-n5-11"
+      ],
+      "status": "ready",
+      "file": "unit-n5-12.json"
+    },
+    {
+      "id": "u-n5-13",
+      "level": "N5",
+      "number": 13,
+      "title": "日常生活 I",
+      "lessonCount": 3,
+      "prerequisites": [
+        "u-n5-12"
+      ],
+      "status": "planned",
+      "file": null
+    },
+    {
+      "id": "u-n5-14",
+      "level": "N5",
+      "number": 14,
+      "title": "日常生活 II",
+      "lessonCount": 3,
+      "prerequisites": [
+        "u-n5-13"
+      ],
+      "status": "planned",
+      "file": null
+    },
+    {
+      "id": "u-n5-15",
+      "level": "N5",
+      "number": 15,
+      "title": "去哪裡",
+      "lessonCount": 3,
+      "prerequisites": [
+        "u-n5-14"
+      ],
+      "status": "planned",
+      "file": null
+    },
+    {
+      "id": "u-n5-16",
+      "level": "N5",
+      "number": 16,
+      "title": "我的家",
+      "lessonCount": 3,
+      "prerequisites": [
+        "u-n5-15"
+      ],
+      "status": "planned",
+      "file": null
+    },
+    {
+      "id": "u-n5-17",
+      "level": "N5",
+      "number": 17,
+      "title": "邀請與願望",
+      "lessonCount": 3,
+      "prerequisites": [
+        "u-n5-16"
+      ],
+      "status": "planned",
+      "file": null
+    },
+    {
+      "id": "u-n5-18",
+      "level": "N5",
+      "number": 18,
+      "title": "て形 I",
+      "lessonCount": 3,
+      "prerequisites": [
+        "u-n5-17"
+      ],
+      "status": "planned",
+      "file": null
+    },
+    {
+      "id": "u-n5-19",
+      "level": "N5",
+      "number": 19,
+      "title": "て形 II",
+      "lessonCount": 3,
+      "prerequisites": [
+        "u-n5-18"
+      ],
+      "status": "planned",
+      "file": null
+    },
+    {
+      "id": "u-n5-20",
+      "level": "N5",
+      "number": 20,
+      "title": "ない形與た形",
+      "lessonCount": 3,
+      "prerequisites": [
+        "u-n5-19"
+      ],
+      "status": "planned",
+      "file": null
+    },
+    {
+      "id": "u-n5-21",
+      "level": "N5",
+      "number": 21,
+      "title": "原因、比較與疑問",
+      "lessonCount": 3,
+      "prerequisites": [
+        "u-n5-20"
+      ],
+      "status": "planned",
+      "file": null
+    },
+    {
+      "id": "u-n5-22",
+      "level": "N5",
+      "number": 22,
+      "title": "N5 考試專項",
+      "lessonCount": 3,
+      "prerequisites": [
+        "u-n5-21"
+      ],
+      "status": "planned",
+      "file": null
+    }
+  ]
+}
