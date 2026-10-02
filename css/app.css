@@ -661,19 +661,44 @@ input { min-height: 56px; font-size: var(--jp-practice); }
   border-radius: 20px 20px 0 0;
   padding: 16px 16px calc(12px + env(safe-area-inset-bottom));
   box-shadow: 0 -8px 24px rgba(58, 38, 0, 0.12);
+  overflow: hidden;
 }
 
 .sheet.is-ok { background: var(--ok-bg); color: var(--ok-text); }
 .sheet.is-bad { background: var(--bad-bg); color: var(--bad-text); }
 
-.sheet-fixed { flex: 0 1 auto; overflow: auto; min-height: 0; }
 .sheet-scroll { flex: 1 1 auto; overflow: auto; min-height: 0; }
 
-.sheet-answer, .sheet-rule, .sheet-line {
+.sheet-pin {
+  position: sticky;
+  top: 0;
+  z-index: 1;
   margin: 0 0 8px;
-  font-size: var(--jp-practice);
+  padding-bottom: 4px;
+}
+
+.sheet.is-ok .sheet-pin { background: var(--ok-bg); }
+.sheet.is-bad .sheet-pin { background: var(--bad-bg); }
+
+.sheet-answer, .sheet-rule, .sheet-line, .sheet-jp {
+  margin: 0 0 8px;
+  font-size: max(24px, var(--jp-practice));
   font-weight: 800;
   line-height: 1.35;
+}
+
+.sheet-reading {
+  margin: -4px 0 8px;
+  font-size: var(--jp-reading);
+  font-weight: 700;
+  line-height: 1.35;
+  color: inherit;
+}
+
+.sheet-note {
+  margin: 0 0 2px;
+  font-size: 0.95rem;
+  font-weight: 800;
 }
 
 .sheet.is-ok .sheet-answer,
@@ -694,6 +719,20 @@ input { min-height: 56px; font-size: var(--jp-practice); }
   font-size: var(--jp-practice);
   line-height: 1.4;
   overflow-wrap: anywhere;
+}
+
+.sheet .sheet-answer,
+.sheet .sheet-rule,
+.sheet .sheet-jp {
+  font-size: max(24px, var(--jp-practice));
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.sheet .sheet-reading {
+  font-size: var(--jp-reading);
+  font-weight: 700;
+  color: inherit;
 }
 
 .sheet .btn { margin-bottom: 0; }

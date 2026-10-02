@@ -429,15 +429,83 @@ assert.strictEqual(logic.choiceLayout(["安くなかったです", "安くない
 assert.strictEqual(logic.choiceLayout(["只有一個"]), "stack");
 assert.strictEqual(logic.choiceLayout([]), "stack");
 
-const wrongPanel = logic.feedbackPanel({ correct: false, answer: "ぱ", rule: "半濁音加圈。", explanation: "「ば」先係濁音。" });
+const wrongPanel = logic.feedbackPanel({ correct: false, answer: "ぱ", reading: "ぱ", jp: "ぱ", rule: "半濁音加圈。", explanation: "「ば」先係濁音。" });
 assert.strictEqual(wrongPanel.tone, "bad");
 assert.strictEqual(wrongPanel.title, "再睇下");
 assert.strictEqual(wrongPanel.lines.length, 2);
 assert.strictEqual(wrongPanel.lines[0].label, "正確答案");
 assert.strictEqual(wrongPanel.lines[0].text, "ぱ");
+assert.strictEqual(wrongPanel.lines[0].reading, "ぱ");
 assert.strictEqual(wrongPanel.lines[1].label, "規則");
 assert.strictEqual(wrongPanel.lines[1].text, "半濁音加圈。");
 assert.strictEqual(wrongPanel.detail, "「ば」先係濁音。");
+const listenGuide = logic.answerGuide({
+  type: "listening",
+  jp: "おばあさん",
+  reading: "おばあさん",
+  choices: ["おばさん（阿姨）", "おばあさん（婆婆）"],
+  answer: 1
+}, {});
+assert.strictEqual(listenGuide.answer, "おばあさん");
+assert.strictEqual(listenGuide.reading, "おばあさん");
+const readingMap = logic.readingIndex([
+  { japanese: "飲む", reading: "のむ", forms: { "て形": { japanese: "飲んで", reading: "のんで" } } },
+  { word: "公園", reading: "こうえん" }
+]);
+const formGuide = logic.answerGuide({
+  type: "choice",
+  kind: "verb-form",
+  verb: "飲む",
+  reading: "のむ",
+  form: "て形",
+  choices: ["飲んで", "飲いて", "飲って", "飲して"],
+  answer: 0
+}, readingMap);
+assert.strictEqual(formGuide.answer, "飲んで");
+assert.strictEqual(formGuide.reading, "のんで");
+assert.strictEqual(formGuide.extraJp, "飲む");
+assert.strictEqual(formGuide.extraReading, "のむ");
+const groupGuide = logic.answerGuide({
+  type: "choice",
+  kind: "verb-group",
+  verb: "見る",
+  reading: "みる",
+  choices: ["一類", "二類", "三類", "唔係動詞"],
+  answer: 1
+}, {});
+assert.strictEqual(groupGuide.answer, "二類");
+assert.strictEqual(groupGuide.jp, "見る");
+assert.strictEqual(groupGuide.reading, "みる");
+const fillGuide = logic.answerGuide({ type: "fill", accepted: ["で"] }, {});
+assert.strictEqual(fillGuide.answer, "で");
+assert.strictEqual(fillGuide.reading, "で");
+const lookedUp = logic.answerGuide({
+  type: "choice",
+  choices: ["公園", "映画"],
+  answer: 0
+}, readingMap);
+assert.strictEqual(lookedUp.jp, "公園");
+assert.strictEqual(lookedUp.reading, "こうえん");
+const kanaGuide = logic.answerGuide({
+  type: "choice",
+  choices: ["こうえん", "こえん"],
+  answer: 0
+}, {});
+assert.strictEqual(kanaGuide.reading, "こうえん");
+const beside = logic.answerGuide({
+  type: "choice",
+  choices: ["部屋で寝る。", "部屋に寝る。"],
+  answer: 0,
+  explanation: "動作發生嘅地點用「で」：部屋で寝る（へやでねる）。"
+}, {});
+assert.strictEqual(beside.reading, "へやでねる");
+const missingGuide = logic.answerGuide({
+  type: "choice",
+  choices: ["部屋で寝る。", "部屋に寝る。"],
+  answer: 0
+}, {});
+assert.strictEqual(missingGuide.jp, "部屋で寝る。");
+assert.strictEqual(missingGuide.reading, "");
 const wrongRuleOnly = logic.feedbackPanel({ correct: false, answer: "で", rule: "", explanation: "第一個音係濁音。" });
 assert.strictEqual(wrongRuleOnly.lines[1].text, "第一個音係濁音。");
 assert.strictEqual(wrongRuleOnly.detail, "");
@@ -504,17 +572,22 @@ Object.keys(colors).forEach((key) => {
 });
 assert.ok(css.indexOf("--jp-flash: 32px") !== -1);
 assert.ok(css.indexOf("--jp-practice: 24px") !== -1);
+assert.ok(css.indexOf("max(24px, var(--jp-practice))") !== -1);
+assert.ok(css.indexOf("position: sticky") !== -1);
 assert.ok(css.indexOf("prefers-reduced-motion") !== -1);
 assert.ok(css.indexOf("scroll-pad") === -1);
 assert.ok(/\.toast\s*\{[^}]*pointer-events:\s*none/.test(css));
 const sw = fs.readFileSync(require("path").join(__dirname, "../sw.js"), "utf8");
-assert.ok(sw.indexOf("jp-log-v14") !== -1);
-assert.ok(sw.indexOf("jp-log-v13") === -1);
+assert.ok(sw.indexOf("jp-log-v15") !== -1);
+assert.ok(sw.indexOf("jp-log-v14") === -1);
 assert.ok(sw.indexOf("cache.addAll") === -1);
 assert.ok(sw.indexOf('cache: "reload"') !== -1);
 const appSource = fs.readFileSync(require("path").join(__dirname, "../js/app.js"), "utf8");
 assert.ok(appSource.indexOf('updateViaCache: "none"') !== -1);
 assert.ok(appSource.indexOf('cache: "reload"') !== -1);
 assert.ok(appSource.indexOf("getBoundingClientRect().height") !== -1);
+assert.ok(appSource.indexOf("fitRuleLine") === -1);
+assert.ok(appSource.indexOf("size > 17") === -1);
+assert.ok(appSource.indexOf("answerGuide") !== -1);
 
 console.log("logic tests ok");

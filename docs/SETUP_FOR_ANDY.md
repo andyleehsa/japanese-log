@@ -110,7 +110,7 @@
 GitHub Pages **唔可以**為呢個網站自訂 `Cache-Control` 或者其他回應 header。瀏覽器自己嘅 HTTP cache 可能喺更新之後短暫留住舊嘅 `sw.js` 同 `app.js`。呢個 app 唔靠 header，而係喺 app 層繞過：
 
 1. 頁面註冊 `sw.js` 時用 `updateViaCache: "none"`。瀏覽器檢查 worker 有冇新版本，唔會用 HTTP cache 入面嘅舊 `sw.js`。
-2. Service worker 預快取（安裝）同之後每次有網嘅更新，都用 `fetch(url, { cache: "reload" })`。呢個會跳過 HTTP cache，直接攞網上嗰份，再寫入 Cache Storage。而家嘅 cache 名係 `jp-log-v14`。舊名會喺新 worker 啟動時刪走。
+2. Service worker 預快取（安裝）同之後每次有網嘅更新，都用 `fetch(url, { cache: "reload" })`。呢個會跳過 HTTP cache，直接攞網上嗰份，再寫入 Cache Storage。而家嘅 cache 名係 `jp-log-v15`。舊名會喺新 worker 啟動時刪走。
 3. 課題 JSON 喺頁面入面重新載入，同樣用 `cache: "reload"`。
 4. 冇網絡先至讀 Cache Storage。有網絡就唔會把 HTTP cache 入面嘅舊檔寫入離線快取。
 

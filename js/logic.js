@@ -721,12 +721,118 @@
     return false;
   }
 
+  function hasKanji(text) {
+    return /[\u3400-\u9fff]/.test(String(text || ""));
+  }
+
+  function hasJapaneseScript(text) {
+    return /[\u3040-\u30ff\u3400-\u9fff]/.test(String(text || ""));
+  }
+
+  function isKanaPhrase(text) {
+    var value = String(text || "").trim();
+    return !!value && !hasKanji(value) && /[\u3040-\u30ff]/.test(value);
+  }
+
+  function parenReading(text) {
+    var match = String(text || "").match(/[（(]([^）)]+)[）)]/);
+    if (!match) return "";
+    var inside = match[1].trim();
+    if (inside && !hasKanji(inside) && /[\u3040-\u30ff]/.test(inside)) return inside;
+    return "";
+  }
+
+  function rememberReading(map, surface, reading) {
+    var key = normalizeAnswer(surface);
+    var value = String(reading == null ? "" : reading).trim();
+    if (!key || !value || map[key]) return;
+    map[key] = value;
+  }
+
+  function readingIndex(sources) {
+    var map = {};
+    (sources || []).forEach(function (item) {
+      if (!item) return;
+      rememberReading(map, item.japanese || item.word || item.jp, item.reading);
+      var forms = item.forms || {};
+      Object.keys(forms).forEach(function (name) {
+        var form = forms[name];
+        if (form) rememberReading(map, form.japanese, form.reading);
+      });
+    });
+    return map;
+  }
+
+  function lookupReading(index, surface) {
+    if (!index || surface == null) return "";
+    var key = normalizeAnswer(surface);
+    if (!key) return "";
+    if (typeof index === "function") return String(index(surface) || "").trim();
+    return index[key] ? String(index[key]) : "";
+  }
+
+  function looseKey(value) {
+    return normalizeAnswer(value).replace(/[。．、！？!?,，.]+/g, "");
+  }
+
+  function readingBeside(surface, text) {
+    var target = looseKey(surface);
+    if (!target) return "";
+    var source = String(text || "");
+    var pattern = /[（(]([^）)]+)[）)]/g;
+    var match;
+    while ((match = pattern.exec(source))) {
+      var inside = match[1].trim();
+      if (!isKanaPhrase(inside)) continue;
+      var before = looseKey(source.slice(0, match.index));
+      if (before === target || before.slice(-target.length) === target) return inside;
+    }
+    return "";
+  }
+
+  function answerGuide(question, index) {
+    var graded = correctAnswerText(question);
+    var empty = { answer: graded, jp: "", reading: "", extraJp: "", extraReading: "" };
+    if (!question) return empty;
+    if (question.type === "listening") {
+      var heard = String(question.jp || graded).trim();
+      var heardReading = String(question.reading || "").trim() || lookupReading(index, heard) || parenReading(heard);
+      return { answer: heard || graded, jp: heard || graded, reading: heardReading, extraJp: "", extraReading: "" };
+    }
+    if (question.kind === "verb-group") {
+      var verb = String(question.verb || "").trim();
+      var verbReading = String(question.reading || "").trim() || lookupReading(index, verb);
+      return { answer: graded, jp: verb, reading: verbReading, extraJp: "", extraReading: "" };
+    }
+    if (question.kind === "verb-form") {
+      var spoken = lookupReading(index, graded) || parenReading(graded) || readingBeside(graded, (question.explanation || "") + (question.rule || ""));
+      if (!spoken && isKanaPhrase(graded)) spoken = String(graded).trim();
+      var dict = String(question.verb || "").trim();
+      var dictReading = String(question.reading || "").trim() || lookupReading(index, dict);
+      return {
+        answer: graded,
+        jp: hasJapaneseScript(graded) ? graded : "",
+        reading: spoken,
+        extraJp: dict,
+        extraReading: dictReading
+      };
+    }
+    if (!hasJapaneseScript(graded)) return empty;
+    var found = lookupReading(index, graded) || parenReading(graded) || readingBeside(graded, (question.explanation || "") + (question.rule || ""));
+    if (!found && isKanaPhrase(graded)) found = String(graded).trim();
+    return { answer: graded, jp: graded, reading: found, extraJp: "", extraReading: "" };
+  }
+
   function feedbackPanel(input) {
     var data = input || {};
     var correct = !!data.correct;
     var answer = data.answer == null ? "" : String(data.answer);
     var rule = String(data.rule == null ? "" : data.rule).trim();
     var explanation = String(data.explanation == null ? "" : data.explanation).trim();
+    var reading = String(data.reading == null ? "" : data.reading).trim();
+    var jp = String(data.jp == null ? "" : data.jp).trim();
+    var extraJp = String(data.extraJp == null ? "" : data.extraJp).trim();
+    var extraReading = String(data.extraReading == null ? "" : data.extraReading).trim();
     if (correct) {
       return { tone: "ok", title: "正確", lines: [], detail: explanation };
     }
@@ -736,7 +842,7 @@
       tone: "bad",
       title: "再睇下",
       lines: [
-        { label: "正確答案", text: answer },
+        { label: "正確答案", text: answer, jp: jp, reading: reading, extraJp: extraJp, extraReading: extraReading },
         { label: "規則", text: ruleText }
       ],
       detail: detail
@@ -834,6 +940,9 @@
     stepFontSize: stepFontSize,
     choiceLayout: choiceLayout,
     confirmReady: confirmReady,
+    readingIndex: readingIndex,
+    lookupReading: lookupReading,
+    answerGuide: answerGuide,
     feedbackPanel: feedbackPanel,
     roadmapStatus: roadmapStatus,
     roadmapMarks: roadmapMarks,

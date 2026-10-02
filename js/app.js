@@ -4,6 +4,7 @@
     lessons: [],
     curriculum: null,
     vocabBanks: [],
+    readingIndex: {},
     error: "",
     loading: true
   };
@@ -602,27 +603,50 @@
       + "</div>";
   }
 
+  function renderAnswerGuide(line) {
+    if (!line) return "";
+    var html = "<p class=\"sheet-answer\">" + escapeHtml(line.label) + "：" + jaSpan(line.text) + "</p>";
+    if (line.jp && String(line.jp) !== String(line.text)) html += "<p class=\"sheet-jp jp\" lang=\"ja\">" + escapeHtml(line.jp) + "</p>";
+    if (line.reading) html += "<p class=\"sheet-reading\" lang=\"ja\">" + escapeHtml(line.reading) + "</p>";
+    if (line.extraJp && String(line.extraJp) !== String(line.jp) && String(line.extraJp) !== String(line.text)) {
+      html += "<p class=\"sheet-note\">辭書形</p>";
+      html += "<p class=\"sheet-jp jp\" lang=\"ja\">" + escapeHtml(line.extraJp) + "</p>";
+      if (line.extraReading) html += "<p class=\"sheet-reading\" lang=\"ja\">" + escapeHtml(line.extraReading) + "</p>";
+    }
+    return html;
+  }
+
   function renderSheet(question) {
     var correct = session.results[session.results.length - 1].correct;
+    var guide = window.JPLogic.answerGuide(question, state.readingIndex);
     var panel = window.JPLogic.feedbackPanel({
       correct: correct,
-      answer: window.JPLogic.correctAnswerText(question),
+      answer: guide.answer,
+      jp: guide.jp,
+      reading: guide.reading,
+      extraJp: guide.extraJp,
+      extraReading: guide.extraReading,
       rule: question.rule || "",
       explanation: question.explanation || ""
     });
-    var lines = panel.lines.map(function (line) {
-      var cls = line.label === "規則" ? "sheet-rule" : "sheet-answer";
-      return "<p class=\"" + cls + "\">" + escapeHtml(line.label) + "：" + jaSpan(line.text) + "</p>";
-    }).join("");
+    var answerLine = panel.lines.filter(function (line) { return line.label === "正確答案"; })[0];
+    var ruleLine = panel.lines.filter(function (line) { return line.label === "規則"; })[0];
     var extra = "";
     if (panel.detail) extra += "<p>" + inline(panel.detail) + "</p>";
     extra += renderExampleSentence(question.example);
     var title = "<p class=\"sheet-title\">" + (correct ? icon("check") : icon("cross")) + escapeHtml(panel.title) + "</p>";
-    var fixed = correct ? title : lines;
-    var scroll = correct ? extra : title + extra;
+    var pin = title;
+    var body = extra;
+    if (!correct) {
+      pin += renderAnswerGuide(answerLine);
+      pin += "<p class=\"sheet-answer sheet-rule-label\">規則</p>";
+      body = (ruleLine ? "<p class=\"sheet-rule\">" + jaSpan(ruleLine.text) + "</p>" : "") + extra;
+    }
     return "<aside class=\"sheet is-" + panel.tone + "\" id=\"answer-feedback\" role=\"status\">"
-      + "<div class=\"sheet-fixed\">" + fixed + "</div>"
-      + (scroll ? "<div class=\"sheet-scroll\">" + scroll + "</div>" : "")
+      + "<div class=\"sheet-scroll\">"
+      + "<div class=\"sheet-pin\">" + pin + "</div>"
+      + body
+      + "</div>"
       + "<button type=\"button\" class=\"btn sheet-next\" data-action=\"next\">繼續</button>"
       + "</aside>";
   }
@@ -1156,8 +1180,6 @@
     if (kept != null) window.scrollTo(0, kept);
     applySpeechHint();
     layoutDock();
-    fitRuleLine();
-    layoutDock();
     if (opts.reveal || document.getElementById("answer-feedback") || document.getElementById("answer-dock")) revealAboveDock();
     if (opts.keepScroll) return;
     var fill = app.querySelector("#fill-answer");
@@ -1273,28 +1295,6 @@
     var height = panelHeight + inset;
     document.documentElement.style.setProperty("--dock-h", height + "px");
     if (spacer) spacer.style.height = height + "px";
-  }
-
-  function fitRuleLine() {
-    var el = document.querySelector(".sheet-rule");
-    if (!el) return;
-    el.style.fontSize = "";
-    el.style.lineHeight = "1.35";
-    function lineBox() {
-      var value = parseFloat(window.getComputedStyle(el).lineHeight);
-      return value || 32;
-    }
-    function fits() {
-      return el.scrollHeight <= lineBox() * 2 + 2;
-    }
-    if (fits()) return;
-    el.style.lineHeight = "1.25";
-    if (fits()) return;
-    var size = parseFloat(window.getComputedStyle(el).fontSize) || 24;
-    while (size > 17 && !fits()) {
-      size -= 1;
-      el.style.fontSize = size + "px";
-    }
   }
 
   function revealAboveDock() {
@@ -1652,6 +1652,32 @@
     if (navigator.onLine && window.JPStore.isPending() && window.JPStore.getToken()) tryAutoSync();
   }
 
+  function readingSources() {
+    var list = [];
+    (state.vocabBanks || []).forEach(function (bank) {
+      (bank.categories || []).forEach(function (category) {
+        (category.entries || []).forEach(function (entry) {
+          if (entry) list.push(entry);
+        });
+      });
+    });
+    (state.lessons || []).forEach(function (lesson) {
+      (lesson.teaching || []).forEach(function (block) {
+        if (!block) return;
+        if (block.jp) list.push({ japanese: block.jp, reading: block.reading });
+        (block.items || []).forEach(function (item) {
+          if (item && item.word) list.push({ japanese: item.word, reading: item.reading });
+        });
+      });
+      (lesson.questions || []).forEach(function (question) {
+        if (!question) return;
+        if (question.jp) list.push({ japanese: question.jp, reading: question.reading });
+        if (question.verb) list.push({ japanese: question.verb, reading: question.reading });
+      });
+    });
+    return list;
+  }
+
   async function loadOptionalJson(url) {
     try {
       var response = await fetch(url, { cache: "reload" });
@@ -1698,6 +1724,7 @@
       if (!state.index) state.index = { lessons: [] };
       state.error = "載入唔到課題。如果係第一次開，請駁住網絡再試。";
     } finally {
+      state.readingIndex = window.JPLogic.readingIndex(readingSources());
       state.loading = false;
     }
   }
