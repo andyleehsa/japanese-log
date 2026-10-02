@@ -964,6 +964,7 @@
       + "<h2>字體大小</h2>" + steps
       + '<section class="panel"><p>進度只保存在這部裝置。加入主畫面之後，沒有網絡也可以打開已經載入的課程。</p>'
       + (window.JPStore.persistent() ? "" : "<p>這部瀏覽器未能保存進度。離開頁面之後，練習紀錄可能會消失。</p>")
+      + (voiceMissing() && window.JPSpeech ? "<p>" + escapeHtml(window.JPSpeech.hintDetail()) + "</p>" : "")
       + "</section>"
       + '<button type="button" class="btn secondary" data-action="clear-progress">清除本機進度</button>';
   }
