@@ -1,4 +1,4 @@
-var CACHE = "jp-log-v10";
+var CACHE = "jp-log-v11";
 var SHELL = [
   "index.html",
   "css/app.css",

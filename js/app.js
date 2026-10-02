@@ -228,23 +228,37 @@
     var attempts = progressAttempts(window.JPStore.loadAttempts());
     var stats = window.JPLogic.computeStats(attempts, { lessonTitles: lessonTitles() });
     var items = listedLessons();
-    var todayItem = nextOfficialLesson(attempts);
+    var plan = window.JPLogic.homeLessonPlan(items.map(function (item) {
+      var lesson = lessonById(item.id);
+      if (lesson && !lesson.loadError) return lesson;
+      return { id: item.id, title: item.title, questions: [] };
+    }), attempts, window.JPStore.loadHomeSkips(), completionThreshold());
     var todayHtml;
-    if (!items.length) {
+    if (plan.kind === "empty") {
       todayHtml = "<section class=\"card\"><h1>未有課題</h1><p>老師未放課題。放咗之後撳下面「重新載入課題」。</p></section>";
-    } else if (!todayItem) {
-      todayHtml = "<section class=\"card\"><p class=\"kicker\">正式課題</p><h1>全部做完</h1><p>正式課題都做完喇。可以喺下面揀任何一課再睇、再練。</p></section>";
+    } else if (plan.kind === "done") {
+      todayHtml = "<section class=\"card\"><p class=\"kicker\">正式課題</p><h1>全部做完</h1><p>正式課題都達標喇。可以喺下面揀任何一課再睇、再練。</p></section>";
     } else {
-      var todayLesson = lessonById(todayItem.id);
+      var todayItem = indexItem(plan.lessonId);
+      var todayLesson = lessonById(plan.lessonId);
       var progress = todayLesson ? window.JPLogic.lessonProgress(todayLesson, attempts) : null;
-      todayHtml = "<a class=\"card today\" href=\"#/lesson/" + encodeURIComponent(todayItem.id) + "\">"
-        + "<p class=\"kicker\">下一課</p>"
-        + "<h1 class=\"jp\" lang=\"ja\">" + escapeHtml(todayItem.title) + "</h1>"
-        + "<p class=\"meta\">" + escapeHtml(window.JPLogic.formatDateLabel(todayItem.date)) + "</p>"
-        + "<p class=\"tags\">" + renderTags(todayItem.tags) + "</p>"
+      var skip = plan.skipLessonId
+        ? "<a class=\"skip-next\" href=\"#/\" data-action=\"skip-home\" data-id=\"" + escapeHtml(plan.lessonId) + "\">跳去下一課</a>"
+        : "";
+      var heading = plan.mode === "retry"
+        ? "<h1>" + escapeHtml(plan.heading) + "</h1>"
+        : "<h1 class=\"jp\" lang=\"ja\">" + escapeHtml(todayItem ? todayItem.title : plan.title) + "</h1>";
+      todayHtml = "<section class=\"home-next\">"
+        + "<a class=\"card today\" href=\"#/lesson/" + encodeURIComponent(plan.lessonId) + "\">"
+        + "<p class=\"kicker\">" + (plan.mode === "retry" ? "未達標" : "下一課") + "</p>"
+        + heading
+        + "<p class=\"meta\">" + escapeHtml(window.JPLogic.formatDateLabel(todayItem ? todayItem.date : "")) + "</p>"
+        + "<p class=\"tags\">" + renderTags(todayItem ? todayItem.tags : []) + "</p>"
         + "<p class=\"meta\">" + progressText(progress) + "</p>"
-        + "<span class=\"btn\">開始溫習</span>"
-        + "</a>";
+        + "<span class=\"btn\">" + escapeHtml(plan.button) + "</span>"
+        + "</a>"
+        + skip
+        + "</section>";
     }
     var list = items.map(function (item) {
       var lesson = lessonById(item.id);
@@ -434,14 +448,10 @@
     });
   }
 
-  function nextOfficialLesson(attempts) {
-    var items = listedLessons();
-    for (var i = 0; i < items.length; i++) {
-      var lesson = lessonById(items[i].id);
-      if (!lesson || lesson.loadError) return items[i];
-      if (!window.JPLogic.lessonProgress(lesson, attempts).completed) return items[i];
-    }
-    return null;
+  function completionThreshold() {
+    var source = state.curriculum;
+    if (source && typeof source.completionAccuracy === "number") return source.completionAccuracy;
+    return window.JPLogic.COMPLETION_ACCURACY;
   }
 
   function renderLesson(id) {
@@ -1369,6 +1379,11 @@
     if (name === "clear-token") clearToken();
     if (name === "export") exportJson();
     if (name === "clear-progress") clearProgress();
+    if (name === "skip-home") {
+      event.preventDefault();
+      window.JPStore.skipHomeLesson(action.getAttribute("data-id"));
+      render();
+    }
     if (name === "reload") location.reload();
     if (name === "reveal" && cards) {
       cards.revealed = true;

@@ -288,7 +288,7 @@
       "id": "n5w1-d3-q8",
       "type": "choice",
       "kind": "verb-group",
-      "prompt": "睇字典形，揀呢個動詞係邊類。",
+      "prompt": "睇辭書形，揀呢個動詞係邊類。",
       "verb": "待つ",
       "reading": "まつ",
       "speak": "まつ",

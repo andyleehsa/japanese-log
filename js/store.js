@@ -4,6 +4,7 @@
   var LAST = "jp-log-last-synced";
   var PENDING = "jp-log-pending-sync";
   var VOCAB = "jp-log-vocab-v1";
+  var HOME_SKIP = "jp-log-home-skip-v1";
   var memory = {};
   var persistent = true;
 
@@ -101,6 +102,23 @@
       writeRaw(ATTEMPTS, "[]");
       writeRaw(VOCAB, "{}");
       writeRaw(PENDING, "0");
+      writeRaw(HOME_SKIP, "[]");
+    },
+    loadHomeSkips: function () {
+      var raw = readRaw(HOME_SKIP);
+      if (!raw) return [];
+      try {
+        var parsed = JSON.parse(raw);
+        return Array.isArray(parsed) ? parsed.filter(function (id) { return typeof id === "string" && id; }) : [];
+      } catch (err) {
+        return [];
+      }
+    },
+    skipHomeLesson: function (id) {
+      var list = this.loadHomeSkips();
+      if (id && list.indexOf(id) === -1) list.push(id);
+      writeRaw(HOME_SKIP, JSON.stringify(list));
+      return list;
     },
     loadVocabMarks: function () {
       var raw = readRaw(VOCAB);

@@ -549,6 +549,49 @@
     return Math.round(accuracy * 100) + "%";
   }
 
+  function dayHeading(title) {
+    var text = String(title || "");
+    var head = text.split("：")[0];
+    return head || text;
+  }
+
+  function homeLessonPlan(lessons, attempts, skippedIds, threshold) {
+    var list = Array.isArray(lessons) ? lessons : [];
+    var skipped = {};
+    (skippedIds || []).forEach(function (id) {
+      if (id) skipped[id] = true;
+    });
+    var limit = threshold == null ? COMPLETION_ACCURACY : threshold;
+    var rows = list.map(function (lesson) {
+      var progress = lessonProgress(lesson, attempts || []);
+      return {
+        id: lesson && lesson.id,
+        title: (lesson && lesson.title) || (lesson && lesson.id) || "",
+        done: lessonIsDone(progress, limit),
+        accuracy: progress.accuracy,
+        attempts: progress.attempts || 0
+      };
+    }).filter(function (row) { return row.id; });
+    if (!rows.length) return { kind: "empty" };
+    if (rows.every(function (row) { return row.done; })) return { kind: "done" };
+    var open = rows.filter(function (row) { return !row.done && !skipped[row.id]; });
+    if (!open.length) open = rows.filter(function (row) { return !row.done; });
+    var current = open[0];
+    var mode = current.attempts > 0 ? "retry" : "new";
+    return {
+      kind: "lesson",
+      lessonId: current.id,
+      title: current.title,
+      mode: mode,
+      accuracy: current.accuracy,
+      button: mode === "retry" ? "再練一次" : "開始今日課堂",
+      heading: mode === "retry"
+        ? dayHeading(current.title) + "再練一次（上次 " + formatPercent(current.accuracy) + "）"
+        : current.title,
+      skipLessonId: open.length > 1 ? open[1].id : null
+    };
+  }
+
   function formatDateLabel(iso) {
     var parts = String(iso || "").split("-");
     if (parts.length !== 3) return String(iso || "");
@@ -583,6 +626,7 @@
     nextAttemptNo: nextAttemptNo,
     buildSummary: buildSummary,
     examplePendingVerify: examplePendingVerify,
+    homeLessonPlan: homeLessonPlan,
     entryPendingVerify: entryPendingVerify,
     formatPercent: formatPercent,
     formatDateLabel: formatDateLabel,

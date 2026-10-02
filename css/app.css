@@ -516,7 +516,18 @@ input { min-height: 56px; font-size: 1.25rem; }
 
 .score { font-size: 1.6rem; font-weight: 800; color: var(--indigo); }
 
-.sticky-next { position: sticky; bottom: calc(12px + env(safe-area-inset-bottom)); }
+.sticky-next { margin-top: 8px; }
+
+a.skip-next {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin: 4px 0 8px;
+  padding: 10px 2px;
+  box-sizing: border-box;
+  font-size: 16px;
+  font-weight: 700;
+}
 
 .cal-grid {
   display: grid;

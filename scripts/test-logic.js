@@ -237,4 +237,59 @@ const reviewAttempt = logic.makeAttempt({
 });
 assert.strictEqual(reviewAttempt.review, true);
 
+const homeA = { id: "n5w1-d1", title: "第 1 日：長音", questions: [{ id: "a1" }, { id: "a2" }] };
+const homeB = { id: "n5w1-d1v", title: "第 1 日（動詞篇）：辭書形", questions: [{ id: "b1" }, { id: "b2" }] };
+const homeC = { id: "n5w1-d2", title: "第 2 日：助詞", questions: [{ id: "c1" }] };
+function homeAttempts(lesson, flags) {
+  return lesson.questions.map(function (question, index) {
+    return { questionId: question.id, lessonId: lesson.id, correct: !!flags[index] };
+  });
+}
+const homePassed = homeAttempts(homeA, [true, true]);
+let homePlan = logic.homeLessonPlan([homeA, homeB], homePassed, []);
+assert.strictEqual(homePlan.kind, "lesson");
+assert.strictEqual(homePlan.lessonId, "n5w1-d1v");
+assert.strictEqual(homePlan.mode, "new");
+assert.strictEqual(homePlan.button, "開始今日課堂");
+const homeHalf = homeAttempts(homeA, [true, false]);
+homePlan = logic.homeLessonPlan([homeA, homeB], homeHalf, []);
+assert.strictEqual(homePlan.lessonId, "n5w1-d1");
+assert.strictEqual(homePlan.mode, "retry");
+assert.strictEqual(homePlan.button, "再練一次");
+assert.strictEqual(homePlan.heading, "第 1 日再練一次（上次 50%）");
+assert.strictEqual(homePlan.skipLessonId, "n5w1-d1v");
+homePlan = logic.homeLessonPlan([homeA, homeB, homeC], homeHalf, ["n5w1-d1"]);
+assert.strictEqual(homePlan.lessonId, "n5w1-d1v");
+assert.strictEqual(homePlan.mode, "new");
+assert.strictEqual(homePlan.button, "開始今日課堂");
+assert.strictEqual(homePlan.skipLessonId, "n5w1-d2");
+const homeFour = {
+  id: "n5w1-d1",
+  title: "第 1 日：長音",
+  questions: [{ id: "q1" }, { id: "q2" }, { id: "q3" }, { id: "q4" }]
+};
+homePlan = logic.homeLessonPlan([homeFour, homeB], homeAttempts(homeFour, [true, true, true, false]), []);
+assert.strictEqual(homePlan.lessonId, "n5w1-d1");
+assert.strictEqual(homePlan.mode, "retry");
+assert.strictEqual(homePlan.heading, "第 1 日再練一次（上次 75%）");
+const homeFive = {
+  id: "n5w1-d1",
+  title: "第 1 日：長音",
+  questions: [{ id: "q1" }, { id: "q2" }, { id: "q3" }, { id: "q4" }, { id: "q5" }]
+};
+homePlan = logic.homeLessonPlan([homeFive, homeB], homeAttempts(homeFive, [true, true, true, true, false]), []);
+assert.strictEqual(homePlan.lessonId, "n5w1-d1v");
+assert.strictEqual(homePlan.mode, "new");
+homePlan = logic.homeLessonPlan([homeA], homeHalf, []);
+assert.strictEqual(homePlan.skipLessonId, null);
+homePlan = logic.homeLessonPlan([homeA, homeB], homePassed.concat(homeAttempts(homeB, [true, true])), []);
+assert.strictEqual(homePlan.kind, "done");
+const homeSkippedDone = logic.homeLessonPlan(
+  [homeA, homeB, homeC],
+  homeHalf.concat(homeAttempts(homeB, [true, true])),
+  []
+);
+assert.strictEqual(homeSkippedDone.lessonId, "n5w1-d1");
+assert.strictEqual(homeSkippedDone.skipLessonId, "n5w1-d2");
+
 console.log("logic tests ok");
