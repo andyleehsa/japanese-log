@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://andyleehsa.github.io/japanese-log/schema/index.schema.json",
+  "title": "Lesson index",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "lessons"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "lessons": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/entry" }
+    }
+  },
+  "$defs": {
+    "entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "title", "date", "file", "tags"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+        "title": { "type": "string", "minLength": 1 },
+        "date": { "type": "string", "format": "date" },
+        "file": { "type": "string", "pattern": "^lessons/[A-Za-z0-9._-]+\\.json$" },
+        "tags": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "topics": {
+          "type": "array",
+          "items": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" }
+        },
+        "sample": { "type": "boolean" }
+      }
+    }
+  }
+}

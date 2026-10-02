@@ -1,0 +1,133 @@
+{
+  "id": "day-002",
+  "title": "これ・それ・あれ",
+  "date": "2026-10-02",
+  "level": "N5",
+  "sample": true,
+  "sampleNote": "樣本課題，老師可以成個檔換走。正式課題請刪走 sample，或者設做 false。",
+  "tags": ["あれ", "この", "これ", "それ", "は"],
+  "topics": ["n5-kosoado"],
+  "teaching": [
+    {
+      "type": "tip",
+      "text": "呢份係**樣本課題**，方便試用個 app。老師之後可以換走。"
+    },
+    {
+      "type": "heading",
+      "text": "呢個、嗰個、遠啲嗰個"
+    },
+    {
+      "type": "paragraph",
+      "text": "日文用三個詞講物件離邊個近。近自己用 **これ**，近對方用 **それ**，離雙方都遠用 **あれ**。"
+    },
+    {
+      "type": "vocab",
+      "caption": "今日詞彙",
+      "items": [
+        { "word": "これ", "reading": "これ", "meaning": "呢個（近自己）", "speak": "これ" },
+        { "word": "それ", "reading": "それ", "meaning": "嗰個（近對方）", "speak": "それ" },
+        { "word": "あれ", "reading": "あれ", "meaning": "嗰個（離雙方都遠）", "speak": "あれ" },
+        { "word": "この", "reading": "この", "meaning": "呢個 + 名詞", "speak": "この" },
+        { "word": "水", "reading": "みず", "meaning": "水", "speak": "みず" },
+        { "word": "学校", "reading": "がっこう", "meaning": "學校", "speak": "がっこう" }
+      ]
+    },
+    {
+      "type": "example",
+      "jp": "これは水です。",
+      "reading": "これは みずです。",
+      "zh": "呢個係水。",
+      "speak": "これは水です。",
+      "note": "物件喺自己隔離。"
+    },
+    {
+      "type": "example",
+      "jp": "それはペンです。",
+      "reading": "それは ペンです。",
+      "zh": "嗰個係筆。",
+      "speak": "それはペンです。",
+      "note": "物件喺對方隔離。"
+    },
+    {
+      "type": "example",
+      "jp": "あれは学校です。",
+      "reading": "あれは がっこうです。",
+      "zh": "遠啲嗰個係學校。",
+      "speak": "あれは学校です。"
+    },
+    {
+      "type": "paragraph",
+      "text": "これ／それ／あれ 本身就係名詞，後面可以直接加 `は`。如果要再加名詞，就要轉做 **この・その・あの**。唔可以講「これ本」。"
+    },
+    {
+      "type": "example",
+      "jp": "この本",
+      "reading": "この ほん",
+      "zh": "呢本書（近自己）",
+      "speak": "この本",
+      "note": "「この」後面先接名詞。「これ本」係錯嘅。"
+    }
+  ],
+  "questions": [
+    {
+      "id": "day-002-q1",
+      "type": "choice",
+      "prompt": "物件喺自己手度，用邊個？",
+      "choices": ["これ", "それ", "あれ", "どれ"],
+      "answer": 0,
+      "explanation": "近自己用「これ」。「どれ」係「邊個」，係問句用嘅詞。",
+      "tags": ["これ"],
+      "speak": "これ"
+    },
+    {
+      "id": "day-002-q2",
+      "type": "choice",
+      "prompt": "物件喺對方度，用邊個？",
+      "choices": ["それ", "これ", "あれ", "この"],
+      "answer": 0,
+      "explanation": "近對方用「それ」。近自己先用「これ」。",
+      "tags": ["それ"],
+      "speak": "それ"
+    },
+    {
+      "id": "day-002-q3",
+      "type": "fill",
+      "prompt": "遠嘅學校：___は学校です。",
+      "speak": "あれは学校です",
+      "accepted": ["あれ"],
+      "explanation": "離講嘢嘅人同聽嘢嘅人都遠，用「あれ」。",
+      "tags": ["あれ"]
+    },
+    {
+      "id": "day-002-q4",
+      "type": "fill",
+      "prompt": "呢個係水：これ___水です。",
+      "speak": "これは水です",
+      "accepted": ["は"],
+      "explanation": "「これ」做主題，後面用助詞「は」。",
+      "tags": ["は", "これ"]
+    },
+    {
+      "id": "day-002-q5",
+      "type": "choice",
+      "prompt": "想講「呢本書」（本書喺自己隔離），邊個先啱？",
+      "speak": "この本",
+      "choices": ["この本", "これ本", "あの本", "それ本"],
+      "answer": 0,
+      "explanation": "近自己又要加名詞「本」，用「この本」。「これ本」係錯嘅。「あの」「それ」唔係近自己。",
+      "tags": ["この"]
+    },
+    {
+      "id": "day-002-q6",
+      "type": "listening",
+      "prompt": "聽完用數字填時間：___時。",
+      "speak": "三時です。",
+      "jp": "三時です。",
+      "reading": "さんじです。",
+      "meaning": "三點。",
+      "accepted": ["3", "３", "三"],
+      "explanation": "「三時」係三點。可以寫 3 或者 三。",
+      "tags": ["聽力", "時間"]
+    }
+  ]
+}
