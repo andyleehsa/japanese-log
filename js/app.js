@@ -1163,13 +1163,12 @@
   function applySpeechHint(force) {
     var el = document.getElementById("speech-hint");
     if (!el || !window.JPSpeech) return;
-    var state = window.JPSpeech.voiceState();
-    if (force || state === "unsupported" || state === "missing") {
+    if (force === true) {
       el.hidden = false;
       el.textContent = window.JPSpeech.hint();
-    } else if (state === "ready") {
-      el.hidden = true;
+      return;
     }
+    if (window.JPSpeech.voiceState() === "ready") el.hidden = true;
   }
 
   async function manualSync() {
@@ -1487,7 +1486,7 @@
 
   async function boot() {
     bind();
-    window.JPSpeech.onChange(applySpeechHint);
+    window.JPSpeech.onChange(function () { applySpeechHint(); });
     applySpeechHint();
     registerSW();
     await reloadContent();
