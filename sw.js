@@ -1,4 +1,5 @@
-var CACHE = "jpn5-shell-v1";
+var CACHE = "jpn5-shell-v2";
+var CACHE_PREFIX = "jpn5-";
 var SHELL = [
   "index.html",
   "css/app.css",
@@ -42,7 +43,9 @@ self.addEventListener("install", function (event) {
 self.addEventListener("activate", function (event) {
   event.waitUntil((async function () {
     var keys = await caches.keys();
-    await Promise.all(keys.filter(function (key) { return key !== CACHE; }).map(function (key) {
+    await Promise.all(keys.filter(function (key) {
+      return key !== CACHE && key.indexOf(CACHE_PREFIX) === 0;
+    }).map(function (key) {
       return caches.delete(key);
     }));
     await self.clients.claim();

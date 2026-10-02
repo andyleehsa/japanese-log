@@ -578,7 +578,9 @@ assert.ok(css.indexOf("prefers-reduced-motion") !== -1);
 assert.ok(css.indexOf("scroll-pad") === -1);
 assert.ok(/\.toast\s*\{[^}]*pointer-events:\s*none/.test(css));
 const sw = fs.readFileSync(require("path").join(__dirname, "../sw.js"), "utf8");
-assert.ok(sw.indexOf("jpn5-shell-v1") !== -1);
+assert.ok(sw.indexOf("jpn5-shell-v2") !== -1);
+assert.ok(sw.indexOf("jpn5-shell-v1") === -1);
+assert.ok(sw.indexOf('key.indexOf(CACHE_PREFIX) === 0') !== -1);
 assert.ok(sw.indexOf("jp-log-v15") === -1);
 assert.ok(sw.indexOf("js/sync.js") === -1);
 assert.ok(sw.indexOf("cache.addAll") === -1);
@@ -640,5 +642,26 @@ assert.strictEqual(logic.gradeQuestion({ type: "reorder", answer: ["p3", "p1"] }
 const tagged = logic.applyGrammarTags({ tags: [] }, { id: "q-n5-12-001", grammar: ["g-n5-12-01"] });
 assert.deepStrictEqual(tagged.grammar, ["g-n5-12-01"]);
 assert.deepStrictEqual(tagged.tags, ["g-n5-12-01"]);
+
+assert.strictEqual(logic.continueAllowed(1000, 1000), false);
+assert.strictEqual(logic.continueAllowed(1000, 1399), false);
+assert.strictEqual(logic.continueAllowed(1000, 1400), true);
+assert.strictEqual(logic.continueAllowed(1000, 2000), true);
+assert.strictEqual(logic.continueAllowed(null, 2000), true);
+assert.strictEqual(logic.nextAttemptNo([null, { questionId: "q1" }, null], "q1"), 2);
+
+const retiredRecords = [
+  null,
+  { questionId: "q-n5-12-036", correct: false },
+  { questionId: "q-n5-12-045", correct: false },
+  { questionId: "q-n5-12-001", correct: false },
+  { note: "missing id" }
+];
+const retiredDropped = logic.dropUnknownQuestions(retiredRecords);
+assert.deepStrictEqual(retiredDropped.map((row) => row.questionId), ["q-n5-12-001"]);
+const knownOnly = logic.dropUnknownQuestions(retiredRecords.concat([{ questionId: "q-old", correct: false }]), ["q-n5-12-001"]);
+assert.deepStrictEqual(knownOnly.map((row) => row.questionId), ["q-n5-12-001"]);
+assert.doesNotThrow(() => logic.mistakeNotebook(retiredRecords, "2026-10-02"));
+assert.doesNotThrow(() => logic.nextAttemptNo(retiredRecords, "q-n5-12-060"));
 
 console.log("logic tests ok");

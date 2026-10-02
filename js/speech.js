@@ -3,7 +3,7 @@
   var listeners = [];
   var voicesSettled = false;
   var VOICE_WAIT_MS = 1500;
-  var HINT = "這部手機沒有日文語音。請到 iPhone 設定、輔助使用、朗讀內容、語音，加入日文語音。";
+  var HINT = "這部手機沒有日文語音。聆聽題可以按「顯示文字」查看句子。請到 iPhone 設定、輔助使用、朗讀內容、語音，加入日文語音。";
 
   function supported() {
     return typeof window !== "undefined" && "speechSynthesis" in window && typeof SpeechSynthesisUtterance === "function";

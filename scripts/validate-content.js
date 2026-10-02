@@ -7,6 +7,7 @@ const path = require("path");
 const HARD_CHARS = "嘅咗唔喺啲嘢冇俾佢哋咁嚟睇嗰啱乜𠵼咩嚿呢㗎喎囉噉揀掣撳仲";
 const HARD_WORDS = ["點解", "邊個", "而家", "邊度", "幾多", "點樣", "好似", "係"];
 const SOFT_WORDS = ["同埋", "返去", "返回", "不用", "幫手", "同"];
+const RETIRED_IDS = { "q-n5-12-036": true, "q-n5-12-045": true };
 const PART = { "は": "わ", "へ": "え", "を": "お" };
 const ID_PATTERNS = {
   u: /^u-n\d-\d{2}$/,
@@ -85,6 +86,11 @@ function checkUnit(data) {
   Object.keys(seen).forEach(function (id) {
     if (seen[id] > 1) err("ids", "duplicate id " + id + " x" + seen[id]);
   });
+  walk(unit, function (nodePath, node) {
+    if (node && typeof node === "object" && !Array.isArray(node) && RETIRED_IDS[node.id]) {
+      err(nodePath, "retired id reused: " + node.id);
+    }
+  });
   const defined = {};
   (unit.lessons || []).forEach(function (lesson) {
     ["id", "number", "title", "prerequisites", "vocab", "grammar", "exercises", "listening"].forEach(function (key) {
@@ -114,6 +120,13 @@ function checkUnit(data) {
   if (definedIds.join("\n") !== indexIds.join("\n")) {
     err("grammarIndex", "grammarIndex " + JSON.stringify(indexIds) + " != defined " + JSON.stringify(definedIds));
   }
+  ((((unit.story || {}).reading || {}).lines) || []).forEach(function (line) {
+    ["group", "groupNote", "groupDetail"].forEach(function (key) {
+      if (line && Object.prototype.hasOwnProperty.call(line, key)) {
+        err((line && line.id) || "story line", "story line leaks answer via field " + key);
+      }
+    });
+  });
   const questionIds = [];
   let listeningCount = 0;
   let realDeviceCount = 0;
@@ -148,7 +161,7 @@ function checkUnit(data) {
         if ("ja" in chosen && !String(node.answerDisplay).startsWith(rstripPeriod(chosen.ja))) {
           err(node.id, "answerDisplay " + JSON.stringify(node.answerDisplay) + " does not match answer option " + JSON.stringify(chosen.ja));
         }
-        if ("text" in chosen && node.type === "choice" && chosen.text !== node.answerDisplay && !(node.kind === "verb-group" && String(node.answerDisplay).startsWith(String(chosen.text).slice(0, 2)))) {
+        if ("text" in chosen && (node.type === "choice" || node.kind === "listen-group") && chosen.text !== node.answerDisplay) {
           err(node.id, "answerDisplay " + JSON.stringify(node.answerDisplay) + " != answer option text " + JSON.stringify(chosen.text));
         }
       }
@@ -207,7 +220,7 @@ function checkUnit(data) {
           if (at === -1) break;
           const next = value.slice(at + word.length, at + word.length + 1);
           const prev = value.slice(Math.max(0, at - 1), at);
-          if (!(word === "同" && ("樣時步一".indexOf(next) !== -1 || "不相".indexOf(prev) !== -1))) {
+          if (!(word === "同" && ("樣時步一音".indexOf(next) !== -1 || "不相".indexOf(prev) !== -1))) {
             warn(nodePath, "check word " + JSON.stringify(word) + " in " + JSON.stringify(value.slice(0, 40)));
           }
           from = at + word.length;

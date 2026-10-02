@@ -429,9 +429,39 @@
   function nextAttemptNo(attempts, questionId) {
     var count = 0;
     (attempts || []).forEach(function (attempt) {
-      if (attempt.questionId === questionId) count += 1;
+      if (attempt && attempt.questionId === questionId) count += 1;
     });
     return count + 1;
+  }
+
+  var CONTINUE_GUARD_MS = 400;
+  var RETIRED_QUESTION_IDS = {
+    "q-n5-12-036": true,
+    "q-n5-12-045": true
+  };
+
+  function continueAllowed(appearedAt, now, guardMs) {
+    var guard = typeof guardMs === "number" ? guardMs : CONTINUE_GUARD_MS;
+    if (appearedAt == null || now == null) return true;
+    return Number(now) - Number(appearedAt) >= guard;
+  }
+
+  function dropUnknownQuestions(attempts, knownIds) {
+    var known = null;
+    if (Array.isArray(knownIds)) {
+      known = {};
+      knownIds.forEach(function (id) { known[id] = true; });
+    }
+    var kept = [];
+    (attempts || []).forEach(function (attempt) {
+      if (!attempt || typeof attempt !== "object") return;
+      var id = attempt.questionId;
+      if (typeof id !== "string" || !id) return;
+      if (RETIRED_QUESTION_IDS[id]) return;
+      if (known && !known[id]) return;
+      kept.push(attempt);
+    });
+    return kept;
   }
 
   function latestCompletePass(lesson, attempts) {
@@ -1089,6 +1119,8 @@
     computeStats: computeStats,
     lessonProgress: lessonProgress,
     nextAttemptNo: nextAttemptNo,
+    continueAllowed: continueAllowed,
+    dropUnknownQuestions: dropUnknownQuestions,
     buildSummary: buildSummary,
     examplePendingVerify: examplePendingVerify,
     homeLessonPlan: homeLessonPlan,

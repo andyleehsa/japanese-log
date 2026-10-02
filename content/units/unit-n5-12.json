@@ -1007,7 +1007,7 @@
             "particles": [],
             "wordId": "w-n5-12-003"
           },
-          "answerDisplay": "行く（いく）",
+          "answerDisplay": "一類（五段）",
           "rule": "辭書形不是以「る」結尾的動詞，一定是一類。",
           "explanation": "聽到「いく」，是「行く」。最後的「く」不是「る」，所以是一類動詞。",
           "source": "new",
@@ -2489,9 +2489,9 @@
           ],
           "shuffle": false,
           "answer": "a",
-          "answerDisplay": "一類（五段，看似二類）",
+          "answerDisplay": "一類（五段）",
           "rule": "「帰る」「入る」等少數動詞，「る」前面雖是い段或え段，看似二類，其實屬於一類，必須逐個記住。",
-          "explanation": "「帰る」（かえる）的「る」前面是「え」（え段），看似二類，但屬於例外，是一類動詞。",
+          "explanation": "「帰る」（かえる）的「る」前面是「え」（え段），看似二類，但屬於例外，是一類（五段）動詞。",
           "source": "reused",
           "sourceRef": "batch1-n5-day1-7/content/lessons/n5w1-d1v.json#n5w1-d1v-q2",
           "sourceNote": "題幹沿用舊題（帰る），解說以書面中文重寫，並刪去本單元未教的例外詞。"
@@ -2529,9 +2529,9 @@
           ],
           "shuffle": false,
           "answer": "a",
-          "answerDisplay": "一類（五段，看似二類）",
+          "answerDisplay": "一類（五段）",
           "rule": "「帰る」「入る」等少數動詞，「る」前面雖是い段或え段，看似二類，其實屬於一類，必須逐個記住。",
-          "explanation": "「入る」（はいる）的「る」前面是「い」（い段），看似二類，但屬於例外，是一類動詞。",
+          "explanation": "「入る」（はいる）的「る」前面是「い」（い段），看似二類，但屬於例外，是一類（五段）動詞。",
           "source": "new"
         },
         {
@@ -2890,57 +2890,37 @@
           "listeningNote": null
         },
         {
-          "id": "q-n5-12-036",
+          "id": "q-n5-12-060",
           "type": "listen-choice",
-          "kind": "listen-choice",
+          "kind": "listen-reading",
           "lesson": 3,
           "grammar": [
             "g-n5-12-06"
           ],
-          "prompt": "請聽音頻，選出你聽到的動詞。",
+          "prompt": "請看漢字「帰る」（意思：回去、回家），再聽音頻，選出讀音相符的假名。",
           "audio": {
             "ttsText": "かえる",
             "engine": "ios-tts",
             "rate": "normal",
             "file": null
           },
-          "showStem": false,
+          "showStem": true,
           "options": [
             {
-              "ja": "買う",
-              "reading": "かう",
-              "zh": "買",
-              "tts": "かう",
-              "particles": [],
-              "wordId": "w-n5-12-011",
-              "id": "a"
+              "id": "a",
+              "text": "かう"
             },
             {
-              "ja": "入る",
-              "reading": "はいる",
-              "zh": "進入",
-              "tts": "はいる",
-              "particles": [],
-              "wordId": "w-n5-12-014",
-              "id": "b"
+              "id": "b",
+              "text": "はいる"
             },
             {
-              "ja": "帰る",
-              "reading": "かえる",
-              "zh": "回去；回家",
-              "tts": "かえる",
-              "particles": [],
-              "wordId": "w-n5-12-013",
-              "id": "c"
+              "id": "c",
+              "text": "かえる"
             },
             {
-              "ja": "話す",
-              "reading": "はなす",
-              "zh": "說話；交談",
-              "tts": "はなす",
-              "particles": [],
-              "wordId": "w-n5-12-015",
-              "id": "d"
+              "id": "d",
+              "text": "はなす"
             }
           ],
           "shuffle": false,
@@ -2955,10 +2935,18 @@
           },
           "answerDisplay": "帰る（かえる）",
           "rule": "「かえる」有三拍：か・え・る。與「かう」（兩拍）不同。",
-          "explanation": "聽到「か・え・る」，是「帰る」。它看似二類，其實是一類動詞。",
+          "explanation": "「帰る」讀作「かえる」，意思是回去。它看似二類，其實是一類動詞。",
           "source": "new",
           "needsRealDeviceCheck": false,
-          "listeningNote": "（非長音題）部分語音可能把「かえる」讀成「蛙」的高低音調；本題只要求辨別假名，不要求音調。"
+          "listeningNote": "（非長音題）本題題幹已顯示漢字「帰る」與中文提示，不要求辨別同音詞；只確認語音讀出的是「か・え・る」三拍。若 TTS 把「かえる」讀成「蛙」的音調，請在此記錄。",
+          "stem": {
+            "ja": "帰る",
+            "reading": "かえる",
+            "zh": "回去；回家",
+            "tts": "かえる",
+            "particles": [],
+            "wordId": "w-n5-12-013"
+          }
         },
         {
           "id": "q-n5-12-037",
@@ -3000,7 +2988,7 @@
             "particles": [],
             "wordId": "w-n5-12-014"
           },
-          "answerDisplay": "入る（はいる）",
+          "answerDisplay": "一類（五段）",
           "rule": "「はいる」看似二類，其實是一類。",
           "explanation": "聽到「はいる」，是「入る」，屬於一類動詞（看似二類）。",
           "source": "new",
@@ -3379,7 +3367,6 @@
           "particles": [],
           "zh": "早上起床。",
           "verbWordId": "w-n5-12-007",
-          "group": "二類",
           "audio": null
         },
         {
@@ -3390,7 +3377,6 @@
           "particles": [],
           "zh": "現在吃。",
           "verbWordId": "w-n5-12-001",
-          "group": "二類",
           "audio": null
         },
         {
@@ -3401,7 +3387,6 @@
           "particles": [],
           "zh": "稍微喝一點。",
           "verbWordId": "w-n5-12-002",
-          "group": "一類",
           "audio": null
         },
         {
@@ -3412,7 +3397,6 @@
           "particles": [],
           "zh": "今天外出。",
           "verbWordId": "w-n5-12-010",
-          "group": "二類",
           "audio": null
         },
         {
@@ -3423,7 +3407,6 @@
           "particles": [],
           "zh": "明天去。",
           "verbWordId": "w-n5-12-003",
-          "group": "一類",
           "audio": null
         },
         {
@@ -3434,7 +3417,6 @@
           "particles": [],
           "zh": "稍等一下。",
           "verbWordId": "w-n5-12-012",
-          "group": "一類",
           "audio": null
         },
         {
@@ -3445,7 +3427,6 @@
           "particles": [],
           "zh": "現在進去。",
           "verbWordId": "w-n5-12-014",
-          "group": "一類（看似二類）",
           "audio": null
         },
         {
@@ -3456,7 +3437,6 @@
           "particles": [],
           "zh": "稍微看一下。",
           "verbWordId": "w-n5-12-004",
-          "group": "二類",
           "audio": null
         },
         {
@@ -3467,7 +3447,6 @@
           "particles": [],
           "zh": "稍微說幾句。",
           "verbWordId": "w-n5-12-015",
-          "group": "一類",
           "audio": null
         },
         {
@@ -3478,7 +3457,6 @@
           "particles": [],
           "zh": "明天買。",
           "verbWordId": "w-n5-12-011",
-          "group": "一類",
           "audio": null
         },
         {
@@ -3496,7 +3474,6 @@
           ],
           "zh": "我明天會來。",
           "verbWordId": "w-n5-12-006",
-          "group": "三類",
           "audio": null
         },
         {
@@ -3507,7 +3484,6 @@
           "particles": [],
           "zh": "今天回去。",
           "verbWordId": "w-n5-12-013",
-          "group": "一類（看似二類）",
           "audio": null
         },
         {
@@ -3518,7 +3494,6 @@
           "particles": [],
           "zh": "明天教（或告知）。",
           "verbWordId": "w-n5-12-009",
-          "group": "二類",
           "audio": null
         },
         {
@@ -3529,7 +3504,6 @@
           "particles": [],
           "zh": "稍微做一下。",
           "verbWordId": "w-n5-12-005",
-          "group": "三類",
           "audio": null
         },
         {
@@ -3540,7 +3514,6 @@
           "particles": [],
           "zh": "現在睡覺。",
           "verbWordId": "w-n5-12-008",
-          "group": "二類",
           "audio": null
         }
       ],
@@ -3595,7 +3568,6 @@
               "particles": [],
               "zh": "稍等一下。",
               "verbWordId": "w-n5-12-012",
-              "group": "一類",
               "audio": null
             },
             {
@@ -3613,7 +3585,6 @@
               ],
               "zh": "我明天會來。",
               "verbWordId": "w-n5-12-006",
-              "group": "三類",
               "audio": null
             },
             {
@@ -3624,7 +3595,6 @@
               "particles": [],
               "zh": "稍微看一下。",
               "verbWordId": "w-n5-12-004",
-              "group": "二類",
               "audio": null
             },
             {
@@ -3635,7 +3605,6 @@
               "particles": [],
               "zh": "早上起床。",
               "verbWordId": "w-n5-12-007",
-              "group": "二類",
               "audio": null
             }
           ],
@@ -3665,7 +3634,6 @@
               "particles": [],
               "zh": "早上起床。",
               "verbWordId": "w-n5-12-007",
-              "group": "二類",
               "audio": null
             },
             {
@@ -3676,7 +3644,6 @@
               "particles": [],
               "zh": "現在吃。",
               "verbWordId": "w-n5-12-001",
-              "group": "二類",
               "audio": null
             },
             {
@@ -3687,7 +3654,6 @@
               "particles": [],
               "zh": "今天回去。",
               "verbWordId": "w-n5-12-013",
-              "group": "一類（看似二類）",
               "audio": null
             },
             {
@@ -3698,7 +3664,6 @@
               "particles": [],
               "zh": "現在睡覺。",
               "verbWordId": "w-n5-12-008",
-              "group": "二類",
               "audio": null
             }
           ],
@@ -3954,7 +3919,6 @@
             "particles": [],
             "zh": "稍微看一下。",
             "verbWordId": "w-n5-12-004",
-            "group": "二類",
             "audio": null
           },
           "answerDisplay": "ちょっと見る。（ちょっとみる。）",
@@ -3965,21 +3929,21 @@
           "listeningNote": null
         },
         {
-          "id": "q-n5-12-045",
+          "id": "q-n5-12-061",
           "type": "listen-choice",
           "kind": "listen-group",
           "lesson": null,
           "grammar": [
             "g-n5-12-06"
           ],
-          "prompt": "請聽故事中的一句，判斷句中動詞屬於哪一類。",
+          "prompt": "請看句子「きょう帰る。」（意思：今天回去），再聽音頻，判斷句中的動詞屬於哪一類。",
           "audio": {
             "ttsText": "きょうかえる。",
             "engine": "ios-tts",
             "rate": "normal",
             "file": null
           },
-          "showStem": false,
+          "showStem": true,
           "options": [
             {
               "id": "a",
@@ -4003,15 +3967,23 @@
             "particles": [],
             "zh": "今天回去。",
             "verbWordId": "w-n5-12-013",
-            "group": "一類（看似二類）",
             "audio": null
           },
-          "answerDisplay": "きょう帰る。（きょうかえる。）",
-          "rule": "「かえる」是一類（看似二類）。",
-          "explanation": "聽到「きょうかえる」，動詞是「帰る」，屬於一類（看似二類）。",
+          "answerDisplay": "一類（五段）",
+          "rule": "「帰る」的「る」前面是え段，看似二類，但屬於例外，是一類。",
+          "explanation": "「帰る」（かえる）是一類（五段）動詞，只是看似二類。",
           "source": "new",
           "needsRealDeviceCheck": false,
-          "listeningNote": null
+          "listeningNote": null,
+          "stem": {
+            "ja": "きょう帰る。",
+            "reading": "きょうかえる。",
+            "tts": "きょうかえる。",
+            "particles": [],
+            "zh": "今天回去。",
+            "verbWordId": "w-n5-12-013",
+            "audio": null
+          }
         },
         {
           "id": "q-n5-12-046",
@@ -4045,7 +4017,6 @@
               ],
               "zh": "我明天會來。",
               "verbWordId": "w-n5-12-006",
-              "group": "三類",
               "audio": null
             },
             {
@@ -4056,7 +4027,6 @@
               "particles": [],
               "zh": "今天外出。",
               "verbWordId": "w-n5-12-010",
-              "group": "二類",
               "audio": null
             },
             {
@@ -4067,7 +4037,6 @@
               "particles": [],
               "zh": "今天回去。",
               "verbWordId": "w-n5-12-013",
-              "group": "一類（看似二類）",
               "audio": null
             },
             {
@@ -4078,7 +4047,6 @@
               "particles": [],
               "zh": "稍微看一下。",
               "verbWordId": "w-n5-12-004",
-              "group": "二類",
               "audio": null
             }
           ],
@@ -4098,7 +4066,6 @@
             ],
             "zh": "我明天會來。",
             "verbWordId": "w-n5-12-006",
-            "group": "三類",
             "audio": null
           },
           "answerDisplay": "わたしはあした来る。（わたしはあしたくる。）",
@@ -4238,7 +4205,7 @@
         "grammar": [
           "g-n5-12-06"
         ],
-        "prompt": "這個動詞屬於哪一類？（留意：形似二類）",
+        "prompt": "這個動詞屬於哪一類？",
         "stem": {
           "ja": "入る",
           "reading": "はいる",
@@ -4263,9 +4230,9 @@
         ],
         "shuffle": false,
         "answer": "a",
-        "answerDisplay": "一類（五段，看似二類）",
+        "answerDisplay": "一類（五段）",
         "rule": "「帰る」「入る」等少數動詞，「る」前面雖是い段或え段，看似二類，其實屬於一類，必須逐個記住。",
-        "explanation": "「入る」（はいる）的「る」前面是「い」（い段），看似二類，但屬於例外，是一類動詞。",
+        "explanation": "「入る」（はいる）的「る」前面是「い」（い段），看似二類，但屬於例外，是一類（五段）動詞。",
         "source": "new"
       },
       {
@@ -4750,7 +4717,7 @@
           "particles": [],
           "wordId": "w-n5-12-008"
         },
-        "answerDisplay": "寝る（ねる）",
+        "answerDisplay": "二類（一段）",
         "rule": "「ねる」以「る」結尾，前面的「ね」屬於え段，是二類。",
         "explanation": "聽到「ねる」，是「寝る」，屬於二類動詞。",
         "source": "new",

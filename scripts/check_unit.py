@@ -18,6 +18,7 @@ ID_PATTERNS = {
     "st": r"^st-n\d-\d{2}(-[rsl])?$", "sp": r"^sp-n\d-\d{2}-\d{2}$", "qz": r"^qz-n\d-\d{2}$",
     "tip": r"^tip-n\d-\d{2}(-\w+)?$", "tbl": r"^tbl-n\d-\d{2}-\d+$",
 }
+RETIRED_IDS = {"q-n5-12-036", "q-n5-12-045"}   # ids withdrawn in v1.1; must never reappear
 LOCAL_KEYS = {"options", "left", "right", "pieces", "nodes", "edges"}
 
 errors, warns = [], []
@@ -79,6 +80,12 @@ def main(path, strict=False):
                 if k not in v: err(v.get("id", "vocab"), "missing vocab field " + k)
             if v.get("group") not in ("一類", "二類", "三類"): err(v.get("id"), "bad group")
     if gset != gdef: err("grammarIndex", "grammarIndex %s != defined %s" % (sorted(gset), sorted(gdef)))
+    for p, o, loc in walk(u):
+        if isinstance(o, dict) and o.get("id") in RETIRED_IDS: err(p, "retired id reused: " + o["id"])
+    # story reading page must not pre-reveal verb group
+    for ln in u.get("story", {}).get("reading", {}).get("lines", []):
+        for k in ("group", "groupNote", "groupDetail"):
+            if k in ln: err(ln.get("id"), "story line leaks answer via field " + k)
     # questions
     qids = []
     def is_q(o): return isinstance(o, dict) and "prompt" in o and "type" in o and "answer" in o
@@ -110,7 +117,7 @@ def main(path, strict=False):
                     ao = [x for x in o["options"] if x["id"] == o["answer"]][0]
                     if "ja" in ao and not o["answerDisplay"].startswith(ao["ja"].rstrip("。")):
                         err(o["id"], "answerDisplay %r does not match answer option %r" % (o["answerDisplay"], ao["ja"]))
-                    if "text" in ao and o["type"] == "choice" and ao["text"] != o["answerDisplay"] and not (o["kind"] == "verb-group" and o["answerDisplay"].startswith(ao["text"][:2])):
+                    if "text" in ao and (o["type"] == "choice" or o["kind"] == "listen-group") and ao["text"] != o["answerDisplay"]:
                         err(o["id"], "answerDisplay %r != answer option text %r" % (o["answerDisplay"], ao["text"]))
                 if len(ids) != len(set(ids)): err(o["id"], "dup option ids")
     dups = [i for i, c in collections.Counter(qids).items() if c > 1]
@@ -155,7 +162,7 @@ def main(path, strict=False):
                 for m in re.finditer(w, s):
                     nxt = s[m.end():m.end() + 1]
                     prev = s[max(0, m.start() - 1):m.start()]
-                    if w == "同" and (nxt in "樣時步一" or prev in "不相"): continue
+                    if w == "同" and (nxt in "樣時步一音" or prev in "不相"): continue
                     warn(p, "check word %r in %r" % (w, s[:40]))
     for h in hits: err("colloquial", "%s found %r in %r at %s" % (h[0], h[1], h[2], h[0]))
     stats = {"lessons": len(u["lessons"]), "grammarPoints": len(gdef),

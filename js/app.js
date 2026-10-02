@@ -229,12 +229,28 @@
     document.documentElement.setAttribute("data-font", window.JPLogic.normalizeFontSize(value));
   }
 
+  function voiceMissing() {
+    if (!window.JPSpeech) return false;
+    var state = window.JPSpeech.voiceState();
+    return state === "missing" || state === "unsupported";
+  }
+
+  function speechHintClosed() {
+    if (state.speechHintDismissed) return true;
+    try { return sessionStorage.getItem("jpn5-v1-speech-hint-dismissed") === "1"; } catch (err) { return false; }
+  }
+
   function applySpeechHint() {
     var banner = document.getElementById("speech-hint");
     if (!banner || !window.JPSpeech) return;
-    var missing = window.JPSpeech.voiceState() === "missing" || window.JPSpeech.voiceState() === "unsupported";
-    banner.hidden = !missing;
-    banner.textContent = missing ? window.JPSpeech.hint() : "";
+    if (!voiceMissing() || speechHintClosed()) {
+      banner.hidden = true;
+      banner.textContent = "";
+      return;
+    }
+    banner.hidden = false;
+    banner.innerHTML = "<p>" + escapeHtml(window.JPSpeech.hint()) + "</p>"
+      + '<button type="button" class="icon-btn speech-dismiss" data-action="dismiss-speech" aria-label="關閉提示">×</button>';
   }
 
   function speakFrom(tts, file, rate) {
@@ -407,7 +423,27 @@
     var file = session.file;
     var html = '<p class="prompt' + (hasJp(question.prompt) ? " jp" : "") + '">' + escapeHtml(question.prompt || "") + "</p>";
     if (question.type === "listen-choice") {
-      html = mascot("cat-headphone") + html + speakButtons({ audio: question.audio, tts: question.audio && question.audio.ttsText }, file) + renderChoices(question);
+      var stemHtml = "";
+      if (question.showStem === true && question.stem && question.stem.ja) {
+        stemHtml = '<div class="listen-stem"><p class="jp" lang="ja">' + escapeHtml(question.stem.ja) + "</p>"
+          + (question.stem.reading ? '<p class="reading" lang="ja">' + escapeHtml(question.stem.reading) + "</p>" : "")
+          + "</div>";
+      }
+      var fallback = "";
+      if (voiceMissing() && question.showStem !== true) {
+        if (session.revealListen) {
+          var heard = question.reveal || {};
+          var heardJa = heard.ja || (question.audio && question.audio.ttsText) || "";
+          fallback = '<div class="listen-fallback card"><p class="jp" lang="ja">' + escapeHtml(heardJa) + "</p>"
+            + (heard.reading ? '<p class="reading" lang="ja">' + escapeHtml(heard.reading) + "</p>" : "")
+            + "</div>";
+        } else {
+          fallback = '<button type="button" class="btn secondary" data-action="reveal-listen">顯示文字</button>';
+        }
+      }
+      html = mascot("cat-headphone") + html
+        + '<div class="listen-play">' + speakButtons({ audio: question.audio, tts: question.audio && question.audio.ttsText }, file) + stemHtml + "</div>"
+        + fallback + renderChoices(question);
       return html;
     }
     if (question.stem && question.stem.ja && question.showStem !== false) {
@@ -470,16 +506,18 @@
     var answerLine = panel.lines.filter(function (line) { return line.label === "正確答案"; })[0];
     var ruleLine = panel.lines.filter(function (line) { return line.label === "規則"; })[0];
     var title = correct ? session.correctLabel : session.wrongLabel;
-    var pin = '<p class="sheet-title">' + escapeHtml(title || panel.title) + "</p>";
-    var body = panel.detail ? "<p>" + rich(panel.detail) + "</p>" : "";
+    var head = '<div class="sheet-head">' + (correct ? mascot("cat-happy") : mascot("cat-encourage"))
+      + '<p class="sheet-title">' + escapeHtml(title || panel.title) + "</p></div>";
+    var body = "";
     if (!correct) {
-      pin += renderAnswerGuide(answerLine);
-      pin += '<p class="sheet-answer sheet-rule-label">規則</p>';
-      body = (ruleLine ? '<p class="sheet-rule">' + rich(ruleLine.text) + "</p>" : "") + body;
+      body += renderAnswerGuide(answerLine);
+      if (ruleLine && ruleLine.text) body += '<p class="sheet-answer sheet-rule-label">規則</p><p class="sheet-rule">' + rich(ruleLine.text) + "</p>";
+      if (panel.detail) body += "<p>" + rich(panel.detail) + "</p>";
+    } else if (panel.detail) {
+      body += "<p>" + rich(panel.detail) + "</p>";
     }
     return '<aside class="sheet is-' + panel.tone + '" id="answer-feedback" role="status"><div class="sheet-scroll">'
-      + (correct ? mascot("cat-happy") : mascot("cat-encourage"))
-      + '<div class="sheet-pin">' + pin + "</div>" + body + "</div>"
+      + head + body + "</div>"
       + '<button type="button" class="btn sheet-next" data-action="next">' + escapeHtml(uiText(session.file, "continue", "繼續")) + "</button></aside>";
   }
 
@@ -535,17 +573,30 @@
     else if (step.kind === "grammar") {
       body = "<h1>" + escapeHtml(step.point.title || "文法") + "</h1>" + renderBlocks(step.point.blocks, session.file);
     } else if (step.kind === "lines") {
-      body = "<h1>" + escapeHtml(step.title || "讀") + "</h1>" + (step.lines || []).map(function (line) {
-        return '<article class="card"><p class="jp" lang="ja">' + escapeHtml(line.ja || "") + "</p>"
+      body = "<h1>" + escapeHtml(step.title || "讀") + "</h1>" + (step.lines || []).map(function (line, index) {
+        return '<article class="card"><p class="meta">第 ' + (index + 1) + " 行</p>"
+          + '<p class="jp" lang="ja">' + escapeHtml(line.ja || "") + "</p>"
           + (line.reading ? '<p class="reading" lang="ja">' + escapeHtml(line.reading) + "</p>" : "")
           + (line.zh ? "<p>" + escapeHtml(line.zh) + "</p>" : "")
-          + (line.group ? '<p class="meta">' + escapeHtml(line.group) + "</p>" : "")
           + speakButtons(line, session.file) + "</article>";
       }).join("");
     } else if (step.kind === "speaking") {
       var block = step.block;
+      var targetIds = [];
+      (block.tasks || []).forEach(function (task) {
+        (task.targets || []).forEach(function (id) { targetIds.push(id); });
+      });
       body = "<h1>" + escapeHtml(block.title || "說") + "</h1>"
         + (block.note ? "<p>" + escapeHtml(block.note) + "</p>" : "")
+        + linesForTargets(session.file, targetIds).map(function (line) {
+          var number = lineNumber(session.file, line.id);
+          return '<article class="card">'
+            + (number ? '<p class="meta">第 ' + number + " 行</p>" : "")
+            + '<p class="jp" lang="ja">' + escapeHtml(line.ja || "") + "</p>"
+            + (line.reading ? '<p class="reading" lang="ja">' + escapeHtml(line.reading) + "</p>" : "")
+            + (line.zh ? "<p>" + escapeHtml(line.zh) + "</p>" : "")
+            + speakButtons(line, session.file) + "</article>";
+        }).join("")
         + (block.tasks || []).map(function (task) {
           return "<section class=\"panel\"><p>" + escapeHtml(task.prompt || "") + "</p><ul>"
             + (task.selfCheck || []).map(function (item) { return "<li>" + escapeHtml(item) + "</li>"; }).join("")
@@ -584,6 +635,8 @@
       locked: false,
       draft: null,
       lastCorrect: false,
+      feedbackAt: null,
+      revealListen: false,
       title: spec.title || "",
       lessonId: spec.lessonId || "",
       unitId: spec.unitId,
@@ -679,8 +732,86 @@
     return renderStep();
   }
 
+  function storyLines(file) {
+    return (file && file.story && file.story.reading && file.story.reading.lines) || [];
+  }
+
+  function lineNumber(file, id) {
+    var lines = storyLines(file);
+    for (var i = 0; i < lines.length; i++) {
+      if (lines[i] && lines[i].id === id) return i + 1;
+    }
+    return 0;
+  }
+
+  function linesForTargets(file, targets) {
+    var byId = {};
+    storyLines(file).forEach(function (line) {
+      if (line && line.id) byId[line.id] = line;
+    });
+    var seen = {};
+    var out = [];
+    (targets || []).forEach(function (id) {
+      if (seen[id] || !byId[id]) return;
+      seen[id] = true;
+      out.push(byId[id]);
+    });
+    return out;
+  }
+
+  function safeAttempts() {
+    return window.JPLogic.dropUnknownQuestions(window.JPStore.loadAttempts());
+  }
+
+  function cleanStoredAttempts() {
+    var raw = window.JPStore.loadAttempts();
+    var clean = window.JPLogic.dropUnknownQuestions(raw);
+    if (clean.length !== raw.length) window.JPStore.saveAttempts(clean);
+  }
+
+  function grammarTitles(ids) {
+    var map = {};
+    Object.keys(state.files).forEach(function (unitId) {
+      var file = state.files[unitId];
+      (file.lessons || []).forEach(function (lesson) {
+        ((lesson.grammar && lesson.grammar.points) || []).forEach(function (point) {
+          if (point && point.id && point.title) map[point.id] = point.title;
+        });
+      });
+    });
+    var titles = [];
+    (Array.isArray(ids) ? ids : []).forEach(function (id) {
+      if (typeof id === "string" && map[id] && titles.indexOf(map[id]) === -1) titles.push(map[id]);
+    });
+    return titles;
+  }
+
+  function questionBody(question) {
+    if (!question) return "";
+    var bits = [];
+    if (question.prompt) bits.push(question.prompt);
+    if (question.stem && question.stem.ja) {
+      bits.push(question.stem.ja + (question.stem.reading ? "（" + question.stem.reading + "）" : ""));
+    } else if (question.type === "listen-choice" && question.reveal && question.reveal.ja) {
+      bits.push(question.reveal.ja + (question.reveal.reading ? "（" + question.reveal.reading + "）" : ""));
+    }
+    if (question.type === "match") {
+      (question.left || []).forEach(function (item) {
+        if (item && item.ja) bits.push(item.ja + (item.reading ? "（" + item.reading + "）" : ""));
+      });
+    } else if (question.options) {
+      var labels = question.options.map(function (option) {
+        if (!option) return "";
+        if (option.ja) return option.ja + (option.reading ? "（" + option.reading + "）" : "");
+        return option.text || "";
+      }).filter(Boolean);
+      if (labels.length) bits.push(labels.join("／"));
+    }
+    return bits.join("\n");
+  }
+
   function openReviewPractice() {
-    var rows = window.JPLogic.mistakeNotebook(window.JPStore.loadAttempts());
+    var rows = window.JPLogic.mistakeNotebook(safeAttempts());
     var steps = [];
     rows.forEach(function (row) {
       var found = questionById(row.questionId);
@@ -798,21 +929,21 @@
 
   function renderReview() {
     if (session && session.kind === "review" && parseRoute().name === "review" && location.hash.indexOf("practice") !== -1) return renderStep();
-    var rows = window.JPLogic.mistakeNotebook(window.JPStore.loadAttempts());
+    var rows = window.JPLogic.mistakeNotebook(safeAttempts());
     if (!rows.length) {
       return "<h1>錯題本</h1>" + mascot("cat-think") + "<p>答錯的題目會留在這裡，方便稍後再練習。</p>";
     }
     var list = rows.map(function (row) {
       var found = questionById(row.questionId);
-      var prompt = found ? found.question.prompt : row.questionId;
+      var prompt = found ? questionBody(found.question) : "這題已從課程中移除";
       var when = row.dueNow ? "今日可以複習" : "將於 " + window.JPLogic.formatDateLabel(row.due) + " 再練習";
-      var tags = "";
       var attemptGrammar = [];
-      window.JPStore.loadAttempts().forEach(function (attempt) {
-        if (attempt.questionId === row.questionId && attempt.grammar) attemptGrammar = attempt.grammar;
+      safeAttempts().forEach(function (attempt) {
+        if (attempt && attempt.questionId === row.questionId && Array.isArray(attempt.grammar)) attemptGrammar = attempt.grammar;
       });
-      if (attemptGrammar.length) tags = '<span class="meta">' + escapeHtml(attemptGrammar.join("、")) + "</span>";
-      return '<article class="card"><p>' + escapeHtml(prompt) + "</p><p class=\"meta\">" + escapeHtml(when) + "</p>" + tags + "</article>";
+      var titles = grammarTitles(attemptGrammar);
+      var tags = titles.length ? '<span class="meta">' + escapeHtml(titles.join("、")) + "</span>" : "";
+      return '<article class="card"><p class="notebook-q">' + escapeHtml(prompt) + "</p><p class=\"meta\">" + escapeHtml(when) + "</p>" + tags + "</article>";
     }).join("");
     return "<h1>錯題本</h1>" + list + '<a class="btn" href="#/review?practice=1">練習錯題</a>';
   }
@@ -831,7 +962,9 @@
       + '<progress max="' + (progress.total || 1) + '" value="' + progress.done + '"></progress>'
       + "<p>" + progress.done + " / " + progress.total + " · " + progress.percent + "%</p></section>"
       + "<h2>字體大小</h2>" + steps
-      + '<section class="panel"><p>進度只保存在這部裝置。加入主畫面之後，沒有網絡也可以打開已經載入的課程。</p></section>'
+      + '<section class="panel"><p>進度只保存在這部裝置。加入主畫面之後，沒有網絡也可以打開已經載入的課程。</p>'
+      + (window.JPStore.persistent() ? "" : "<p>這部瀏覽器未能保存進度。離開頁面之後，練習紀錄可能會消失。</p>")
+      + "</section>"
       + '<button type="button" class="btn secondary" data-action="clear-progress">清除本機進度</button>';
   }
 
@@ -860,6 +993,8 @@
     bindFallbacks(app);
     syncTabs(route);
     layoutDock();
+    applySpeechHint();
+    if (session && session.locked) requestAnimationFrame(nudgeCoveredRows);
     var fill = document.getElementById("fill-answer");
     if (fill && !session.locked) {
       try { fill.focus({ preventScroll: true }); } catch (err) { fill.focus(); }
@@ -870,6 +1005,8 @@
     session.locked = false;
     session.draft = null;
     session.lastCorrect = false;
+    session.feedbackAt = null;
+    session.revealListen = false;
     session.index += 1;
     if (session.index >= session.steps.length) session.index = session.steps.length - 1;
     render();
@@ -889,7 +1026,7 @@
       lessonId: lessonId,
       userAnswerText: typeof userAnswer === "string" ? userAnswer : JSON.stringify(userAnswer),
       correct: correct,
-      attemptNo: window.JPLogic.nextAttemptNo(window.JPStore.loadAttempts(), question.id),
+      attemptNo: window.JPLogic.nextAttemptNo(safeAttempts(), question.id),
       now: new Date(),
       review: session.kind === "review"
     });
@@ -897,6 +1034,7 @@
     window.JPStore.addAttempt(attempt);
     session.locked = true;
     session.lastCorrect = correct;
+    session.feedbackAt = Date.now();
     render();
   }
 
@@ -925,8 +1063,23 @@
       render();
       return;
     }
+    if (name === "dismiss-speech") {
+      state.speechHintDismissed = true;
+      try { sessionStorage.setItem("jpn5-v1-speech-hint-dismissed", "1"); } catch (err) { /* session only */ }
+      applySpeechHint();
+      return;
+    }
+    if (name === "reveal-listen" && session && !session.locked) {
+      session.revealListen = true;
+      render();
+      return;
+    }
     if (name === "confirm") { confirmAnswer(); return; }
-    if (name === "next") { advance(); return; }
+    if (name === "next") {
+      if (session && !window.JPLogic.continueAllowed(session.feedbackAt, Date.now())) return;
+      advance();
+      return;
+    }
     if (name === "vocab-known" || name === "vocab-unknown") {
       var step = session && session.steps[session.index];
       if (step && step.word && step.word.id === action.getAttribute("data-id")) {
@@ -995,6 +1148,16 @@
     return Math.max(0, window.innerHeight - vv.offsetTop - vv.height);
   }
 
+  function nudgeCoveredRows() {
+    var sheet = document.getElementById("answer-feedback");
+    if (!sheet) return;
+    var rows = document.querySelectorAll(".match-row");
+    if (!rows.length) return;
+    var last = rows[rows.length - 1];
+    var gap = last.getBoundingClientRect().bottom - (sheet.getBoundingClientRect().top - 12);
+    if (gap > 0) window.scrollBy(0, gap);
+  }
+
   function layoutDock() {
     var inset = viewportBottomInset();
     document.documentElement.style.setProperty("--vv-bottom", inset + "px");
@@ -1002,7 +1165,7 @@
     var spacer = document.getElementById("dock-spacer");
     var panelHeight = 0;
     if (panel) panelHeight = panel.getBoundingClientRect().height;
-    var height = panelHeight + inset;
+    var height = panelHeight + inset + (panel && panel.id === "answer-feedback" ? 24 : 0);
     document.documentElement.style.setProperty("--dock-h", height + "px");
     if (spacer) spacer.style.height = height + "px";
   }
@@ -1036,7 +1199,11 @@
     applyFont(window.JPStore.getFontSize());
     bindFallbacks(document);
     applySpeechHint();
-    if (window.JPSpeech) window.JPSpeech.onChange(applySpeechHint);
+    if (window.JPSpeech) window.JPSpeech.onChange(function () {
+      applySpeechHint();
+      var step = session && session.steps ? session.steps[session.index] : null;
+      if (step && step.kind === "question" && step.question && step.question.type === "listen-choice") render();
+    });
     document.body.addEventListener("click", onClick);
     document.body.addEventListener("change", onChange);
     window.addEventListener("hashchange", onHash);
@@ -1059,7 +1226,10 @@
         }).then(function (data) { state.files[unit.id] = data; });
       });
       return Promise.all(jobs);
-    }).then(render).catch(function () {
+    }).then(function () {
+      cleanStoredAttempts();
+      render();
+    }).catch(function () {
       state.error = "暫時無法載入課程。";
       render();
     });

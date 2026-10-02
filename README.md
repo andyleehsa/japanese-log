@@ -1,40 +1,50 @@
 # 日文日誌
 
-Andy 用嚟自學日文嘅單人網頁 app。每日一課同練習由老師寫 JSON 放上嚟；Andy 唔使打內容。進度存在部手機，撳「同步畀老師」先寫入呢個 repo。
+離線可用的日文學習網頁。課程按等級排列成單元路線；目前開放的是 N5 單元 12。練習、錯題本和生詞標記只保存在這部裝置，沒有同步，也不需要金鑰。
 
 開啟網址：<https://andyleehsa.github.io/japanese-log/>
 
 ## 開啟 GitHub Pages
 
 1. 打開 <https://github.com/andyleehsa/japanese-log>
-2. 撳 **Settings**
-3. 左邊撳 **Pages**
-4. **Build and deployment** 揀 **Deploy from a branch**
-5. Branch 揀 **main**，folder 揀 **/ (root)**
-6. 撳 **Save**
+2. 進入 **Settings**
+3. 左側選擇 **Pages**
+4. **Build and deployment** 選擇 **Deploy from a branch**
+5. Branch 選擇 **main**，folder 選擇 **/ (root)**
+6. 按 **Save**
 
-幾分鐘之後，網站會喺 <https://andyleehsa.github.io/japanese-log/>。iPhone 完整步驟見 [docs/SETUP_FOR_ANDY.md](docs/SETUP_FOR_ANDY.md)。
+幾分鐘後，網站會在 <https://andyleehsa.github.io/japanese-log/>。在 iPhone 上加入主畫面的步驟見 [docs/SETUP_FOR_ANDY.md](docs/SETUP_FOR_ANDY.md)。
+
+## 怎樣用
+
+底部有三個分頁：學習、複習、我的。
+
+- **學習**：顯示目前等級的單元。進度的分母是該等級所有單元的課數之和，分子是已走到完成畫面的課。只有一份等級時，不顯示等級切換。
+- **單元**：狀態為準備中的單元可以點開，畫面寫「內容準備中」。已開放的單元可以進入各課、小貼士、情境故事和小測。尚未完成的前置單元只顯示「建議先完成」，不會鎖住。
+- **一課**：生詞卡、文法、練習、聆聽，走到完成畫面後這一課計入進度。
+- **複習**：錯題本。答錯的題目會按 2、5、10 日再出現。
+- **我的**：字體可選標準、大、特大。可以清除這部裝置上的進度。
+
+日文練習字至少 24px。喇叭讀的是發音欄位；若題目附有音檔就播音檔，否則使用系統語音。
 
 ## 檔案
 
 | 路徑 | 用途 |
 | --- | --- |
-| `index.html`、`js/`、`css/`、`sw.js`、`manifest.json` | 網頁同離線用 |
-| `content/index.json`、`content/lessons/` | 課題。每課可以選填 `topics` |
-| `content/curriculum.json` | N5／N4／N3 課題大綱同進度計法 |
-| `content/vocab/` | 每級生詞庫 |
-| `logs/summary.json`、`logs/attempts/`、`logs/vocab.json` | Andy 同步之後先出現 |
-| `docs/` | 課題格式、進度格式、Andy 設定 |
-| `schema/` | JSON Schema |
-| `scripts/validate-content.js` | 檢查課題，冇第三方套件 |
+| `index.html`、`js/`、`css/`、`sw.js`、`manifest.json` | 網頁與離線快取 |
+| `content/units-index.json` | 等級與單元路線 |
+| `content/units/` | 已開放單元的課文 |
+| `docs/` | 設定、課文格式、單元說明 |
+| `scripts/validate-content.js` | 檢查課文，不需第三方套件 |
+| `scripts/check_unit.py` | 同一套單元檢查的 Python 版本 |
+| `scripts/test-logic.js` | 判分、進度與回饋的邏輯測試 |
 
-老師寫課題之前請讀 [docs/CONTENT_FORMAT.md](docs/CONTENT_FORMAT.md)。睇進度請讀 [docs/LOGBOOK_FORMAT.md](docs/LOGBOOK_FORMAT.md)。
+老師撰寫單元前請讀 [docs/CONTENT_FORMAT.md](docs/CONTENT_FORMAT.md)。單元 12 的欄位說明見 [docs/unit-n5-12.README.md](docs/unit-n5-12.README.md)。
 
-檢查課題：
+檢查課文與邏輯：
 
 ```bash
-node scripts/validate-content.js
 node scripts/test-logic.js
+npm run validate-content
+python3 scripts/check_unit.py content/units/unit-n5-12.json
 ```
-
-`day-001`、`day-002` 仍然係樣本課題，檔案留喺 repo，但 app 唔顯示，亦唔計入進度。主頁最頂卡片係下一課未做完嘅正式課。課程大綱同三級生詞係正式內容：209 個課題、2414 個生詞。課題未連課之前，課題頁顯示「課堂準備中」。主頁每一級有進度列。課題、課、生詞分類都可以隨時再開，唔使按順序。N3 生詞標咗詞條層級 `verified: false`，例句收埋喺「睇例句」。
