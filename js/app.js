@@ -1289,7 +1289,7 @@
     el.style.lineHeight = "1.25";
     if (fits()) return;
     var size = parseFloat(window.getComputedStyle(el).fontSize) || 24;
-    while (size > 20 && !fits()) {
+    while (size > 17 && !fits()) {
       size -= 1;
       el.style.fontSize = size + "px";
     }
