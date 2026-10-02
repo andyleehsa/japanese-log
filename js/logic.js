@@ -4,7 +4,7 @@
   root.JPLogic = api;
 })(typeof globalThis !== "undefined" ? globalThis : this, function () {
   var WEAK_THRESHOLD = 0.8;
-  var COMPLETION_ACCURACY = 0.8;
+  var COMPLETION_ACCURACY = 0.7;
 
   function normalizeAnswer(value) {
     return String(value == null ? "" : value)
@@ -374,9 +374,71 @@
     return count + 1;
   }
 
-  function lessonIsDone(progress, threshold) {
+  function latestCompletePass(lesson, attempts) {
+    var questions = lesson && Array.isArray(lesson.questions) ? lesson.questions : [];
+    var ids = [];
+    var seen = {};
+    questions.forEach(function (question) {
+      if (!question || !question.id || seen[question.id]) return;
+      seen[question.id] = true;
+      ids.push(question.id);
+    });
+    var needed = ids.length;
+    if (!needed || !lesson) return { complete: false, accuracy: null, correct: 0, total: needed };
+    var allowed = {};
+    ids.forEach(function (id) { allowed[id] = true; });
+    var related = [];
+    (attempts || []).forEach(function (attempt, index) {
+      if (!attempt || attempt.lessonId !== lesson.id || !allowed[attempt.questionId]) return;
+      related.push({ attempt: attempt, index: index });
+    });
+    related.sort(function (a, b) {
+      var at = String(a.attempt.timestamp || "");
+      var bt = String(b.attempt.timestamp || "");
+      if (at !== bt) return at < bt ? -1 : 1;
+      return a.index - b.index;
+    });
+    var last = null;
+    var open = {};
+    var count = 0;
+    related.forEach(function (item) {
+      var qid = item.attempt.questionId;
+      if (Object.prototype.hasOwnProperty.call(open, qid)) {
+        open = {};
+        count = 0;
+      }
+      open[qid] = !!item.attempt.correct;
+      count += 1;
+      if (count === needed) {
+        var correct = 0;
+        ids.forEach(function (id) { if (open[id]) correct += 1; });
+        last = { correct: correct, total: needed, accuracy: correct / needed };
+        open = {};
+        count = 0;
+      }
+    });
+    if (!last) return { complete: false, accuracy: null, correct: 0, total: needed };
+    return { complete: true, accuracy: last.accuracy, correct: last.correct, total: last.total };
+  }
+
+  function lessonStanding(lesson, attempts, threshold) {
+    var pass = latestCompletePass(lesson, attempts);
+    var progress = lessonProgress(lesson, attempts);
     var limit = threshold == null ? COMPLETION_ACCURACY : threshold;
-    return !!(progress && progress.total > 0 && progress.completed && progress.accuracy != null && progress.accuracy >= limit);
+    return {
+      done: !!(pass.complete && pass.accuracy != null && pass.accuracy >= limit),
+      complete: pass.complete,
+      accuracy: pass.complete ? pass.accuracy : null,
+      correct: pass.correct,
+      total: pass.total,
+      attempts: progress.attempts,
+      answered: progress.answered,
+      questionTotal: progress.total
+    };
+  }
+
+  function lessonIsDone(lesson, attempts, threshold) {
+    return lessonStanding(lesson, attempts, threshold).done;
   }
 
   function curriculumReport(curriculum, lessonMap, attempts) {
@@ -388,15 +450,15 @@
         var planned = topic.planned == null ? lessonIds.length : topic.planned;
         var lessons = lessonIds.map(function (lessonId) {
           var lesson = lessonMap && lessonMap[lessonId];
-          var progress = lesson ? lessonProgress(lesson, attempts) : { attempts: 0, correct: 0, accuracy: null, completed: false, total: 0 };
+          var standing = lesson ? lessonStanding(lesson, attempts, threshold) : { done: false, complete: false, attempts: 0, correct: 0, accuracy: null };
           return {
             lessonId: lessonId,
             title: (lesson && lesson.title) || lessonId,
-            done: lessonIsDone(progress, threshold),
-            completed: !!progress.completed,
-            attempts: progress.attempts,
-            correct: progress.correct,
-            accuracy: progress.accuracy
+            done: standing.done,
+            completed: !!standing.complete,
+            attempts: standing.attempts,
+            correct: standing.correct,
+            accuracy: standing.accuracy
           };
         });
         var doneCount = lessons.filter(function (lesson) { return lesson.done; }).length;
@@ -429,7 +491,7 @@
     });
     return {
       completionAccuracy: threshold,
-      rule: "A lesson is done when every question has at least one attempt and accuracy is at least completionAccuracy. Topic percent = done lessons / planned (planned defaults to linked lesson count). A topic is complete when done lessons reach planned. Level percent is the average of topic percents. Review is never blocked by order.",
+      rule: "A lesson is done when the latest complete pass (every question answered once in that pass; an unfinished pass does not replace it) has accuracy of at least completionAccuracy. Topic percent = done lessons / planned (planned defaults to linked lesson count). A topic is complete when done lessons reach planned. Level percent is the average of topic percents. Review is never blocked by order.",
       levels: levels
     };
   }
@@ -563,13 +625,13 @@
     });
     var limit = threshold == null ? COMPLETION_ACCURACY : threshold;
     var rows = list.map(function (lesson) {
-      var progress = lessonProgress(lesson, attempts || []);
+      var standing = lessonStanding(lesson, attempts || [], limit);
       return {
         id: lesson && lesson.id,
         title: (lesson && lesson.title) || (lesson && lesson.id) || "",
-        done: lessonIsDone(progress, limit),
-        accuracy: progress.accuracy,
-        attempts: progress.attempts || 0
+        done: standing.done,
+        accuracy: standing.accuracy,
+        attempts: standing.attempts || 0
       };
     }).filter(function (row) { return row.id; });
     if (!rows.length) return { kind: "empty" };
@@ -605,6 +667,7 @@
     reviewInterval: reviewInterval,
     dueReviews: dueReviews,
     lessonIsDone: lessonIsDone,
+    lessonStanding: lessonStanding,
     curriculumReport: curriculumReport,
     mergeVocabMarks: mergeVocabMarks,
     vocabReport: vocabReport,

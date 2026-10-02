@@ -319,7 +319,7 @@ function validateContent(rootDir) {
     assertKeys(curriculum, ["schemaVersion", "sample", "completionAccuracy", "levels"], "content/curriculum.json");
     if (curriculum.schemaVersion !== 1) fail("content/curriculum.json schemaVersion must be 1");
     if (curriculum.sample != null && typeof curriculum.sample !== "boolean") fail("content/curriculum.json sample must be boolean");
-    if (curriculum.completionAccuracy !== 0.8) fail("content/curriculum.json completionAccuracy must be 0.8");
+    if (curriculum.completionAccuracy !== 0.7) fail("content/curriculum.json completionAccuracy must be 0.7");
     if (!Array.isArray(curriculum.levels)) {
       fail("content/curriculum.json levels must be an array");
       return;

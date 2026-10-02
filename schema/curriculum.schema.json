@@ -8,7 +8,7 @@
   "properties": {
     "schemaVersion": { "const": 1 },
     "sample": { "type": "boolean" },
-    "completionAccuracy": { "const": 0.8 },
+    "completionAccuracy": { "const": 0.7 },
     "levels": {
       "type": "array",
       "minItems": 3,

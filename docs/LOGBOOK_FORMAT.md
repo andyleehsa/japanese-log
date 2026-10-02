@@ -77,8 +77,8 @@ Schema：
     }
   ],
   "curriculum": {
-    "completionAccuracy": 0.8,
-    "rule": "A lesson is done when every question has at least one attempt and accuracy is at least completionAccuracy. Topic percent = done lessons / planned. A topic is complete when done lessons reach planned. Level percent is the average of topic percents.",
+    "completionAccuracy": 0.7,
+    "rule": "A lesson is done when the latest complete pass has accuracy of at least completionAccuracy. An unfinished pass does not replace the previous score. Topic percent = done lessons / planned. A topic is complete when done lessons reach planned. Level percent is the average of topic percents.",
     "levels": [
       {
         "level": "N5",
@@ -165,12 +165,12 @@ Schema：
 
 ## 課程進度
 
-`curriculum.completionAccuracy` 係 `0.8`。
+`curriculum.completionAccuracy` 係 `0.7`。
 
-- 一課 `done: true`：每一題都做過，而且 `accuracy` ≥ 0.8。`completed: true` 只表示題目做齊，正確率未夠都唔算達標。
+- 一課 `done: true`：最近一次完整作答（每一題都有答；未做完唔覆蓋）嘅 `accuracy` ≥ 0.7。`completed: true` 表示有過至少一次完整作答，正確率未夠都唔算達標。再練一次低過 70% 會即時變回未達標。
 - 課題 `percent` = `doneCount` / `planned`。`complete` 係 `doneCount` ≥ `planned`。
 - 級別 `percent` 係呢級所有課題 `percent` 嘅平均。主頁三條進度列用呢個數。
-- 課題 `accuracy` 係連住嗰幾課嘅全部作答正確率。未有作答係 `null`。
+- 每課 `accuracy` 係最近一次完整作答嘅正確率。未有完整作答係 `null`。課題 `accuracy` 仍然係連住嗰幾課嘅全部作答正確率。
 - 重溫唔受順序限制。Andy 可以隨時再開任何課，新作答會追加，呢度嘅數會變。
 
 ## 生詞標記 logs/vocab.json

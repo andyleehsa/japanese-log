@@ -241,7 +241,7 @@
     } else {
       var todayItem = indexItem(plan.lessonId);
       var todayLesson = lessonById(plan.lessonId);
-      var progress = todayLesson ? window.JPLogic.lessonProgress(todayLesson, attempts) : null;
+      var progressLesson = todayLesson;
       var skip = plan.skipLessonId
         ? "<a class=\"skip-next\" href=\"#/\" data-action=\"skip-home\" data-id=\"" + escapeHtml(plan.lessonId) + "\">跳去下一課</a>"
         : "";
@@ -254,7 +254,7 @@
         + heading
         + "<p class=\"meta\">" + escapeHtml(window.JPLogic.formatDateLabel(todayItem ? todayItem.date : "")) + "</p>"
         + "<p class=\"tags\">" + renderTags(todayItem ? todayItem.tags : []) + "</p>"
-        + "<p class=\"meta\">" + progressText(progress) + "</p>"
+        + "<p class=\"meta\">" + progressText(progressLesson, attempts) + "</p>"
         + "<span class=\"btn\">" + escapeHtml(plan.button) + "</span>"
         + "</a>"
         + skip
@@ -262,12 +262,11 @@
     }
     var list = items.map(function (item) {
       var lesson = lessonById(item.id);
-      var progress = lesson ? window.JPLogic.lessonProgress(lesson, attempts) : null;
       return "<a class=\"card lesson-row\" href=\"#/lesson/" + encodeURIComponent(item.id) + "\">"
         + "<span class=\"row-title jp\" lang=\"ja\">" + escapeHtml(item.title) + "</span>"
         + "<span class=\"meta\">" + escapeHtml(window.JPLogic.formatDateLabel(item.date)) + "</span>"
         + "<span class=\"tags\">" + renderTags(item.tags) + "</span>"
-        + "<span class=\"meta\">" + progressText(progress) + "</span>"
+        + "<span class=\"meta\">" + progressText(lesson, attempts) + "</span>"
         + "</a>";
     }).join("");
     return banner()
@@ -325,13 +324,16 @@
     return "<div class=\"stat\"><span class=\"stat-num" + (empty ? " is-empty" : "") + "\">" + escapeHtml(num) + "</span><span class=\"stat-label\">" + escapeHtml(label) + "</span></div>";
   }
 
-  function progressText(progress) {
-    if (!progress || !progress.total) return "未有練習";
-    if (!progress.attempts) return "未開始 · " + progress.total + " 題";
-    var pct = window.JPLogic.formatPercent(progress.accuracy);
-    if (window.JPLogic.lessonIsDone(progress)) return "已達標 · 正確率 " + pct;
-    if (progress.completed) return "做齊題目，未達 " + Math.round(window.JPLogic.COMPLETION_ACCURACY * 100) + "% · 正確率 " + pct;
-    return progress.answered + "/" + progress.total + " 題做過 · 正確率 " + pct;
+  function progressText(lesson, attempts) {
+    if (!lesson || !Array.isArray(lesson.questions) || !lesson.questions.length) return "未有練習";
+    var standing = window.JPLogic.lessonStanding(lesson, attempts, completionThreshold());
+    if (!standing.attempts) return "未開始 · " + standing.questionTotal + " 題";
+    var pct = window.JPLogic.formatPercent(standing.accuracy);
+    var line = Math.round(completionThreshold() * 100);
+    if (standing.done) return "已達標 · 正確率 " + pct;
+    if (standing.complete) return "做齊題目，未達 " + line + "% · 正確率 " + pct;
+    var progress = window.JPLogic.lessonProgress(lesson, attempts);
+    return progress.answered + "/" + progress.total + " 題做過 · 正確率 " + window.JPLogic.formatPercent(progress.accuracy);
   }
 
   function lessonMap() {
@@ -359,9 +361,9 @@
         + "<span class=\"meta\">" + level.completeTopics + "/" + level.topicCount + " 個課題達標</span>"
         + "</a>";
     }).join("")
-      + "<p class=\"meta\">達標：每一題都做過，而且正確率至少 "
-      + Math.round(window.JPLogic.COMPLETION_ACCURACY * 100)
-      + "%。未達標都可以隨時重溫。</p>"
+      + "<p class=\"meta\">達標：最近一次完整作答（每一題都有答）正確率至少 "
+      + Math.round(completionThreshold() * 100)
+      + "%。未做完嘅一次唔會覆蓋上次分數。未達標都可以隨時重溫。</p>"
       + "<a class=\"btn secondary\" href=\"#/vocab\">去生詞庫</a>";
   }
 
@@ -508,10 +510,10 @@
     if (session.locked && mode !== "unsupported") {
       var correct = session.results[session.results.length - 1].correct;
       var right = window.JPLogic.correctAnswerText(question);
-      feedback = "<div class=\"feedback " + (correct ? "is-ok" : "is-bad") + "\" role=\"status\">"
-        + "<p class=\"feedback-title\">" + (correct ? "啱！" : "錯咗") + "</p>"
-        + (correct ? "" : "<p>正確答案：" + jaSpan(right) + "</p>")
+      feedback = "<div class=\"feedback " + (correct ? "is-ok" : "is-bad") + "\" id=\"answer-feedback\" role=\"status\">"
+        + (correct ? "" : "<p class=\"feedback-answer\">正確答案：" + jaSpan(right) + "</p>")
         + (!correct && question.rule ? "<p class=\"verb-rule\">" + escapeHtml(question.rule) + "</p>" : "")
+        + "<p class=\"feedback-title\">" + (correct ? "啱！" : "錯咗") + "</p>"
         + "<p>" + inline(question.explanation || "") + "</p>"
         + renderExampleSentence(question.example)
         + "</div>";
@@ -535,6 +537,8 @@
       media = "<div class=\"media\">" + audioElement(question.audio) + speakButton(question.speak) + "</div>"
         + (question.speak || question.audio ? "<p class=\"hint\">聽唔到聲，先檢查 iPhone 靜音掣同音量。</p>" : "");
     }
+    var wrong = session.locked && session.results.length && !session.results[session.results.length - 1].correct;
+    var pad = wrong ? "<div class=\"scroll-pad\" aria-hidden=\"true\"></div>" : "";
     return "<div class=\"practice-head\"><a class=\"back\" href=\"#/\">離開</a>"
       + "<h1>" + (session.key === "review" ? "今日要溫習 · " : "") + "第 " + (session.index + 1) + " / " + total + " 題</h1></div>"
       + "<progress max=\"" + total + "\" value=\"" + (session.index + (session.locked ? 1 : 0)) + "\"></progress>"
@@ -543,7 +547,8 @@
       + media
       + answerUi
       + feedback
-      + next;
+      + next
+      + pad;
   }
 
   function verifyMark(example, force) {
@@ -1048,6 +1053,7 @@
       try { fill.focus({ preventScroll: true }); } catch (err) { fill.focus(); }
       return;
     }
+    if (app.querySelector("#answer-feedback")) return;
     var heading = app.querySelector("h1");
     if (heading) {
       heading.setAttribute("tabindex", "-1");
@@ -1120,7 +1126,50 @@
     session.locked = true;
     session.picked = picked;
     session.results.push({ questionId: question.id, correct: correct });
+    var fill = questionMode(question) === "fill";
+    var kept = window.scrollY;
+    blurAnswerField();
     render();
+    if (correct) {
+      window.scrollTo(0, kept);
+      return;
+    }
+    scrollToFeedback();
+    if (fill) holdFeedbackAfterKeyboard();
+  }
+
+  function blurAnswerField() {
+    var active = document.activeElement;
+    if (!active || !active.blur) return;
+    if (active.tagName !== "INPUT" && active.tagName !== "TEXTAREA") return;
+    active.blur();
+  }
+
+  function prefersReducedMotion() {
+    try {
+      return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    } catch (err) {
+      return false;
+    }
+  }
+
+  function scrollToFeedback() {
+    var card = document.getElementById("answer-feedback");
+    if (!card || !card.scrollIntoView) return;
+    card.scrollIntoView({ behavior: prefersReducedMotion() ? "auto" : "smooth", block: "start" });
+  }
+
+  function holdFeedbackAfterKeyboard() {
+    if (!window.visualViewport) return;
+    var fix = function () {
+      window.visualViewport.removeEventListener("resize", fix);
+      var again = document.getElementById("answer-feedback");
+      if (again) again.scrollIntoView({ behavior: "auto", block: "start" });
+    };
+    window.visualViewport.addEventListener("resize", fix);
+    setTimeout(function () {
+      window.visualViewport.removeEventListener("resize", fix);
+    }, 800);
   }
 
   function submitChoice(index) {
@@ -1172,13 +1221,9 @@
 
   function applySpeechHint(force) {
     var el = document.getElementById("speech-hint");
-    if (!el || !window.JPSpeech) return;
-    if (force === true) {
-      el.hidden = false;
-      el.textContent = window.JPSpeech.hint();
-      return;
-    }
-    if (window.JPSpeech.voiceState() === "ready") el.hidden = true;
+    if (el) el.hidden = true;
+    if (!window.JPSpeech) return;
+    if (force === true) showToast(window.JPSpeech.hint());
   }
 
   async function manualSync() {

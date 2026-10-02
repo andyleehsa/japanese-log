@@ -124,9 +124,9 @@ const mixed = [
   { questionId: "q1", lessonId: "day-001", correct: false },
   { questionId: "q2", lessonId: "day-001", correct: true }
 ];
-assert.strictEqual(logic.lessonIsDone(logic.lessonProgress(doneLesson, perfect)), true);
-assert.strictEqual(logic.lessonIsDone(logic.lessonProgress(doneLesson, mixed)), false);
-assert.strictEqual(logic.lessonIsDone(logic.lessonProgress(doneLesson, perfect.slice(0, 1))), false);
+assert.strictEqual(logic.lessonIsDone(doneLesson, perfect), true);
+assert.strictEqual(logic.lessonIsDone(doneLesson, mixed), false);
+assert.strictEqual(logic.lessonIsDone(doneLesson, perfect.slice(0, 1)), false);
 
 const curriculum = {
   completionAccuracy: 0.8,
@@ -269,9 +269,8 @@ const homeFour = {
   questions: [{ id: "q1" }, { id: "q2" }, { id: "q3" }, { id: "q4" }]
 };
 homePlan = logic.homeLessonPlan([homeFour, homeB], homeAttempts(homeFour, [true, true, true, false]), []);
-assert.strictEqual(homePlan.lessonId, "n5w1-d1");
-assert.strictEqual(homePlan.mode, "retry");
-assert.strictEqual(homePlan.heading, "第 1 日再練一次（上次 75%）");
+assert.strictEqual(homePlan.lessonId, "n5w1-d1v");
+assert.strictEqual(homePlan.mode, "new");
 const homeFive = {
   id: "n5w1-d1",
   title: "第 1 日：長音",
@@ -291,5 +290,61 @@ const homeSkippedDone = logic.homeLessonPlan(
 );
 assert.strictEqual(homeSkippedDone.lessonId, "n5w1-d1");
 assert.strictEqual(homeSkippedDone.skipLessonId, "n5w1-d2");
+
+function countedLesson(count) {
+  var questions = [];
+  for (var i = 0; i < count; i++) questions.push({ id: "q" + i });
+  return { id: "n5w1-d1", title: "第 1 日：測", questions: questions };
+}
+function countedAttempts(lesson, correctCount, stamp) {
+  return lesson.questions.map(function (question, index) {
+    return {
+      questionId: question.id,
+      lessonId: lesson.id,
+      correct: index < correctCount,
+      timestamp: stamp + String(index).padStart(2, "0")
+    };
+  });
+}
+const ten = countedLesson(10);
+const at70 = logic.lessonStanding(ten, countedAttempts(ten, 7, "2026-10-01T10:00:"));
+assert.strictEqual(at70.accuracy, 0.7);
+assert.strictEqual(at70.done, true);
+assert.strictEqual(logic.homeLessonPlan([ten, homeB], countedAttempts(ten, 7, "2026-10-01T10:00:"), []).lessonId, "n5w1-d1v");
+const hundred = countedLesson(100);
+const at69 = logic.lessonStanding(hundred, countedAttempts(hundred, 69, "2026-10-01T10:00:"));
+assert.ok(at69.accuracy < 0.7);
+assert.strictEqual(Math.round(at69.accuracy * 100), 69);
+assert.strictEqual(at69.done, false);
+const plan69 = logic.homeLessonPlan([hundred, homeB], countedAttempts(hundred, 69, "2026-10-01T10:00:"), []);
+assert.strictEqual(plan69.lessonId, "n5w1-d1");
+assert.strictEqual(plan69.mode, "retry");
+assert.strictEqual(plan69.heading, "第 1 日再練一次（上次 69%）");
+const highThenLow = countedAttempts(ten, 10, "2026-10-01T10:00:").concat(countedAttempts(ten, 5, "2026-10-02T10:00:"));
+const dropped = logic.lessonStanding(ten, highThenLow);
+assert.strictEqual(dropped.accuracy, 0.5);
+assert.strictEqual(dropped.done, false);
+const dropPlan = logic.homeLessonPlan([ten, homeB], highThenLow, []);
+assert.strictEqual(dropPlan.lessonId, "n5w1-d1");
+assert.strictEqual(dropPlan.heading, "第 1 日再練一次（上次 50%）");
+const unfinished = countedAttempts(ten, 10, "2026-10-01T10:00:").concat([
+  { questionId: "q0", lessonId: "n5w1-d1", correct: false, timestamp: "2026-10-03T10:00:00" }
+]);
+const kept = logic.lessonStanding(ten, unfinished);
+assert.strictEqual(kept.done, true);
+assert.strictEqual(kept.accuracy, 1);
+assert.strictEqual(logic.homeLessonPlan([ten, homeB], unfinished, []).lessonId, "n5w1-d1v");
+const report70 = logic.curriculumReport({
+  completionAccuracy: 0.7,
+  levels: [{ level: "N5", topics: [{ id: "n5-a", title: "甲", level: "N5", lessonIds: ["n5w1-d1"], planned: 1 }] }]
+}, { "n5w1-d1": ten }, countedAttempts(ten, 7, "2026-10-01T10:00:"));
+assert.strictEqual(report70.levels[0].topics[0].doneCount, 1);
+assert.strictEqual(report70.levels[0].percent, 1);
+const report69 = logic.curriculumReport({
+  completionAccuracy: 0.7,
+  levels: [{ level: "N5", topics: [{ id: "n5-a", title: "甲", level: "N5", lessonIds: ["n5w1-d1"], planned: 1 }] }]
+}, { "n5w1-d1": hundred }, countedAttempts(hundred, 69, "2026-10-01T10:00:"));
+assert.strictEqual(report69.levels[0].topics[0].doneCount, 0);
+assert.strictEqual(report69.levels[0].percent, 0);
 
 console.log("logic tests ok");

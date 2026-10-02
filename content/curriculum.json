@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "sample": false,
-  "completionAccuracy": 0.8,
+  "completionAccuracy": 0.7,
   "levels": [
     {
       "level": "N5",
