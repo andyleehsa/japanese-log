@@ -913,14 +913,27 @@ body.in-practice .tabbar { display: none; }
   position: fixed;
   left: 50%;
   transform: translateX(-50%);
-  bottom: calc(132px + env(safe-area-inset-bottom));
+  top: calc(8px + env(safe-area-inset-top));
   width: min(440px, calc(100% - 24px));
   background: var(--ink);
   color: var(--paper);
   border-radius: 14px;
   padding: 12px 14px;
-  z-index: 9;
+  z-index: 7;
   font-weight: 700;
+  pointer-events: none;
+  line-height: 1.35;
+  font-size: 0.95rem;
+}
+
+body.in-practice .toast {
+  position: static;
+  left: auto;
+  transform: none;
+  top: auto;
+  width: auto;
+  margin: 0 0 8px;
+  z-index: auto;
 }
 
 code {

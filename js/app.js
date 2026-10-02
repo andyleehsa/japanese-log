@@ -1268,7 +1268,9 @@
     document.documentElement.style.setProperty("--vv-bottom", inset + "px");
     var panel = document.getElementById("answer-feedback") || document.getElementById("answer-dock");
     var spacer = document.getElementById("dock-spacer");
-    var height = (panel ? panel.offsetHeight : 0) + inset;
+    var panelHeight = 0;
+    if (panel) panelHeight = panel.getBoundingClientRect().height;
+    var height = panelHeight + inset;
     document.documentElement.style.setProperty("--dock-h", height + "px");
     if (spacer) spacer.style.height = height + "px";
   }
@@ -1556,6 +1558,12 @@
       el.id = "toast";
       el.className = "toast";
       el.setAttribute("role", "status");
+    }
+    var practice = document.querySelector(".practice");
+    var topBar = practice && practice.querySelector(".practice-top");
+    if (practice && topBar) {
+      if (el.parentNode !== practice) practice.insertBefore(el, topBar.nextSibling);
+    } else if (el.parentNode !== document.body) {
       document.body.appendChild(el);
     }
     el.textContent = text;
@@ -1646,7 +1654,7 @@
 
   async function loadOptionalJson(url) {
     try {
-      var response = await fetch(url, { cache: "no-cache" });
+      var response = await fetch(url, { cache: "reload" });
       if (!response.ok) return null;
       return await response.json();
     } catch (err) {
@@ -1657,14 +1665,14 @@
   async function reloadContent() {
     state.loading = true;
     try {
-      var response = await fetch("content/index.json", { cache: "no-cache" });
+      var response = await fetch("content/index.json", { cache: "reload" });
       if (!response.ok) throw new Error("index");
       var index = await response.json();
       var items = Array.isArray(index.lessons) ? index.lessons : [];
       var lessons = await Promise.all(items.map(async function (item) {
         try {
           if (!/^lessons\/[A-Za-z0-9._-]+\.json$/.test(item.file || "")) throw new Error("file");
-          var lessonResponse = await fetch("content/" + item.file, { cache: "no-cache" });
+          var lessonResponse = await fetch("content/" + item.file, { cache: "reload" });
           if (!lessonResponse.ok) throw new Error("lesson");
           return await lessonResponse.json();
         } catch (err) {
@@ -1696,7 +1704,7 @@
 
   function registerSW() {
     if (!("serviceWorker" in navigator)) return;
-    navigator.serviceWorker.register("sw.js").then(function (registration) {
+    navigator.serviceWorker.register("sw.js", { updateViaCache: "none" }).then(function (registration) {
       registration.update();
     }).catch(function () {});
   }

@@ -104,3 +104,25 @@
 金鑰過期：跟第 3 步再開一條，貼上覆蓋。可以喺 GitHub 嘅細權限存取碼（fine-grained tokens）頁刪走舊嗰條。
 
 清除練習紀錄（設定頁最底「進階」）只會清呢部機，唔會刪 GitHub 上已同步嘅紀錄，亦唔會清金鑰。
+
+## 7. App 更新、離線快取同限制
+
+GitHub Pages **唔可以**為呢個網站自訂 `Cache-Control` 或者其他回應 header。瀏覽器自己嘅 HTTP cache 可能喺更新之後短暫留住舊嘅 `sw.js` 同 `app.js`。呢個 app 唔靠 header，而係喺 app 層繞過：
+
+1. 頁面註冊 `sw.js` 時用 `updateViaCache: "none"`。瀏覽器檢查 worker 有冇新版本，唔會用 HTTP cache 入面嘅舊 `sw.js`。
+2. Service worker 預快取（安裝）同之後每次有網嘅更新，都用 `fetch(url, { cache: "reload" })`。呢個會跳過 HTTP cache，直接攞網上嗰份，再寫入 Cache Storage。而家嘅 cache 名係 `jp-log-v14`。舊名會喺新 worker 啟動時刪走。
+3. 課題 JSON 喺頁面入面重新載入，同樣用 `cache: "reload"`。
+4. 冇網絡先至讀 Cache Storage。有網絡就唔會把 HTTP cache 入面嘅舊檔寫入離線快取。
+
+升級流程：
+
+1. 老師將新版本推上 `main`。GitHub Pages 部署完成之後，網上已經係新檔。
+2. Andy 駁住網絡，用主畫面個「日文日誌」圖示開。頁面會更新 service worker。新 worker 安裝時用 `cache: "reload"` 重新下載殼（包括 `app.js`）同課題，啟動後刪走舊 cache。
+3. 如果眼前仲係舊畫面，由 app 切換器滑走「日文日誌」，再撳圖示開一次。唔使清網站資料，亦唔使刪主畫面圖示。
+4. 只係新課題、畫面未變，可以喺主頁撳「重新載入課題」。
+
+限制：
+
+- 完全離線開，只會見到上次成功快取嘅版本，唔會知道有更新。
+- 已經開住嘅頁要重新載入，先會跑新嘅 `app.js`。更新嗰一下，舊 worker 可能仲控制緊個頁，直到新 worker 接管。因為預快取同更新都用 `cache: "reload"`，新 cache 入面嘅檔係網上嗰份，唔會把舊 `app.js` 抄入去。
+- Pages 預設嘅 HTTP 快取時間我哋改唔到。上面嘅做法係 app 自己繞過，唔係靠伺服器 header。

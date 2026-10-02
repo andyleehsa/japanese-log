@@ -450,7 +450,7 @@
         var planned = topic.planned == null ? lessonIds.length : topic.planned;
         var lessons = lessonIds.map(function (lessonId) {
           var lesson = lessonMap && lessonMap[lessonId];
-          var standing = lesson ? lessonStanding(lesson, attempts, threshold) : { done: false, complete: false, attempts: 0, correct: 0, accuracy: null };
+          var standing = lesson ? lessonStanding(lesson, attempts, threshold) : { done: false, complete: false, attempts: 0, correct: 0, accuracy: null, total: 0 };
           return {
             lessonId: lessonId,
             title: (lesson && lesson.title) || lessonId,
@@ -458,14 +458,19 @@
             completed: !!standing.complete,
             attempts: standing.attempts,
             correct: standing.correct,
+            questionTotal: standing.complete ? standing.total : 0,
             accuracy: standing.accuracy
           };
         });
         var doneCount = lessons.filter(function (lesson) { return lesson.done; }).length;
-        var related = (attempts || []).filter(function (attempt) {
-          return lessonIds.indexOf(attempt.lessonId) !== -1;
+        var poolCorrect = 0;
+        var poolTotal = 0;
+        lessons.forEach(function (lesson) {
+          if (!lesson.completed || !(lesson.questionTotal > 0)) return;
+          poolCorrect += lesson.correct;
+          poolTotal += lesson.questionTotal;
         });
-        var accuracy = tally(related).accuracy;
+        var accuracy = poolTotal > 0 ? poolCorrect / poolTotal : null;
         return {
           id: topic.id,
           title: topic.title,
@@ -491,7 +496,7 @@
     });
     return {
       completionAccuracy: threshold,
-      rule: "A lesson is done when the latest complete pass (every question answered once in that pass; an unfinished pass does not replace it) has accuracy of at least completionAccuracy. Topic percent = done lessons / planned (planned defaults to linked lesson count). A topic is complete when done lessons reach planned. Level percent is the average of topic percents. Review is never blocked by order.",
+      rule: "A lesson is done when the latest complete pass (every question answered once in that pass; an unfinished pass does not replace it) has accuracy of at least completionAccuracy. Topic accuracy pools each linked lesson's latest complete pass (sum of correct answers ÷ sum of question counts; lessons with no complete pass are omitted; null if none). Topic percent = done lessons / planned (planned defaults to linked lesson count). A topic is complete when done lessons reach planned. Level percent is the average of topic percents. Review is never blocked by order.",
       levels: levels
     };
   }

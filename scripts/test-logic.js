@@ -347,6 +347,57 @@ const report69 = logic.curriculumReport({
 assert.strictEqual(report69.levels[0].topics[0].doneCount, 0);
 assert.strictEqual(report69.levels[0].percent, 0);
 
+function topicStamp(lessonId, questionId, correct, stamp) {
+  return { lessonId: lessonId, questionId: questionId, correct: correct, timestamp: stamp };
+}
+const topicA = { id: "la", title: "甲課", questions: [{ id: "a1" }, { id: "a2" }] };
+const topicB = { id: "lb", title: "乙課", questions: [{ id: "b1" }, { id: "b2" }, { id: "b3" }] };
+const topicCurriculum = {
+  completionAccuracy: 0.7,
+  levels: [{
+    level: "N5",
+    topics: [{ id: "n5-pool", title: "池", level: "N5", lessonIds: ["la", "lb"], planned: 2 }]
+  }]
+};
+const olderWrongs = [
+  topicStamp("la", "a1", false, "2026-10-01T10:00:00"),
+  topicStamp("la", "a2", false, "2026-10-01T10:00:01"),
+  topicStamp("lb", "b1", false, "2026-10-01T10:00:02"),
+  topicStamp("lb", "b2", false, "2026-10-01T10:00:03"),
+  topicStamp("lb", "b3", false, "2026-10-01T10:00:04")
+];
+const latestPasses = [
+  topicStamp("la", "a1", true, "2026-10-02T10:00:00"),
+  topicStamp("la", "a2", true, "2026-10-02T10:00:01"),
+  topicStamp("lb", "b1", true, "2026-10-02T10:00:02"),
+  topicStamp("lb", "b2", true, "2026-10-02T10:00:03"),
+  topicStamp("lb", "b3", false, "2026-10-02T10:00:04")
+];
+const pooled = logic.curriculumReport(topicCurriculum, { la: topicA, lb: topicB }, olderWrongs.concat(latestPasses));
+const pooledTopic = pooled.levels[0].topics[0];
+assert.strictEqual(pooledTopic.lessons[0].accuracy, 1);
+assert.strictEqual(pooledTopic.lessons[1].accuracy, 2 / 3);
+assert.strictEqual(pooledTopic.lessons[0].questionTotal, 2);
+assert.strictEqual(pooledTopic.lessons[1].questionTotal, 3);
+assert.strictEqual(pooledTopic.accuracy, 0.8);
+assert.notStrictEqual(pooledTopic.accuracy, 0.4);
+const unfinishedTopic = logic.curriculumReport(topicCurriculum, { la: topicA, lb: topicB }, olderWrongs.concat(latestPasses, [
+  topicStamp("la", "a1", false, "2026-10-03T10:00:00")
+]));
+assert.strictEqual(unfinishedTopic.levels[0].topics[0].accuracy, 0.8);
+assert.strictEqual(unfinishedTopic.levels[0].topics[0].lessons[0].accuracy, 1);
+const noneComplete = logic.curriculumReport(topicCurriculum, { la: topicA, lb: topicB }, [
+  topicStamp("la", "a1", true, "2026-10-01T10:00:00"),
+  topicStamp("lb", "b1", false, "2026-10-01T10:00:01")
+]);
+assert.strictEqual(noneComplete.levels[0].topics[0].accuracy, null);
+assert.strictEqual(noneComplete.levels[0].topics[0].lessons[0].accuracy, null);
+assert.strictEqual(noneComplete.levels[0].topics[0].lessons[0].questionTotal, 0);
+const onlyOne = logic.curriculumReport(topicCurriculum, { la: topicA, lb: topicB }, latestPasses.filter(function (item) {
+  return item.lessonId === "la";
+}));
+assert.strictEqual(onlyOne.levels[0].topics[0].accuracy, 1);
+
 assert.deepStrictEqual(logic.FONT_STEPS, ["standard", "large", "xlarge"]);
 assert.strictEqual(logic.FONT_LABELS.standard, "標準");
 assert.strictEqual(logic.FONT_LABELS.large, "大");
@@ -454,8 +505,16 @@ Object.keys(colors).forEach((key) => {
 assert.ok(css.indexOf("--jp-flash: 32px") !== -1);
 assert.ok(css.indexOf("--jp-practice: 24px") !== -1);
 assert.ok(css.indexOf("prefers-reduced-motion") !== -1);
+assert.ok(css.indexOf("scroll-pad") === -1);
+assert.ok(/\.toast\s*\{[^}]*pointer-events:\s*none/.test(css));
 const sw = fs.readFileSync(require("path").join(__dirname, "../sw.js"), "utf8");
-assert.ok(sw.indexOf("jp-log-v13") !== -1);
-assert.ok(sw.indexOf("jp-log-v12") === -1);
+assert.ok(sw.indexOf("jp-log-v14") !== -1);
+assert.ok(sw.indexOf("jp-log-v13") === -1);
+assert.ok(sw.indexOf("cache.addAll") === -1);
+assert.ok(sw.indexOf('cache: "reload"') !== -1);
+const appSource = fs.readFileSync(require("path").join(__dirname, "../js/app.js"), "utf8");
+assert.ok(appSource.indexOf('updateViaCache: "none"') !== -1);
+assert.ok(appSource.indexOf('cache: "reload"') !== -1);
+assert.ok(appSource.indexOf("getBoundingClientRect().height") !== -1);
 
 console.log("logic tests ok");
