@@ -98,18 +98,6 @@ assert.strictEqual(stamped.localDate, "2026-10-01");
 assert.ok(stamped.timestamp.startsWith("2026-10-01T08:05:06"));
 assert.deepStrictEqual(Object.keys(logic.groupAttemptsByMonth(attempts)), ["2026-10"]);
 
-const summary = logic.buildSummary(stats, {
-  titles: { "day-001": "題" },
-  lookup: () => ({ prompt: "題目", correctAnswer: "あれ", lessonTitle: "題" }),
-  generatedAt: "2026-10-02T00:00:00.000Z",
-  lastSyncedAt: "2026-10-02T00:00:00.000Z"
-});
-assert.strictEqual(summary.mistakes[0].prompt, "題目");
-assert.strictEqual(summary.weakThreshold, 0.8);
-assert.strictEqual(summary.lastStudyDate, "2026-10-02");
-assert.strictEqual(summary.curriculum, null);
-assert.strictEqual(summary.vocab, null);
-
 const doneLesson = {
   id: "day-001",
   title: "は",
@@ -428,6 +416,12 @@ assert.strictEqual(logic.choiceLayout(["3 拍", "4 拍", "5 拍", "6 拍"]), "gr
 assert.strictEqual(logic.choiceLayout(["安くなかったです", "安くないです", "安かったです", "いです"]), "stack");
 assert.strictEqual(logic.choiceLayout(["只有一個"]), "stack");
 assert.strictEqual(logic.choiceLayout([]), "stack");
+const storySentences = ["あさ起きる。", "いま食べる。", "きょう帰る。", "いま寝る。"];
+assert.strictEqual(logic.choiceLayout(storySentences, logic.choiceGridLimit(390, 32)), "stack");
+assert.strictEqual(logic.choiceLayout(storySentences, logic.choiceGridLimit(360, 28)), "stack");
+assert.strictEqual(logic.choiceLayout(storySentences, logic.choiceGridLimit(360, 32)), "stack");
+assert.strictEqual(logic.choiceLayout(storySentences, logic.choiceGridLimit(430, 32)), "stack");
+assert.strictEqual(logic.choiceLayout(["ば", "ぱ", "わ", "ほ"], logic.choiceGridLimit(360, 32)), "grid");
 
 const wrongPanel = logic.feedbackPanel({ correct: false, answer: "ぱ", reading: "ぱ", jp: "ぱ", rule: "半濁音加圈。", explanation: "「ば」先係濁音。" });
 assert.strictEqual(wrongPanel.tone, "bad");
@@ -578,9 +572,13 @@ assert.ok(css.indexOf("prefers-reduced-motion") !== -1);
 assert.ok(css.indexOf("scroll-pad") === -1);
 assert.ok(/\.toast\s*\{[^}]*pointer-events:\s*none/.test(css));
 const sw = fs.readFileSync(require("path").join(__dirname, "../sw.js"), "utf8");
-assert.ok(sw.indexOf("jpn5-shell-v3") !== -1);
+assert.ok(sw.indexOf("jpn5-shell-v4") !== -1);
+assert.ok(sw.indexOf("jpn5-shell-v3") === -1);
 assert.ok(sw.indexOf("jpn5-shell-v2") === -1);
 assert.ok(sw.indexOf("jpn5-shell-v1") === -1);
+assert.ok(/\.choice \.jp, \.choice \.reading \{[^}]*overflow-wrap:\s*anywhere/.test(css));
+assert.ok(css.indexOf("max(14px, 0.8rem)") !== -1);
+assert.ok(!/\.tabbar a \{[^}]*font-size:\s*11px/.test(css));
 assert.ok(sw.indexOf('key.indexOf(CACHE_PREFIX) === 0') !== -1);
 assert.ok(sw.indexOf("jp-log-v15") === -1);
 assert.ok(sw.indexOf("js/sync.js") === -1);
@@ -664,5 +662,33 @@ const knownOnly = logic.dropUnknownQuestions(retiredRecords.concat([{ questionId
 assert.deepStrictEqual(knownOnly.map((row) => row.questionId), ["q-n5-12-001"]);
 assert.doesNotThrow(() => logic.mistakeNotebook(retiredRecords, "2026-10-02"));
 assert.doesNotThrow(() => logic.nextAttemptNo(retiredRecords, "q-n5-12-060"));
+
+const unit12 = JSON.parse(fs.readFileSync(require("path").join(__dirname, "../content/units/unit-n5-12.json"), "utf8"));
+function findQuestion(id) {
+  let found = null;
+  (function walk(node) {
+    if (!node || found) return;
+    if (Array.isArray(node)) node.forEach(walk);
+    else if (typeof node === "object") {
+      if (node.id === id && node.stem) found = node;
+      Object.keys(node).forEach((key) => walk(node[key]));
+    }
+  })(unit12);
+  return found;
+}
+const q060 = findQuestion("q-n5-12-060");
+const q061 = findQuestion("q-n5-12-061");
+assert.strictEqual(q060.stem.hideReading, true);
+const before060 = logic.stemFields(q060.stem, false);
+assert.strictEqual(before060.ja, "帰る");
+assert.strictEqual(before060.zh, "回去；回家");
+assert.strictEqual(before060.reading, "");
+const after060 = logic.stemFields(q060.stem, true);
+assert.strictEqual(after060.reading, "かえる");
+const before061 = logic.stemFields(q061.stem, false);
+assert.strictEqual(before061.ja, q061.stem.ja);
+assert.strictEqual(before061.reading, q061.stem.reading);
+assert.notStrictEqual(before061.reading, "");
+assert.strictEqual(q061.stem.hideReading, undefined);
 
 console.log("logic tests ok");

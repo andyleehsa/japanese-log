@@ -1,4 +1,4 @@
-var CACHE = "jpn5-shell-v3";
+var CACHE = "jpn5-shell-v4";
 var CACHE_PREFIX = "jpn5-";
 var SHELL = [
   "index.html",

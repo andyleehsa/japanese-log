@@ -2940,6 +2940,7 @@
           "needsRealDeviceCheck": false,
           "listeningNote": "（非長音題）本題題幹已顯示漢字「帰る」與中文提示，不要求辨別同音詞；只確認語音讀出的是「か・え・る」三拍。若 TTS 把「かえる」讀成「蛙」的音調，請在此記錄。",
           "stem": {
+            "hideReading": true,
             "ja": "帰る",
             "reading": "かえる",
             "zh": "回去；回家",

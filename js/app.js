@@ -243,12 +243,24 @@
   function applySpeechHint() {
     var banner = document.getElementById("speech-hint");
     if (!banner || !window.JPSpeech) return;
-    if (!voiceMissing() || speechHintClosed()) {
+    var voice = window.JPSpeech.voiceState();
+    var missing = voice === "missing" || voice === "unsupported";
+    var pending = voice === "unknown";
+    if (speechHintClosed() || (!missing && !pending)) {
       banner.hidden = true;
+      banner.classList.remove("is-reserved");
       banner.textContent = "";
       return;
     }
     banner.hidden = false;
+    if (pending) {
+      banner.classList.add("is-reserved");
+      banner.setAttribute("aria-hidden", "true");
+      banner.innerHTML = "";
+      return;
+    }
+    banner.classList.remove("is-reserved");
+    banner.removeAttribute("aria-hidden");
     banner.innerHTML = "<p>" + escapeHtml(window.JPSpeech.hint()) + "</p>"
       + '<button type="button" class="icon-btn speech-dismiss" data-action="dismiss-speech" aria-label="關閉提示">×</button>';
   }
@@ -407,10 +419,21 @@
     return window.JPLogic.confirmReady({ mode: "fill", text: session.draft, locked: false });
   }
 
+  function choiceFitLimit() {
+    var raw = window.getComputedStyle(document.documentElement).getPropertyValue("--jp-practice");
+    var px = parseFloat(raw);
+    if (!isFinite(px)) px = 24;
+    return window.JPLogic.choiceGridLimit(window.innerWidth, px);
+  }
+
   function renderChoices(question) {
     var options = orderedOptions(question);
-    var labels = options.map(function (option) { return option.ja || option.text || ""; });
-    var layout = window.JPLogic.choiceLayout(labels);
+    var labels = options.map(function (option) {
+      var main = String((option && (option.ja || option.text)) || "");
+      var reading = option && option.reading ? String(option.reading) : "";
+      return reading.length > main.length ? reading : main;
+    });
+    var layout = window.JPLogic.choiceLayout(labels, choiceFitLimit());
     return '<div class="choices is-' + layout + '">' + options.map(function (option) {
       var picked = session.draft === option.id;
       return '<button type="button" class="choice' + (picked ? " is-picked" : "") + '" data-action="pick" data-id="' + escapeHtml(option.id) + '"' + (session.locked ? " disabled" : "") + ">"
@@ -424,9 +447,12 @@
     var html = '<p class="prompt' + (hasJp(question.prompt) ? " jp" : "") + '">' + escapeHtml(question.prompt || "") + "</p>";
     if (question.type === "listen-choice") {
       var stemHtml = "";
-      if (question.showStem === true && question.stem && question.stem.ja) {
-        stemHtml = '<div class="listen-stem"><p class="jp" lang="ja">' + escapeHtml(question.stem.ja) + "</p>"
-          + (question.stem.reading ? '<p class="reading" lang="ja">' + escapeHtml(question.stem.reading) + "</p>" : "")
+      if (question.showStem === true && question.stem && (question.stem.ja || question.stem.zh)) {
+        var visible = window.JPLogic.stemFields(question.stem, false);
+        stemHtml = '<div class="listen-stem">'
+          + (visible.ja ? '<p class="jp" lang="ja">' + escapeHtml(visible.ja) + "</p>" : "")
+          + (visible.reading ? '<p class="reading" lang="ja">' + escapeHtml(visible.reading) + "</p>" : "")
+          + (visible.zh ? "<p>" + escapeHtml(visible.zh) + "</p>" : "")
           + "</div>";
       }
       var fallback = "";
@@ -494,12 +520,13 @@
   function renderSheet(question) {
     var correct = !!session.lastCorrect;
     var reveal = !correct && question.type === "listen-choice" ? question.reveal : null;
+    var hiddenReading = question.stem && question.stem.hideReading && question.stem.reading ? question.stem.reading : "";
     var guide = window.JPLogic.answerGuide(question, {});
     var panel = window.JPLogic.feedbackPanel({
       correct: correct,
       answer: question.answerDisplay || guide.answer,
       jp: reveal ? reveal.ja : "",
-      reading: reveal ? reveal.reading : "",
+      reading: (reveal && reveal.reading) || (!correct ? hiddenReading : ""),
       rule: question.rule || "",
       explanation: question.explanation || ""
     });
@@ -513,8 +540,9 @@
       body += renderAnswerGuide(answerLine);
       if (ruleLine && ruleLine.text) body += '<p class="sheet-answer sheet-rule-label">規則</p><p class="sheet-rule">' + rich(ruleLine.text) + "</p>";
       if (panel.detail) body += "<p>" + rich(panel.detail) + "</p>";
-    } else if (panel.detail) {
-      body += "<p>" + rich(panel.detail) + "</p>";
+    } else {
+      if (hiddenReading) body += '<p class="sheet-reading" lang="ja">' + escapeHtml(hiddenReading) + "</p>";
+      if (panel.detail) body += "<p>" + rich(panel.detail) + "</p>";
     }
     return '<aside class="sheet is-' + panel.tone + '" id="answer-feedback" role="status"><div class="sheet-scroll">'
       + head + body + "</div>"
@@ -1201,9 +1229,15 @@
     bindFallbacks(document);
     applySpeechHint();
     if (window.JPSpeech) window.JPSpeech.onChange(function () {
+      var y = window.scrollY;
       applySpeechHint();
+      var route = parseRoute();
       var step = session && session.steps ? session.steps[session.index] : null;
-      if (step && step.kind === "question" && step.question && step.question.type === "listen-choice") render();
+      var listen = step && step.kind === "question" && step.question && step.question.type === "listen-choice";
+      if (route.name === "me" || listen) {
+        render();
+        window.scrollTo(0, y);
+      }
     });
     document.body.addEventListener("click", onClick);
     document.body.addEventListener("change", onChange);

@@ -123,6 +123,12 @@ a { color: var(--accent); }
   font-weight: 700;
 }
 
+.jp, .reading, .prompt, .card, .match-row, .listen-stem, .listen-fallback {
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
 .jp {
   font-family: var(--font);
 }
@@ -510,6 +516,11 @@ strong {
   gap: 8px;
   margin-bottom: 12px;
   padding: 4px 10px;
+  min-height: 52px;
+}
+
+.banner.speech-hint.is-reserved {
+  visibility: hidden;
 }
 
 .banner.speech-hint p {
@@ -578,6 +589,7 @@ progress.level-progress {
   grid-template-columns: 1fr 1fr;
   gap: 10px;
 }
+.choices.is-grid > .choice { min-width: 0; }
 
 .choice {
   width: 100%;
@@ -602,9 +614,11 @@ progress.level-progress {
 .choice .jp, .choice .reading {
   display: block;
   max-width: 100%;
+  min-width: 0;
   writing-mode: horizontal-tb;
   white-space: normal;
-  word-break: keep-all;
+  overflow-wrap: anywhere;
+  word-break: normal;
   line-break: strict;
 }
 
@@ -957,7 +971,8 @@ body.in-practice .tabbar { display: none; }
   text-decoration: none;
   color: var(--muted);
   font-weight: 700;
-  font-size: 11px;
+  font-size: max(14px, 0.8rem);
+  min-width: 0;
   line-height: 1.2;
   padding: 6px 2px;
 }
@@ -1143,7 +1158,7 @@ strong code { color: var(--accent); }
   padding: 10px 12px;
   font-weight: 800;
 }
-.table-scroll { overflow-x: auto; margin: 0 0 12px; }
+.table-scroll { overflow-x: auto; max-width: 100%; margin: 0 0 12px; }
 .cell-jp { display: block; }
 .cell-reading { display: block; color: var(--muted); font-size: var(--jp-reading); }
 .match-row { margin: 0 0 12px; }

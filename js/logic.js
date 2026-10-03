@@ -653,46 +653,6 @@
     return { byLevel: byLevel, unknown: unknown };
   }
 
-  function buildSummary(stats, extras) {
-    var info = extras || {};
-    var lookup = info.lookup || function () { return null; };
-    function enrich(item) {
-      var found = lookup(item.questionId) || {};
-      return {
-        questionId: item.questionId,
-        lessonId: item.lessonId,
-        lessonTitle: found.lessonTitle || info.titles && info.titles[item.lessonId] || item.lessonId,
-        prompt: found.prompt || "",
-        correctAnswer: found.correctAnswer || "",
-        tags: item.tags || [],
-        lastUserAnswer: item.lastUserAnswer,
-        lastAt: item.lastAt,
-        wrongCount: item.wrongCount,
-        attempts: item.attempts,
-        correct: item.correct,
-        accuracy: item.accuracy,
-        errorRate: item.errorRate
-      };
-    }
-    return {
-      schemaVersion: 1,
-      generatedAt: info.generatedAt || null,
-      lastSyncedAt: info.lastSyncedAt || null,
-      lastStudyDate: stats.lastStudyDate,
-      timezoneNote: "attempt.timestamp carries the device offset; lastSyncedAt is UTC.",
-      streak: stats.streak,
-      overall: stats.overall,
-      perLesson: stats.perLesson,
-      perTag: stats.perTag,
-      weakThreshold: stats.weakThreshold,
-      weakTags: stats.weakTags,
-      weakQuestions: stats.weakQuestions.map(enrich),
-      mistakes: stats.mistakes.map(enrich),
-      curriculum: info.curriculum || null,
-      vocab: info.vocab || null
-    };
-  }
-
   function examplePendingVerify(example) {
     return !!(example && example.verified === false);
   }
@@ -794,13 +754,35 @@
     return FONT_STEPS[next];
   }
 
-  function choiceLayout(choices) {
+  function choiceGridLimit(viewportWidth, fontPx) {
+    var width = Number(viewportWidth);
+    if (!isFinite(width) || width <= 0) width = 390;
+    width = Math.min(width, 480);
+    var font = Number(fontPx);
+    if (!isFinite(font) || font <= 0) font = 24;
+    var cell = Math.floor((width - 42) / 2) - 28;
+    if (cell < font) return 1;
+    return Math.max(1, Math.floor(cell / font));
+  }
+
+  function choiceLayout(choices, maxLen) {
     var list = Array.isArray(choices) ? choices : [];
     if (list.length < 2) return "stack";
+    var limit = typeof maxLen === "number" && isFinite(maxLen) ? maxLen : CHOICE_GRID_MAX;
     var long = list.some(function (choice) {
-      return String(choice == null ? "" : choice).trim().length > CHOICE_GRID_MAX;
+      return String(choice == null ? "" : choice).trim().length > limit;
     });
     return long ? "stack" : "grid";
+  }
+
+  function stemFields(stem, answered) {
+    var item = stem || {};
+    var hide = item.hideReading === true && !answered;
+    return {
+      ja: item.ja || "",
+      reading: hide ? "" : (item.reading || ""),
+      zh: item.hideReading === true ? (item.zh || "") : ""
+    };
   }
 
   function confirmReady(state) {
@@ -1121,7 +1103,6 @@
     nextAttemptNo: nextAttemptNo,
     continueAllowed: continueAllowed,
     dropUnknownQuestions: dropUnknownQuestions,
-    buildSummary: buildSummary,
     examplePendingVerify: examplePendingVerify,
     homeLessonPlan: homeLessonPlan,
     entryPendingVerify: entryPendingVerify,
@@ -1138,6 +1119,8 @@
     normalizeFontSize: normalizeFontSize,
     stepFontSize: stepFontSize,
     choiceLayout: choiceLayout,
+    choiceGridLimit: choiceGridLimit,
+    stemFields: stemFields,
     confirmReady: confirmReady,
     readingIndex: readingIndex,
     lookupReading: lookupReading,
