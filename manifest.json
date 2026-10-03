@@ -1,15 +1,15 @@
 {
   "name": "日文日誌",
   "short_name": "日文日誌",
-  "description": "Andy 嘅日文自學日誌：每日一課、練習、錯題本。",
+  "description": "日文學習：單元、練習與錯題本。可離線使用。",
   "lang": "zh-Hant",
   "dir": "ltr",
   "id": "./",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#f6f1e7",
-  "theme_color": "#243056",
+  "background_color": "#FAF7F2",
+  "theme_color": "#FAF7F2",
   "icons": [
     {
       "src": "icons/icon-192.png",
@@ -24,13 +24,7 @@
       "purpose": "any"
     },
     {
-      "src": "icons/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "maskable"
-    },
-    {
-      "src": "icons/icon-512.png",
+      "src": "icons/icon-maskable-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"

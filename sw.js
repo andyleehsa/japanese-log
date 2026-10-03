@@ -1,18 +1,39 @@
-var CACHE = "jp-log-v12";
+var CACHE = "jpn5-shell-v4";
+var CACHE_PREFIX = "jpn5-";
 var SHELL = [
   "index.html",
   "css/app.css",
   "js/logic.js",
   "js/store.js",
   "js/speech.js",
-  "js/sync.js",
   "js/app.js",
   "manifest.json",
   "icons/icon-32.png",
   "icons/apple-touch-icon.png",
   "icons/icon-192.png",
   "icons/icon-512.png",
-  "content/index.json"
+  "icons/icon-maskable-512.png",
+  "content/units-index.json",
+  "content/units/unit-n5-12.json",
+  "content/kana-sounds.json",
+  "assets/mascot/cat-happy.png",
+  "assets/mascot/cat-encourage.png",
+  "assets/mascot/cat-celebrate.png",
+  "assets/mascot/cat-think.png",
+  "assets/mascot/cat-headphone.png",
+  "assets/mascot/cat-keep.png",
+  "assets/mascot/cat-face.png",
+  "assets/units/unit-12-verbs.png",
+  "assets/ui/icon-turtle.png",
+  "assets/ui/icon-speaker.png",
+  "assets/ui/icon-bookmark.png",
+  "assets/ui/icon-bookmark-filled.png",
+  "assets/tabs/tab-study-active.png",
+  "assets/tabs/tab-study-inactive.png",
+  "assets/tabs/tab-review-active.png",
+  "assets/tabs/tab-review-inactive.png",
+  "assets/tabs/tab-me-active.png",
+  "assets/tabs/tab-me-inactive.png"
 ];
 
 self.addEventListener("install", function (event) {
@@ -22,7 +43,9 @@ self.addEventListener("install", function (event) {
 self.addEventListener("activate", function (event) {
   event.waitUntil((async function () {
     var keys = await caches.keys();
-    await Promise.all(keys.filter(function (key) { return key !== CACHE; }).map(function (key) {
+    await Promise.all(keys.filter(function (key) {
+      return key !== CACHE && key.indexOf(CACHE_PREFIX) === 0;
+    }).map(function (key) {
       return caches.delete(key);
     }));
     await self.clients.claim();
@@ -37,36 +60,17 @@ self.addEventListener("fetch", function (event) {
   event.respondWith(networkFirst(request));
 });
 
+function fresh(url) {
+  return fetch(url, { cache: "reload" });
+}
+
 async function precache() {
   var cache = await caches.open(CACHE);
-  await cache.addAll(SHELL);
-  try {
-    var indexResponse = await fetch("content/index.json", { cache: "no-cache" });
-    if (!indexResponse.ok) return;
-    var index = await indexResponse.json();
-    await cache.put("content/index.json", new Response(JSON.stringify(index), {
-      headers: { "Content-Type": "application/json" }
-    }));
-    var extra = [
-      "content/curriculum.json",
-      "content/vocab/n5.json",
-      "content/vocab/n4.json",
-      "content/vocab/n3.json"
-    ];
-    await Promise.all(extra.map(async function (url) {
-      var extraResponse = await fetch(url, { cache: "no-cache" });
-      if (extraResponse.ok) await cache.put(url, extraResponse);
-    }));
-    var lessons = Array.isArray(index.lessons) ? index.lessons : [];
-    await Promise.all(lessons.map(async function (lesson) {
-      if (!lesson || !/^lessons\/[A-Za-z0-9._-]+\.json$/.test(lesson.file || "")) return;
-      var lessonUrl = "content/" + lesson.file;
-      var response = await fetch(lessonUrl, { cache: "no-cache" });
-      if (response.ok) await cache.put(lessonUrl, response);
-    }));
-  } catch (err) {
-    /* Shell is already cached. New lessons are stored when the app fetches them. */
-  }
+  await Promise.all(SHELL.map(async function (url) {
+    var response = await fresh(url);
+    if (!response.ok) throw new Error(url);
+    await cache.put(url, response);
+  }));
   try {
     var page = await cache.match("index.html");
     if (page) {
@@ -74,18 +78,18 @@ async function precache() {
       await cache.put(".", page.clone());
     }
   } catch (err) {
-    /* Some servers do not allow caching the directory URL. index.html is enough. */
+    /* index.html is enough when the directory URL cannot be cached. */
   }
 }
 
 async function networkFirst(request) {
   var cache = await caches.open(CACHE);
   try {
-    var fresh = await fetch(request);
-    if (fresh && fresh.ok && fresh.type === "basic") {
-      await cache.put(request, fresh.clone());
+    var freshResponse = await fresh(request.url);
+    if (freshResponse && freshResponse.ok && freshResponse.type === "basic") {
+      await cache.put(request, freshResponse.clone());
     }
-    return fresh;
+    return freshResponse;
   } catch (err) {
     var cached = await cache.match(request);
     if (cached) return cached;
@@ -93,7 +97,7 @@ async function networkFirst(request) {
       var fallback = (await cache.match("index.html")) || (await cache.match("./"));
       if (fallback) return fallback;
     }
-    return new Response("離線，而且未有快取。", {
+    return new Response("離線，而且尚未有快取。", {
       status: 503,
       headers: { "Content-Type": "text/plain; charset=utf-8" }
     });
