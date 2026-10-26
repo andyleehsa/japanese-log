@@ -602,7 +602,8 @@ const igDecoded = igScript[1]
   .replace(/&#39;/g, "'")
   .replace(/&amp;/g, "&");
 assert.strictEqual(igDecoded, igJs);
-assert.strictEqual(igJs.includes('const VERSION = "1.9.1-ig-photos"'), true);
+assert.strictEqual(igJs.includes('const VERSION = "1.9.2-ig-photos"'), true);
+assert.strictEqual(igJs.includes("1.9.1-ig-photos"), false);
 assert.strictEqual(igJs.includes("1.9.0-ig-photos"), false);
 assert.strictEqual(igJs.includes("1.8.0-ig-photos"), false);
 assert.strictEqual(igJs.includes("1.7.0-ig-photos"), false);
@@ -650,6 +651,12 @@ assert.strictEqual(igJs.includes("function attemptSequence"), true);
 assert.strictEqual(igJs.includes("Photos.fromData"), false);
 assert.strictEqual(igJs.includes("Image.fromData(data)"), true);
 assert.strictEqual(igJs.includes("Photos.save(image)"), true);
+assert.strictEqual(igJs.includes("shortcode_media"), true);
+assert.strictEqual(igJs.includes("edge_sidecar_to_children"), true);
+assert.strictEqual(igJs.includes("EmbeddedMediaImage"), true);
+assert.strictEqual(igJs.includes("const reAny"), false);
+assert.strictEqual(igJs.includes("張失敗"), false);
+assert.strictEqual(igJs.includes("張未存到"), true);
 assert.strictEqual(igJs.includes("搵到相但存唔入。請去 iPhone 設定"), false);
 assert.strictEqual(igJs.includes("Script.complete();"), true);
 {
@@ -675,12 +682,10 @@ assert.strictEqual(igJs.includes("Script.complete();"), true);
     '<img src="https://static.cdninstagram.com/rsrc.php/asset.png" />' +
     '<img src="https://scontent.cdninstagram.com/v/img.jpg" />';
   const parsed = sandbox.imagesFromHtml(sample);
-  assert.ok(parsed.images.indexOf("https://scontent.cdninstagram.com/v/photo.jpg?_nc=1") !== -1);
-  assert.ok(parsed.images.indexOf("https://scontent.cdninstagram.com/v/disp.jpg") !== -1);
-  assert.ok(parsed.images.indexOf("https://scontent.cdninstagram.com/v/cand.jpg") !== -1);
-  assert.ok(parsed.images.indexOf("https://scontent.cdninstagram.com/v/img.jpg") !== -1);
+  assert.strictEqual(parsed.images.length, 1);
+  assert.strictEqual(parsed.images[0], "https://scontent.cdninstagram.com/v/cand.jpg");
   assert.ok(parsed.images.every((u) => u.indexOf("rsrc.php") === -1 && u.indexOf("static.cdninstagram") === -1));
-  assert.ok(parsed.skippedVideo >= 1);
+  assert.strictEqual(parsed.skippedVideo, 0);
   assert.strictEqual(sandbox.shortcodeOf("https://www.instagram.com/p/AbC123/?igsh=1"), "AbC123");
   assert.strictEqual(sandbox.shortcodeOf("https://www.instagram.com/share/ZZZ"), "");
   const targets = sandbox.httpTargets("https://www.instagram.com/p/AbC123/?igsh=1");
@@ -739,6 +744,49 @@ assert.strictEqual(igJs.includes("Script.complete();"), true);
   assert.ok(badImg.message.indexOf("讀唔成圖片") !== -1);
   assert.strictEqual(badImg.message.indexOf("所有相片"), -1);
   assert.strictEqual(badImg.message.indexOf("存相出錯"), -1);
+  const post = sandbox.imagesFromHtml(
+    '<img class="HoverCardPhotos" src="https://scontent.cdninstagram.com/v/t51.82787-15/junk_n.jpg?stp=dst-jpg_e15_s240x240" />' +
+    '<script>{"shortcode_media":{"__typename":"GraphSidecar","is_video":false,"display_url":"https://scontent.cdninstagram.com/v/parent.jpg",' +
+    '"edge_media_to_caption":{"edges":[{"node":{"text":"hello } world"}}]},' +
+    '"edge_sidecar_to_children":{"edges":[' +
+    '{"node":{"__typename":"GraphImage","is_video":false,"display_url":"https://scontent.cdninstagram.com/v/slide1.jpg","display_resources":[{"src":"https://scontent.cdninstagram.com/v/slide1.jpg?stp=dst-jpg_e35_s1080x1080","config_width":1080},{"src":"https://scontent.cdninstagram.com/v/slide1.jpg?stp=s640x640","config_width":640}]}},' +
+    '{"node":{"__typename":"GraphVideo","is_video":true,"display_url":"https://scontent.cdninstagram.com/v/cover.jpg"}},' +
+    '{"node":{"__typename":"GraphImage","is_video":false,"display_url":"https://scontent.cdninstagram.com/v/slide2.jpg"}}' +
+    ']},"owner":{"username":"lilasikuta","profile_pic_url":"https://scontent.cdninstagram.com/v/t51.2885-19/p.jpg"}}}</script>' +
+    '<img class="EmbeddedMediaImage" src="https://scontent.cdninstagram.com/v/onlyembed.jpg" />' +
+    '"video_versions":[{},{},{},{}]' +
+    'https://scontent.cdninstagram.com/v/extra.jpg'
+  );
+  assert.strictEqual(post.images.length, 2);
+  assert.ok(post.images[0].indexOf("s1080x1080") !== -1);
+  assert.strictEqual(post.images[1], "https://scontent.cdninstagram.com/v/slide2.jpg");
+  assert.strictEqual(post.skippedVideo, 1);
+  assert.strictEqual(post.username, "lilasikuta");
+  assert.ok(post.images.every((u) => u.indexOf("junk") === -1 && u.indexOf("extra.jpg") === -1 && u.indexOf("cover.jpg") === -1 && u.indexOf("parent.jpg") === -1 && u.indexOf("onlyembed") === -1));
+  const one = sandbox.imagesFromHtml(
+    '"username":"someoneelse"' +
+    '{"shortcode_media":{"__typename":"GraphImage","is_video":false,"display_url":"https://scontent.cdninstagram.com/v/only.jpg","display_resources":[{"src":"https://scontent.cdninstagram.com/v/only.jpg?stp=s1080x1080","config_width":1080},{"src":"https://scontent.cdninstagram.com/v/only.jpg?stp=s640x640","config_width":640}],"owner":{"username":"lilasikuta"}}}' +
+    '<img src="https://scontent.cdninstagram.com/v/other.jpg?stp=s320x320" />'
+  );
+  assert.strictEqual(one.images.length, 1);
+  assert.ok(one.images[0].indexOf("s1080x1080") !== -1);
+  assert.strictEqual(one.username, "lilasikuta");
+  const video = sandbox.imagesFromHtml(
+    '{"shortcode_media":{"__typename":"GraphVideo","is_video":true,"display_url":"https://scontent.cdninstagram.com/v/coverframe.jpg","owner":{"username":"diegoquinteiro"}}}' +
+    '<img class="EmbeddedMediaImage" src="https://scontent.cdninstagram.com/v/coverframe.jpg" />' +
+    '<img src="https://scontent.cdninstagram.com/v/hover.jpg?stp=s240x240" />'
+  );
+  assert.strictEqual(video.images.length, 0);
+  assert.strictEqual(video.skippedVideo, 1);
+  assert.strictEqual(video.authoritative, true);
+  const loose = sandbox.imagesFromHtml(
+    '<img class="EmbeddedMediaImage" src="https://scontent.cdninstagram.com/v/real.jpg?stp=s1080x1080" />' +
+    '<img class="HoverCardPhotos" src="https://scontent.cdninstagram.com/v/hover.jpg?stp=s240x240" />' +
+    '"video_versions":[{},{},{},{}]https://scontent.cdninstagram.com/v/extra.jpg'
+  );
+  assert.strictEqual(loose.images.length, 1);
+  assert.ok(loose.images[0].indexOf("real.jpg") !== -1);
+  assert.strictEqual(loose.skippedVideo, 0);
 }
 assert.strictEqual(igJs.includes("IG存相 解析"), false);
 assert.strictEqual(igHtml.includes(">IG存相解析<"), true);
@@ -749,7 +797,8 @@ assert.strictEqual(igHtml.includes("刪走舊嘅「IG存相」"), true);
 assert.strictEqual(igHtml.includes("複製連結"), true);
 assert.strictEqual(igHtml.includes("最穩陣方法"), true);
 assert.strictEqual(igHtml.includes("撳播放"), true);
-assert.strictEqual(igHtml.includes("1.9.1-ig-photos"), true);
+assert.strictEqual(igHtml.includes("1.9.2-ig-photos"), true);
+assert.strictEqual(igHtml.includes("1.9.1-ig-photos"), false);
 assert.strictEqual(igHtml.includes("1.9.0-ig-photos"), false);
 assert.strictEqual(igHtml.includes("1.8.0-ig-photos"), false);
 assert.strictEqual(igHtml.includes("1.7.0-ig-photos"), false);

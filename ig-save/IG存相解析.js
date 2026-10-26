@@ -1,10 +1,10 @@
 // IG存相解析.js — Scriptable（IG 相／輪播）
 // v1.9：Timer.timeInterval 係毫秒。之前把 60 當秒，實際 60 毫秒就超時。
 // Request.timeoutInterval 仍然係秒，唔好乘 1000。讀頁仍然等 60 秒，失敗再試。
-// v1.9.1：存相簿用 Image.fromData，再 Photos.save。
+// v1.9.2：存相簿用 Image.fromData 再 Photos.save。只存呢篇貼文嘅相，輪播存晒每張。
 // https://docs.scriptable.app/image/  https://docs.scriptable.app/photos/
 
-const VERSION = "1.9.1-ig-photos";
+const VERSION = "1.9.2-ig-photos";
 const FETCH_SECONDS = 60;
 
 // Scriptable Timer.timeInterval is milliseconds.
@@ -162,6 +162,7 @@ function decodeEscapedUrl(value) {
       .replace(/\\\//g, "/")
       .replace(/&amp;/g, "&")
       .replace(/\\"/g, '"')
+      .replace(/\\%/g, "%")
       .replace(/\\u([0-9a-fA-F]{4})/g, function (_, h) {
         return String.fromCharCode(parseInt(h, 16));
       });
@@ -259,14 +260,197 @@ function candidateBlocks(text) {
   return blocks;
 }
 
-function imagesFromHtml(html) {
-  const text = decodeEscapedUrl(html);
-  let skippedVideo = 0;
+function indexOfKey(text, name, from, escaped) {
+  const form = escaped ? '\\"' + name + '\\"' : '"' + name + '"';
+  return text.indexOf(form, from || 0);
+}
+
+function extractBalanced(raw, openIndex, openChar, closeChar, escaped) {
+  let depth = 0;
+  let inStr = false;
+  const limit = Math.min(raw.length, openIndex + 300000);
+  let i = openIndex;
+  while (i < limit) {
+    const c = raw.charAt(i);
+    if (escaped && c === "\\" && i + 1 < limit) {
+      const n = raw.charAt(i + 1);
+      if (n === '"') {
+        inStr = !inStr;
+        i += 2;
+        continue;
+      }
+      if (n === "\\" && inStr && i + 2 < limit && raw.charAt(i + 2) === '"') {
+        i += 3;
+        continue;
+      }
+      i += 2;
+      continue;
+    }
+    if (inStr) {
+      if (c === "\\") {
+        i += 2;
+        continue;
+      }
+      if (c === '"') inStr = false;
+      i++;
+      continue;
+    }
+    if (c === '"') {
+      inStr = true;
+      i++;
+      continue;
+    }
+    if (c === openChar) depth++;
+    else if (c === closeChar) {
+      depth--;
+      if (depth === 0) return raw.slice(openIndex, i + 1);
+    }
+    i++;
+  }
+  return "";
+}
+
+function findRawMedia(raw) {
+  let from = 0;
+  while (from < raw.length) {
+    const plain = raw.indexOf('"shortcode_media"', from);
+    const esc = raw.indexOf('\\"shortcode_media\\"', from);
+    let at = -1;
+    let escaped = false;
+    if (plain >= 0 && (esc < 0 || plain < esc)) at = plain;
+    else if (esc >= 0) {
+      at = esc;
+      escaped = true;
+    } else return null;
+    const brace = raw.indexOf("{", at);
+    if (brace < 0 || brace - at > 80) {
+      from = at + 16;
+      continue;
+    }
+    const obj = extractBalanced(raw, brace, "{", "}", escaped);
+    if (obj && /display_url|edge_sidecar_to_children|is_video|image_versions2|carousel_media/.test(obj)) {
+      return { raw: obj, escaped: escaped };
+    }
+    from = brace + 1;
+  }
+  return null;
+}
+
+function objectNodes(raw, key, escaped) {
+  const nodes = [];
+  let from = 0;
+  while (from < raw.length) {
+    const at = indexOfKey(raw, key, from, escaped);
+    if (at < 0) break;
+    const brace = raw.indexOf("{", at);
+    if (brace < 0 || brace - at > 40) {
+      from = at + key.length;
+      continue;
+    }
+    const node = extractBalanced(raw, brace, "{", "}", escaped);
+    if (!node) break;
+    nodes.push(node);
+    from = brace + node.length;
+  }
+  return nodes;
+}
+
+function topObjects(raw, escaped) {
+  const items = [];
+  let from = 0;
+  while (from < raw.length) {
+    const brace = raw.indexOf("{", from);
+    if (brace < 0) break;
+    const node = extractBalanced(raw, brace, "{", "}", escaped);
+    if (!node) break;
+    items.push(node);
+    from = brace + node.length;
+  }
+  return items;
+}
+
+function findRawSlides(media) {
+  const sideAt = indexOfKey(media.raw, "edge_sidecar_to_children", 0, media.escaped);
+  if (sideAt >= 0) {
+    const brace = media.raw.indexOf("{", sideAt);
+    const region = brace >= 0 ? extractBalanced(media.raw, brace, "{", "}", media.escaped) : "";
+    const nodes = region ? objectNodes(region, "node", media.escaped) : [];
+    if (nodes.length) return nodes;
+  }
+  const carAt = indexOfKey(media.raw, "carousel_media", 0, media.escaped);
+  if (carAt >= 0) {
+    const br = media.raw.indexOf("[", carAt);
+    const arr = br >= 0 && br - carAt < 40 ? extractBalanced(media.raw, br, "[", "]", media.escaped) : "";
+    const items = arr ? topObjects(arr, media.escaped) : [];
+    if (items.length) return items;
+  }
+  return [media.raw];
+}
+
+function nodeIsVideo(decoded) {
+  const flagAt = decoded.indexOf("display_url");
+  const zone = decoded.slice(0, flagAt > 0 ? flagAt : 500);
+  if (/GraphVideo/.test(zone)) return true;
+  if (/"is_video"\s*:\s*true/.test(zone)) return true;
+  if (/"media_type"\s*:\s*2\b/.test(zone)) return true;
+  return false;
+}
+
+function sizedUrls(text) {
+  const found = [];
+  function push(url, width) {
+    if (url) found.push({ url: url, width: width || widthHint(url) || 0 });
+  }
+  const cut = text.search(/"owner"\s*:/);
+  const body = cut > 0 ? text.slice(0, cut) : text;
+  const du = body.match(/"display_url"\s*:\s*"(https:[^"]+)"/);
+  if (du) push(du[1], 0);
+  const ts = body.match(/"thumbnail_src"\s*:\s*"(https:[^"]+)"/);
+  if (ts) push(ts[1], 0);
+  function absorb(arrText) {
+    const re = /"(?:src|url)"\s*:\s*"(https:[^"]+)"/g;
+    let m;
+    while ((m = re.exec(arrText))) {
+      const objStart = arrText.lastIndexOf("{", m.index);
+      const objEnd = arrText.indexOf("}", m.index);
+      const around = arrText.slice(objStart < 0 ? m.index : objStart, objEnd < 0 ? m.index + 20 : objEnd + 1);
+      const wm = around.match(/"(?:config_width|width)"\s*:\s*(\d+)/);
+      push(m[1], wm ? parseInt(wm[1], 10) : 0);
+    }
+  }
+  ["display_resources", "thumbnail_resources"].forEach(function (name) {
+    const at = body.indexOf('"' + name + '"');
+    if (at < 0) return;
+    const br = body.indexOf("[", at);
+    if (br < 0 || br - at > 40) return;
+    const arr = extractBalanced(body, br, "[", "]", false);
+    if (arr) absorb(arr);
+  });
+  candidateBlocks(body).forEach(absorb);
+  return found;
+}
+
+function embeddedImageUrls(text) {
+  const found = [];
+  const re = /<img\b[^>]*>/gi;
   let m;
-  const reVid = /"video_versions"\s*:\s*\[/g;
-  while ((m = reVid.exec(text))) skippedVideo++;
+  while ((m = re.exec(text))) {
+    const tag = m[0];
+    if (!/EmbeddedMediaImage/i.test(tag)) continue;
+    const src = tag.match(/src=["'](https:[^"']+)["']/i);
+    if (src) found.push(src[1]);
+  }
+  return found;
+}
+
+function imagesFromHtml(html) {
+  const raw = String(html || "");
+  const text = decodeEscapedUrl(raw);
+  let skippedVideo = 0;
   const groups = [];
   const keyIndex = {};
+  let authoritative = false;
+  let username = "";
 
   function take(url, width, forceIndex) {
     const added = addUrl(groups, keyIndex, url, width, forceIndex);
@@ -274,33 +458,70 @@ function imagesFromHtml(html) {
     return added.idx;
   }
 
-  const reOg = /property=["']og:image["'][^>]*content=["']([^"']+)["']|content=["']([^"']+)["'][^>]*property=["']og:image["']/gi;
-  while ((m = reOg.exec(text))) take(m[1] || m[2], 0, null);
-  const reNamed = /"(?:display_uri|display_url|thumbnail_src|thumbnail_url)"\s*:\s*"(https:[^"]+)"/g;
-  while ((m = reNamed.exec(text))) take(m[1], 0, null);
-
-  candidateBlocks(text).forEach(function (block) {
-    const found = [];
-    const reUrl = /"url"\s*:\s*"(https:[^"]+)"/g;
-    let um;
-    while ((um = reUrl.exec(block))) {
-      const objStart = block.lastIndexOf("{", um.index);
-      const objEnd = block.indexOf("}", um.index + um[0].length);
-      const around = block.slice(objStart < 0 ? um.index : objStart, objEnd < 0 ? um.index + um[0].length : objEnd);
-      const wm = around.match(/"width"\s*:\s*(\d+)/);
-      found.push({ url: um[1], width: wm ? parseInt(wm[1], 10) : 0 });
-    }
+  function addPhoto(items) {
     let force = null;
-    found.forEach(function (it) {
+    (items || []).forEach(function (it) {
       const idx = take(it.url, it.width, force);
       if (idx != null && force == null) force = idx;
     });
-  });
+  }
 
-  const reSrc = /<img[^>]+src=["'](https:[^"']+)["']/gi;
-  while ((m = reSrc.exec(text))) take(m[1], 0, null);
-  const reAny = /https:\/\/[^"'\\\s<>]+/g;
-  while ((m = reAny.exec(text))) take(m[0], 0, null);
+  function addBlocks(blocks) {
+    blocks.forEach(function (block) {
+      const found = [];
+      const reUrl = /"url"\s*:\s*"(https:[^"]+)"/g;
+      let um;
+      while ((um = reUrl.exec(block))) {
+        const objStart = block.lastIndexOf("{", um.index);
+        const objEnd = block.indexOf("}", um.index);
+        const around = block.slice(objStart < 0 ? um.index : objStart, objEnd < 0 ? um.index + um[0].length : objEnd + 1);
+        const wm = around.match(/"width"\s*:\s*(\d+)/);
+        found.push({ url: um[1], width: wm ? parseInt(wm[1], 10) : widthHint(um[1]) });
+      }
+      addPhoto(found);
+    });
+  }
+
+  const media = findRawMedia(raw);
+  if (media) {
+    authoritative = true;
+    const decodedMedia = decodeEscapedUrl(media.raw);
+    const um = decodedMedia.match(/"owner"\s*:\s*\{[\s\S]{0,800}?"username"\s*:\s*"([A-Za-z0-9._]+)"/);
+    if (um) username = um[1];
+    findRawSlides(media).forEach(function (nodeRaw) {
+      const node = decodeEscapedUrl(nodeRaw);
+      if (nodeIsVideo(node)) {
+        skippedVideo++;
+        return;
+      }
+      addPhoto(sizedUrls(node));
+    });
+    if (!groups.length && !skippedVideo) {
+      embeddedImageUrls(text).forEach(function (url) {
+        take(url, 0, null);
+      });
+    }
+  } else {
+    const blocks = candidateBlocks(text);
+    if (blocks.length) {
+      addBlocks(blocks);
+    } else {
+      const embedded = embeddedImageUrls(text);
+      if (embedded.length) {
+        embedded.forEach(function (url) {
+          take(url, 0, null);
+        });
+      } else {
+        const og = text.match(/property=["']og:image["'][^>]*content=["'](https:[^"']+)["']/i)
+          || text.match(/content=["'](https:[^"']+)["'][^>]*property=["']og:image["']/i);
+        if (og) take(og[1], 0, null);
+        else {
+          const du = text.match(/"(?:display_url|display_uri)"\s*:\s*"(https:[^"]+)"/);
+          if (du) take(du[1], 0, null);
+        }
+      }
+    }
+  }
 
   const images = [];
   const fallbacks = [];
@@ -311,16 +532,18 @@ function imagesFromHtml(html) {
     images.push(ordered[0]);
     fallbacks.push(ordered.slice(1, 4));
   });
-  const loginWall = images.length === 0 && /log in|login|登入|sign up|註冊|accounts\/login/i.test(text);
-  let username = "";
-  const um = text.match(/"username"\s*:\s*"([A-Za-z0-9._]+)"/);
-  if (um) username = um[1];
+  const loginWall = images.length === 0 && !skippedVideo && /log in|login|登入|sign up|註冊|accounts\/login/i.test(text);
+  if (!username) {
+    const um = text.match(/"username"\s*:\s*"([A-Za-z0-9._]+)"/);
+    if (um) username = um[1];
+  }
   return {
     images: images,
     fallbacks: fallbacks,
     skippedVideo: skippedVideo,
     loginWall: loginWall,
-    username: username
+    username: username,
+    authoritative: authoritative
   };
 }
 
@@ -477,6 +700,7 @@ function httpTargets(url) {
 
 function missingReason(info) {
   const item = info || {};
+  if (item.skippedVideo && !(item.images && item.images.length)) return "呢篇係影片，呢版只存相（單相／輪播）。";
   if (item.isReelPath) return "呢頁好似係影片，呢版只存相。";
   if (item.loginWall) return "公開貼文先得。呢條可能係私人、已刪除，或者要登入先睇到。";
   if (item.fetched) return "讀到 IG 回覆，但係入面冇相片網址。請用公開相嘅「複製連結」再試（Reel 唔存）。";
@@ -546,7 +770,7 @@ async function fetchGraphql(shortcode, lsd, csrf) {
 async function extractByRequest(url) {
   const queue = httpTargets(url);
   const seen = {};
-  let best = { images: [], fallbacks: [], skippedVideo: 0, loginWall: false, username: "" };
+  let best = { images: [], fallbacks: [], skippedVideo: 0, loginWall: false, username: "", authoritative: false };
   let fetched = 0;
   let lastError = "";
   let csrf = "";
@@ -589,11 +813,15 @@ async function extractByRequest(url) {
       if (!seen[light]) queue.push(light);
     }
     const parsed = imagesFromHtml(res.body || "");
+    if (parsed.authoritative) {
+      best = parsed;
+      break;
+    }
     if (parsed.images.length > best.images.length) best = parsed;
     if (best.images.length) break;
     if (parsed.loginWall) best.loginWall = true;
   }
-  if (!best.images.length) {
+  if (!best.images.length && !best.authoritative) {
     const code = shortcodeOf(url) || shortcodeOf(queue.join("\n"));
     if (code) {
       for (let attempt = 0; attempt < 2 && !best.images.length; attempt++) {
@@ -756,7 +984,8 @@ async function main() {
   }
 
   if (!extracted.ok || !extracted.images || !extracted.images.length) {
-    await say("存唔到", missingReason(extracted));
+    if (extracted.skippedVideo) await say("略過影片", missingReason(extracted));
+    else await say("存唔到", missingReason(extracted));
     return;
   }
 
@@ -773,15 +1002,11 @@ async function main() {
   }
 
   if (saved > 0) {
-    await say(
-      "已存相 ✓",
-      "已存 " +
-        saved +
-        " 張入相簿" +
-        (extracted.username ? "（@" + extracted.username + "）" : "") +
-        (extracted.skippedVideo ? "\n（略過 " + extracted.skippedVideo + " 段影片）" : "") +
-        (errors.length ? "\n有 " + errors.length + " 張失敗" : "")
-    );
+    let savedText = "已存 " + saved + " 張入相簿";
+    if (extracted.username) savedText += "（@" + extracted.username + "）";
+    if (extracted.skippedVideo) savedText += "\n（呢篇另外有 " + extracted.skippedVideo + " 段影片，冇存）";
+    if (errors.length) savedText += "\n有 " + errors.length + " 張未存到";
+    await say("已存相 ✓", savedText);
   } else {
     const fail = saveFailureMessage(errors);
     await say(fail.title, fail.message);
