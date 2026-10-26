@@ -75,14 +75,14 @@ textarea {
 </head>
 <body>
 <h1>IG存相 — 安裝</h1>
-<p class="sub">版本 1.4。用 Safari 開呢頁。單張相：分享過去就入相簿，唔使再貼連結。</p>
+<p class="sub">版本 1.5。用 Safari 開呢頁。最穩陣係複製連結之後，喺 Scriptable 撳播放。</p>
 
 <div class="warn">
 你之前裝過嘅話，一定要先做呢三樣，否則會仲係舊問題：
 <ol>
 <li>打開「捷徑」App，<strong>刪走舊嘅「IG存相」</strong></li>
 <li>呢頁拉下<strong>刷新</strong></li>
-<li>腳本要見到 <span class="name">1.4.0-ig-photos</span>，再重新下載裝捷徑</li>
+<li>腳本要見到 <span class="name">1.5.0-ig-photos</span>，再重新下載裝捷徑</li>
 </ol>
 </div>
 
@@ -106,14 +106,14 @@ textarea {
 <li>名稱改成正好：<span class="name">IG存相解析</span></li>
 <li>撳 Done 儲存</li>
 </ol>
-<div class="warn">⚠️ 名要一字唔差：<span class="name">IG存相解析</span><br/>中間<strong>唔可以有空格</strong>！<br/>貼上之後，頭幾行要見到 <span class="name">1.4.0-ig-photos</span>。見唔到就刷新再複製一次。</div>
+<div class="warn">⚠️ 名要一字唔差：<span class="name">IG存相解析</span><br/>中間<strong>唔可以有空格</strong>！<br/>貼上之後，頭幾行要見到 <span class="name">1.5.0-ig-photos</span>。見唔到就刷新再複製一次。</div>
 <button type="button" class="copy" id="copyScript">複製腳本</button>
 <p class="note">複製完會顯示「已複製」。下面細框係後備，唔使睇。</p>
 <textarea id="script" readonly>// IG存相解析.js — Scriptable（IG 相／輪播）
-// v1.4：捷徑有相就直接入相簿。呢度只係「有貼文連結」先開。
-// 由捷徑開但冇連結：短提示後停止，唔再彈長「貼上連結」。
+// v1.5：一開始就彈版本，等用家知道腳本有跑。
+// 捷徑 query 冇連結都會再讀剪貼簿，先至短錯誤。
 
-const VERSION = "1.4.0-ig-photos";
+const VERSION = "1.5.0-ig-photos";
 
 function queryBag() {
   try {
@@ -164,7 +164,7 @@ function extractUrl(text) {
   return m ? m[0].replace(/[)\].,，。！？]+$/u, "") : "";
 }
 
-function firstUseful() {
+function firstFromArgs() {
   const q = queryBag();
   const chunks = [];
   const fromQuery = paramText(q);
@@ -188,12 +188,7 @@ function firstUseful() {
     const found = extractUrl(chunks[i]);
     if (found) return found;
   }
-  if (openedFromShortcut(q)) return "";
-  try {
-    return extractUrl(Pasteboard.pasteString() || "");
-  } catch (e) {
-    return "";
-  }
+  return "";
 }
 
 function normalizeUrl(url) {
@@ -333,7 +328,7 @@ const EXTRACT_JS = `
     images,
     skippedVideo,
     title: document.title || '',
-    version: '1.4.0-ig-photos'
+    version: '1.5.0-ig-photos'
   });
 })();
 `;
@@ -421,15 +416,22 @@ async function saveImages(urls) {
 }
 
 async function main() {
+  await say("IG存相 " + VERSION, "腳本已開始。而家讀連結，然後存相。");
   const fromShortcut = openedFromShortcut(queryBag());
-  let url = normalizeUrl(firstUseful() || "");
+  let url = normalizeUrl(firstFromArgs() || "");
+  if (!url) {
+    try {
+      url = normalizeUrl(extractUrl(Pasteboard.pasteString() || ""));
+    } catch (e) {
+      await say("讀唔到剪貼簿", "iPhone 擋住剪貼簿。請先喺 IG 複製連結，再開 Scriptable 撳播放。");
+    }
+  }
   if (!url) {
     if (fromShortcut) {
       await say(
         "冇帶到連結",
-        "捷徑冇傳 IG 連結，已停止。\n" +
-          "單張相：IG 分享 → 揀 IG存相。\n" +
-          "輪播或要更清：喺 IG 撳複製連結，再開捷徑 App 撳一次 IG存相。"
+        "捷徑同剪貼簿都冇 IG 連結。\n" +
+          "請喺 IG 撳「複製連結」，打開 Scriptable，撳「IG存相解析」播放。"
       );
       return;
     }
@@ -521,29 +523,28 @@ Script.complete();
 
 <div class="card">
 <span class="step">第 3 步</span>
-<h2>裝新捷徑「IG存相」</h2>
+<h2>最穩陣方法（唔經捷徑）</h2>
+<div class="use">複製連結 → 打開 Scriptable → 撳播放<span>撳「IG存相解析」上面嘅播放掣。第一句要係「IG存相 1.5.0-ig-photos」。見到相就撳完成。</span></div>
 <ol>
-<li>確認舊嘅「IG存相」已經刪咗</li>
-<li>撳下面掣下載</li>
-<li>用 Safari 下載 → 去「檔案」App 搵到檔</li>
-<li>撳檔 → <strong>加入捷徑</strong></li>
-<li>打開捷徑 → 撳「IG存相」→ ⓘ → 打開<strong>在分享表單中顯示</strong></li>
+<li>喺 IG 撳<strong>「複製連結」</strong></li>
+<li>打開 <strong>Scriptable</strong>（唔好開捷徑）</li>
+<li>撳 <span class="name">IG存相解析</span> 嘅<strong>播放</strong></li>
 </ol>
-<a class="btn" href="IG-save.shortcut">下載捷徑「IG存相」</a>
-<p class="note">第一次問「允許儲存相片」，撳允許。如果問捷徑權限，選「一律允許」。</p>
+<p class="note">輪播同單張都用呢條。會先彈腳本版本，跟住打開 IG 頁存相。</p>
 </div>
 
 <div class="card">
 <span class="step">第 4 步</span>
-<h2>平時點用</h2>
-<div class="use">日常：IG 分享 → 揀「IG存相」<span>單張相直接入相簿。唔使貼連結，捷徑唔會一直轉圈。相未必係最高清。</span></div>
-<h2 style="margin-top:16px;">輪播全部，或者要更清</h2>
+<h2>捷徑「IG存相」（可選）</h2>
 <ol>
-<li>喺 IG 撳<strong>「複製連結」</strong>（呢次唔好撳分享去 IG存相）</li>
-<li>打開「捷徑」App</li>
-<li>撳一次「IG存相」</li>
+<li>確認舊嘅「IG存相」已經刪咗</li>
+<li>撳下面掣下載，用 Safari 去「檔案」App 搵到檔</li>
+<li>撳檔 → <strong>加入捷徑</strong></li>
+<li>撳「IG存相」→ ⓘ → 打開<strong>在分享表單中顯示</strong></li>
 </ol>
-<p class="note">條路會打開 IG 頁。見到相就撳右上角完成，相先存入相簿。唔好留喺分享畫面等佢叫你貼連結。</p>
+<a class="btn" href="IG-save.shortcut">下載捷徑「IG存相」</a>
+<p class="note">單張相：IG 分享 → IG存相，有機會直接入相簿。輪播分享通常冇相亦都冇連結，要先<strong>複製連結</strong>。複製連結後可以喺「捷徑」App 再撳一次「IG存相」，會彈「即將打開 Scriptable」同條連結。如果捷徑閃一下就冇嘢，用第 3 步播放。</p>
+<p class="note">第一次問「允許儲存相片」，撳允許。</p>
 </div>
 
 <div class="card">

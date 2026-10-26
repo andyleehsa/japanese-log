@@ -602,12 +602,16 @@ const igDecoded = igScript[1]
   .replace(/&#39;/g, "'")
   .replace(/&amp;/g, "&");
 assert.strictEqual(igDecoded, igJs);
-assert.strictEqual(igJs.includes('const VERSION = "1.4.0-ig-photos"'), true);
+assert.strictEqual(igJs.includes('const VERSION = "1.5.0-ig-photos"'), true);
+assert.strictEqual(igJs.includes("1.4.0-ig-photos"), false);
 assert.strictEqual(igJs.includes("1.3.0-ig-photos"), false);
 assert.strictEqual(igJs.includes("1.2.0-ig-photos"), false);
 assert.strictEqual(igJs.includes("1.0.0-ig-photos"), false);
 assert.ok(igJs.indexOf("q.url") !== -1 && igJs.indexOf("q.url") < igJs.indexOf("Pasteboard.pasteString"));
 const igMain = igJs.slice(igJs.indexOf("async function main"));
+assert.ok(igMain.indexOf('say("IG存相 " + VERSION') !== -1);
+assert.ok(igMain.indexOf('say("IG存相 " + VERSION') < igMain.indexOf("Pasteboard.pasteString"));
+assert.ok(igMain.indexOf("Pasteboard.pasteString") < igMain.indexOf("if (fromShortcut)"));
 assert.ok(igMain.indexOf("if (fromShortcut)") < igMain.indexOf("url = await askUrl()"));
 assert.strictEqual(igJs.includes("冇帶到連結"), true);
 assert.strictEqual(igJs.includes("請睇 IG 頁"), false);
@@ -621,7 +625,10 @@ assert.strictEqual(igHtml.includes('lang="zh-Hant"'), true);
 assert.strictEqual(igHtml.includes('href="IG-save.shortcut"'), true);
 assert.strictEqual(igHtml.includes("刪走舊嘅「IG存相」"), true);
 assert.strictEqual(igHtml.includes("複製連結"), true);
-assert.strictEqual(igHtml.includes("1.4.0-ig-photos"), true);
+assert.strictEqual(igHtml.includes("最穩陣方法"), true);
+assert.strictEqual(igHtml.includes("撳播放"), true);
+assert.strictEqual(igHtml.includes("1.5.0-ig-photos"), true);
+assert.strictEqual(igHtml.includes("1.4.0-ig-photos"), false);
 const igShortcut = fs.readFileSync(require("path").join(__dirname, "../ig-save/IG-save.shortcut"));
 assert.strictEqual(igShortcut.subarray(0, 4).toString("utf8"), "AEA1");
 require("child_process").execFileSync("python3", [

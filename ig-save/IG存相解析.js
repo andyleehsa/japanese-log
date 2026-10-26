@@ -1,8 +1,8 @@
 // IG存相解析.js — Scriptable（IG 相／輪播）
-// v1.4：捷徑有相就直接入相簿。呢度只係「有貼文連結」先開。
-// 由捷徑開但冇連結：短提示後停止，唔再彈長「貼上連結」。
+// v1.5：一開始就彈版本，等用家知道腳本有跑。
+// 捷徑 query 冇連結都會再讀剪貼簿，先至短錯誤。
 
-const VERSION = "1.4.0-ig-photos";
+const VERSION = "1.5.0-ig-photos";
 
 function queryBag() {
   try {
@@ -53,7 +53,7 @@ function extractUrl(text) {
   return m ? m[0].replace(/[)\].,，。！？]+$/u, "") : "";
 }
 
-function firstUseful() {
+function firstFromArgs() {
   const q = queryBag();
   const chunks = [];
   const fromQuery = paramText(q);
@@ -77,12 +77,7 @@ function firstUseful() {
     const found = extractUrl(chunks[i]);
     if (found) return found;
   }
-  if (openedFromShortcut(q)) return "";
-  try {
-    return extractUrl(Pasteboard.pasteString() || "");
-  } catch (e) {
-    return "";
-  }
+  return "";
 }
 
 function normalizeUrl(url) {
@@ -222,7 +217,7 @@ const EXTRACT_JS = `
     images,
     skippedVideo,
     title: document.title || '',
-    version: '1.4.0-ig-photos'
+    version: '1.5.0-ig-photos'
   });
 })();
 `;
@@ -310,15 +305,22 @@ async function saveImages(urls) {
 }
 
 async function main() {
+  await say("IG存相 " + VERSION, "腳本已開始。而家讀連結，然後存相。");
   const fromShortcut = openedFromShortcut(queryBag());
-  let url = normalizeUrl(firstUseful() || "");
+  let url = normalizeUrl(firstFromArgs() || "");
+  if (!url) {
+    try {
+      url = normalizeUrl(extractUrl(Pasteboard.pasteString() || ""));
+    } catch (e) {
+      await say("讀唔到剪貼簿", "iPhone 擋住剪貼簿。請先喺 IG 複製連結，再開 Scriptable 撳播放。");
+    }
+  }
   if (!url) {
     if (fromShortcut) {
       await say(
         "冇帶到連結",
-        "捷徑冇傳 IG 連結，已停止。\n" +
-          "單張相：IG 分享 → 揀 IG存相。\n" +
-          "輪播或要更清：喺 IG 撳複製連結，再開捷徑 App 撳一次 IG存相。"
+        "捷徑同剪貼簿都冇 IG 連結。\n" +
+          "請喺 IG 撳「複製連結」，打開 Scriptable，撳「IG存相解析」播放。"
       );
       return;
     }
