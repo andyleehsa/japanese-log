@@ -602,7 +602,8 @@ const igDecoded = igScript[1]
   .replace(/&#39;/g, "'")
   .replace(/&amp;/g, "&");
 assert.strictEqual(igDecoded, igJs);
-assert.strictEqual(igJs.includes('const VERSION = "1.9.0-ig-photos"'), true);
+assert.strictEqual(igJs.includes('const VERSION = "1.9.1-ig-photos"'), true);
+assert.strictEqual(igJs.includes("1.9.0-ig-photos"), false);
 assert.strictEqual(igJs.includes("1.8.0-ig-photos"), false);
 assert.strictEqual(igJs.includes("1.7.0-ig-photos"), false);
 assert.strictEqual(igJs.includes("1.6.1-ig-photos"), false);
@@ -646,6 +647,9 @@ assert.strictEqual(igJs.includes("function shortcodeOf"), true);
 assert.strictEqual(igJs.includes("唔會打開 IG App"), true);
 assert.strictEqual(igJs.includes('req.timeoutInterval = 60'), true);
 assert.strictEqual(igJs.includes("function attemptSequence"), true);
+assert.strictEqual(igJs.includes("Photos.fromData"), false);
+assert.strictEqual(igJs.includes("Image.fromData(data)"), true);
+assert.strictEqual(igJs.includes("Photos.save(image)"), true);
 assert.strictEqual(igJs.includes("搵到相但存唔入。請去 iPhone 設定"), false);
 assert.strictEqual(igJs.includes("Script.complete();"), true);
 {
@@ -722,6 +726,19 @@ assert.strictEqual(igJs.includes("Script.complete();"), true);
   const photoMsg = sandbox.saveFailureMessage(["PHPhotosErrorDomain not authorized"]);
   assert.strictEqual(photoMsg.title, "存唔入相簿");
   assert.ok(photoMsg.message.indexOf("所有相片") !== -1);
+  const apiMsg = sandbox.saveFailureMessage([
+    "Photos.fromData is not a function. (In 'Photos.fromData(data)', 'Photos.fromData' is undefined)"
+  ]);
+  assert.strictEqual(apiMsg.title, "存相出錯");
+  assert.ok(apiMsg.message.indexOf("唔係 IG 拒絕") !== -1);
+  assert.strictEqual(apiMsg.message.indexOf("拒絕咗圖片"), -1);
+  assert.strictEqual(apiMsg.message.indexOf("所有相片"), -1);
+  assert.strictEqual(apiMsg.message.indexOf("轉 Wi"), -1);
+  const badImg = sandbox.saveFailureMessage(["not_image"]);
+  assert.strictEqual(badImg.title, "下載失敗");
+  assert.ok(badImg.message.indexOf("讀唔成圖片") !== -1);
+  assert.strictEqual(badImg.message.indexOf("所有相片"), -1);
+  assert.strictEqual(badImg.message.indexOf("存相出錯"), -1);
 }
 assert.strictEqual(igJs.includes("IG存相 解析"), false);
 assert.strictEqual(igHtml.includes(">IG存相解析<"), true);
@@ -732,7 +749,8 @@ assert.strictEqual(igHtml.includes("刪走舊嘅「IG存相」"), true);
 assert.strictEqual(igHtml.includes("複製連結"), true);
 assert.strictEqual(igHtml.includes("最穩陣方法"), true);
 assert.strictEqual(igHtml.includes("撳播放"), true);
-assert.strictEqual(igHtml.includes("1.9.0-ig-photos"), true);
+assert.strictEqual(igHtml.includes("1.9.1-ig-photos"), true);
+assert.strictEqual(igHtml.includes("1.9.0-ig-photos"), false);
 assert.strictEqual(igHtml.includes("1.8.0-ig-photos"), false);
 assert.strictEqual(igHtml.includes("1.7.0-ig-photos"), false);
 assert.strictEqual(igHtml.includes("1.6.1-ig-photos"), false);
