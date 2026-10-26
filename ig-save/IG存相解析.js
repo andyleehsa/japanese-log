@@ -1,8 +1,9 @@
 // IG存相解析.js — Scriptable（IG 相／輪播）
 // v1.6：唔好用 WebView 直接開 instagram.com，否則 iOS 會跳去 IG App 然後停死。
 // 先用 Request 讀 HTML。一定要開頁先至加 #weblink（IG 自己排除咗呢個 fragment 嘅 Universal Link）。
+// v1.6.1：CDN 圖加 Referer／User-Agent、優先較穩尺寸、超時再試。download_timeout 唔好再叫人改相簿權限。
 
-const VERSION = "1.6.0-ig-photos";
+const VERSION = "1.6.1-ig-photos";
 
 function queryBag() {
   try {
@@ -217,7 +218,7 @@ const EXTRACT_JS = `
     images,
     skippedVideo,
     title: document.title || '',
-    version: '1.6.0-ig-photos'
+    version: '1.6.1-ig-photos'
   });
 })();
 `;
@@ -226,46 +227,246 @@ function decodeEscapedUrl(value) {
   let t = String(value || "");
   t = t.replace(/\\u0026/gi, "&").replace(/\\u002F/gi, "/").replace(/\\\//g, "/");
   t = t.replace(/&amp;/g, "&").replace(/\\"/g, '"');
+  t = t.replace(/\\u([0-9a-fA-F]{4})/g, function (_, h) {
+    return String.fromCharCode(parseInt(h, 16));
+  });
   return t.trim();
+}
+
+function widthHint(url) {
+  const m = String(url || "").match(/s(\d{3,4})x\d{3,4}/i);
+  return m ? parseInt(m[1], 10) : 0;
+}
+
+function widthRank(width) {
+  const w = width || 0;
+  if (w >= 720 && w <= 1280) return Math.abs(w - 1080);
+  if (w > 1280 && w <= 1440) return 200 + (w - 1280);
+  if (w >= 480 && w < 720) return 400 + (720 - w);
+  if (w > 1440) return 2000 + w;
+  if (w > 0) return 800 + Math.abs(480 - w);
+  return 1000;
+}
+
+function keepImageUrl(u) {
+  if (!u || u.indexOf("data:") === 0) return false;
+  if (/\.(mp4|m3u8)(\?|$)/i.test(u)) return false;
+  if (/rsrc\.php|static\.cdninstagram|profile_pic|emoji/i.test(u)) return false;
+  if (!/cdninstagram|fbcdn|scontent/i.test(u)) return false;
+  return true;
+}
+
+function orderGroup(items) {
+  const ranked = items.map(function (it) {
+    const width = it.width || widthHint(it.url);
+    return { url: it.url, width: width, rank: widthRank(width) };
+  });
+  ranked.sort(function (a, b) {
+    return a.rank - b.rank || b.width - a.width;
+  });
+  const urls = [];
+  const seen = {};
+  ranked.forEach(function (it) {
+    if (seen[it.url]) return;
+    seen[it.url] = true;
+    urls.push(it.url);
+  });
+  return urls;
+}
+
+function addUrl(groups, keyIndex, url, width, forceIndex) {
+  const u = decodeEscapedUrl(url);
+  if (/\.(mp4|m3u8)(\?|$)/i.test(u)) return { idx: null, video: true };
+  if (!keepImageUrl(u)) return { idx: null, video: false };
+  const key = u.split("?")[0];
+  let idx = Object.prototype.hasOwnProperty.call(keyIndex, key) ? keyIndex[key] : null;
+  if (idx == null) idx = forceIndex;
+  if (idx == null || !groups[idx]) {
+    idx = groups.length;
+    groups.push([]);
+  }
+  if (!Object.prototype.hasOwnProperty.call(keyIndex, key)) keyIndex[key] = idx;
+  const list = groups[idx];
+  for (let i = 0; i < list.length; i++) {
+    if (list[i].url === u) {
+      if (width && !list[i].width) list[i].width = width;
+      return { idx: idx, video: false };
+    }
+  }
+  list.push({ url: u, width: width || widthHint(u) || 0 });
+  return { idx: idx, video: false };
+}
+
+function candidateBlocks(text) {
+  const blocks = [];
+  const re = /"candidates"\s*:\s*\[/g;
+  let m;
+  while ((m = re.exec(text))) {
+    const pre = text.slice(Math.max(0, m.index - 80), m.index);
+    if (pre.indexOf("image_versions2") < 0) continue;
+    let i = m.index + m[0].length;
+    let depth = 1;
+    const start = i;
+    while (i < text.length && depth > 0 && i - start < 20000) {
+      const c = text.charAt(i);
+      if (c === "[") depth++;
+      else if (c === "]") depth--;
+      i++;
+    }
+    blocks.push(text.slice(start, i - 1));
+  }
+  return blocks;
 }
 
 function imagesFromHtml(html) {
   const text = decodeEscapedUrl(html);
-  const found = [];
   let skippedVideo = 0;
   let m;
   const reVid = /"video_versions"\s*:\s*\[/g;
   while ((m = reVid.exec(text))) skippedVideo++;
-  const reOg = /property=["']og:image["'][^>]*content=["']([^"']+)["']|content=["']([^"']+)["'][^>]*property=["']og:image["']/gi;
-  while ((m = reOg.exec(text))) found.push(m[1] || m[2]);
-  const reNamed = /"(?:display_uri|display_url|thumbnail_src|thumbnail_url)"\s*:\s*"(https:[^"]+)"/g;
-  while ((m = reNamed.exec(text))) found.push(m[1]);
-  const reImg = /"image_versions2"\s*:\s*\{\s*"candidates"\s*:\s*\[\s*\{[\s\S]*?"url"\s*:\s*"(https:[^"]+)"/g;
-  while ((m = reImg.exec(text))) found.push(m[1]);
-  const reSrc = /<img[^>]+src=["'](https:[^"']+)["']/gi;
-  while ((m = reSrc.exec(text))) found.push(m[1]);
-  const seen = {};
-  const images = [];
-  for (let i = 0; i < found.length; i++) {
-    const u = decodeEscapedUrl(found[i]);
-    if (!u || u.indexOf("data:") === 0) continue;
-    if (/\.(mp4|m3u8)(\?|$)/i.test(u)) {
-      skippedVideo++;
-      continue;
-    }
-    if (/rsrc\.php|static\.cdninstagram|profile_pic|emoji/i.test(u)) continue;
-    if (!/cdninstagram|fbcdn|scontent/i.test(u)) continue;
-    const key = u.split("?")[0];
-    if (seen[key]) continue;
-    seen[key] = true;
-    images.push(u);
-    if (images.length >= 20) break;
+  const groups = [];
+  const keyIndex = {};
+
+  function take(url, width, forceIndex) {
+    const added = addUrl(groups, keyIndex, url, width, forceIndex);
+    if (added.video) skippedVideo++;
+    return added.idx;
   }
+
+  const reOg = /property=["']og:image["'][^>]*content=["']([^"']+)["']|content=["']([^"']+)["'][^>]*property=["']og:image["']/gi;
+  while ((m = reOg.exec(text))) take(m[1] || m[2], 0, null);
+  const reNamed = /"(?:display_uri|display_url|thumbnail_src|thumbnail_url)"\s*:\s*"(https:[^"]+)"/g;
+  while ((m = reNamed.exec(text))) take(m[1], 0, null);
+
+  candidateBlocks(text).forEach(function (block) {
+    const found = [];
+    const reUrl = /"url"\s*:\s*"(https:[^"]+)"/g;
+    let um;
+    while ((um = reUrl.exec(block))) {
+      const objStart = block.lastIndexOf("{", um.index);
+      const objEnd = block.indexOf("}", um.index + um[0].length);
+      const around = block.slice(objStart < 0 ? um.index : objStart, objEnd < 0 ? um.index + um[0].length : objEnd);
+      const wm = around.match(/"width"\s*:\s*(\d+)/);
+      found.push({ url: um[1], width: wm ? parseInt(wm[1], 10) : 0 });
+    }
+    let force = null;
+    found.forEach(function (it) {
+      const idx = take(it.url, it.width, force);
+      if (idx != null && force == null) force = idx;
+    });
+  });
+
+  const reSrc = /<img[^>]+src=["'](https:[^"']+)["']/gi;
+  while ((m = reSrc.exec(text))) take(m[1], 0, null);
+
+  const images = [];
+  const fallbacks = [];
+  groups.forEach(function (items) {
+    if (!items || !items.length || images.length >= 20) return;
+    const ordered = orderGroup(items);
+    if (!ordered.length) return;
+    images.push(ordered[0]);
+    fallbacks.push(ordered.slice(1, 4));
+  });
   const loginWall = images.length === 0 && /log in|login|登入|sign up|註冊|accounts\/login/i.test(text);
   let username = "";
   const um = text.match(/"username"\s*:\s*"([A-Za-z0-9._]+)"/);
   if (um) username = um[1];
-  return { images: images, skippedVideo: skippedVideo, loginWall: loginWall, username: username };
+  return {
+    images: images,
+    fallbacks: fallbacks,
+    skippedVideo: skippedVideo,
+    loginWall: loginWall,
+    username: username
+  };
+}
+
+function withStp(url, stp) {
+  if (/[?&]stp=/.test(url)) return url.replace(/([?&]stp=)[^&]*/, "$1" + stp);
+  if (url.indexOf("?") >= 0) return url + "&stp=" + stp;
+  return url + "?stp=" + stp;
+}
+
+function downloadPlan(url, extras) {
+  const ordered = [];
+  function push(raw) {
+    const u = decodeEscapedUrl(raw);
+    if (!keepImageUrl(u) || ordered.indexOf(u) >= 0) return;
+    ordered.push(u);
+  }
+  push(url);
+  const extraList = extras || [];
+  for (let i = 0; i < extraList.length; i++) push(extraList[i]);
+  const seeds = ordered.slice();
+  for (let i = 0; i < seeds.length; i++) {
+    push(withStp(seeds[i], "dst-jpg_e35_s1080x1080_tt6"));
+    push(withStp(seeds[i], "dst-jpg_e35_s640x640_tt6"));
+  }
+  return ordered.slice(0, 4);
+}
+
+function attemptSequence(plan) {
+  const seq = [];
+  if (!plan || !plan.length) return seq;
+  seq.push(plan[0]);
+  seq.push(plan[0]);
+  if (plan.length > 1) seq.push(plan[1]);
+  else seq.push(plan[0]);
+  return seq;
+}
+
+function imageHeaders() {
+  return {
+    "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 17_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.6 Mobile/15E148 Safari/604.1",
+    "Accept": "image/jpeg,image/png,image/webp,image/*;q=0.8,*/*;q=0.5",
+    "Accept-Language": "zh-HK,zh;q=0.9,en;q=0.8",
+    "Referer": "https://www.instagram.com/"
+  };
+}
+
+function saveFailureMessage(errors) {
+  const list = (errors || []).map(function (e) {
+    return String(e || "");
+  });
+  const download = list.some(function (e) {
+    return /download_timeout|timeout|timed out|empty|NSURLError|network|offline|could not connect|lost connection|socket/i.test(e);
+  });
+  const photo = list.some(function (e) {
+    return /PHPhoto|not authorized|authorization status|permission denied|權限/i.test(e);
+  });
+  const detail = list[0] || "";
+  if (download && !photo) {
+    return {
+      title: "下載失敗",
+      message:
+        "搵到相，但係圖片下載超時或者網絡失敗，張相未存到。\n" +
+        "請轉 Wi‑Fi，再撳播放試一次。\n" +
+        detail
+    };
+  }
+  if (download && photo) {
+    return {
+      title: "未存完",
+      message:
+        "有圖片下載超時，亦有相存唔入相簿。\n" +
+        "超時：轉 Wi‑Fi 再撳播放。\n" +
+        "存唔入相簿：去 iPhone 設定 → Scriptable → 相片，改成「所有相片」。\n" +
+        detail
+    };
+  }
+  if (photo) {
+    return {
+      title: "存唔入相簿",
+      message:
+        "相下載到，但係存唔入相簿。\n" +
+        "請去 iPhone 設定 → Scriptable → 相片，改成「所有相片」。\n" +
+        detail
+    };
+  }
+  return {
+    title: "下載失敗",
+    message: "搵到相但未存到。請轉 Wi‑Fi 再撳播放試一次。\n" + detail
+  };
 }
 
 function stayInScriptableUrl(url) {
@@ -313,6 +514,7 @@ async function extractByRequest(url) {
     skippedVideo: best.skippedVideo,
     loginWall: best.loginWall,
     username: best.username,
+    fallbacks: best.fallbacks || [],
     url: url,
     via: "request"
   };
@@ -325,7 +527,7 @@ async function extractWithWebView(url) {
   }
   await say(
     "而家喺 Scriptable 開頁",
-    "呢頁留喺 Scriptable，唔係 IG App。\n見到相之後撳右上角「完成」。\n如果電話跳去 IG App，請即刻返嚟，然後刷新安裝頁再複製腳本（要見到 1.6.0-ig-photos）。"
+    "呢頁留喺 Scriptable，唔係 IG App。\n見到相之後撳右上角「完成」。\n如果電話跳去 IG App，請即刻返嚟，然後刷新安裝頁再複製腳本（要見到 1.6.1-ig-photos）。"
   );
   const wv = new WebView();
   let loadState = "ok";
@@ -381,22 +583,56 @@ async function extractPhotos(url) {
   return viaPage || viaHttp;
 }
 
-async function saveImages(urls) {
+function sleepSeconds(seconds) {
+  return new Promise(function (resolve) {
+    const timer = new Timer();
+    timer.timeInterval = seconds;
+    timer.schedule(function () {
+      try { timer.invalidate(); } catch (e) {}
+      resolve();
+    });
+  });
+}
+
+async function loadImageOnce(url) {
+  const req = new Request(url);
+  req.timeoutInterval = 60;
+  req.headers = imageHeaders();
+  const data = await withTimeout(req.load(), 60, "download_timeout");
+  if (!data || data.byteLength < 200) throw new Error("empty");
+  return data;
+}
+
+async function saveImages(urls, fallbacks) {
   let saved = 0;
   const errors = [];
-  for (let i = 0; i < urls.length; i++) {
-    try {
-      const req = new Request(urls[i]);
-      req.timeoutInterval = 45;
-      const data = await withTimeout(req.load(), 45, "download_timeout");
-      if (!data || data.byteLength < 200) {
-        errors.push("empty_" + (i + 1));
-        continue;
+  const list = urls || [];
+  const alts = fallbacks || [];
+  for (let i = 0; i < list.length; i++) {
+    const seq = attemptSequence(downloadPlan(list[i], alts[i]));
+    let data = null;
+    let lastError = "download_timeout";
+    for (let t = 0; t < seq.length; t++) {
+      try {
+        data = await loadImageOnce(seq[t]);
+        lastError = "";
+        break;
+      } catch (e) {
+        lastError = String(e && e.message ? e.message : e);
+        if (t < seq.length - 1) {
+          try { await sleepSeconds(1.2); } catch (err) {}
+        }
       }
+    }
+    if (!data) {
+      errors.push(lastError || "download_timeout");
+      continue;
+    }
+    try {
       await Photos.fromData(data);
       saved++;
     } catch (e) {
-      errors.push(String(e).slice(0, 100));
+      errors.push(String(e && e.message ? e.message : e).slice(0, 180));
     }
   }
   return { saved, errors };
@@ -455,7 +691,7 @@ async function main() {
   if (!extracted.ok || !extracted.images || !extracted.images.length) {
     const msg =
       extracted.error == "blocked_app_link"
-        ? "為咗唔好跳去 IG App，已停止開頁。請刷新安裝頁，確認腳本係 1.6.0-ig-photos。"
+        ? "為咗唔好跳去 IG App，已停止開頁。請刷新安裝頁，確認腳本係 1.6.1-ig-photos。"
         : extracted.error == "present_failed"
           ? "開唔到頁，已留喺 Scriptable。請再撳播放試一次。"
           : extracted.error == "load_failed" || extracted.error == "load_timeout"
@@ -472,11 +708,12 @@ async function main() {
   let saved = 0;
   let errors = [];
   try {
-    const r = await saveImages(extracted.images);
+    const r = await saveImages(extracted.images, extracted.fallbacks);
     saved = r.saved;
     errors = r.errors;
   } catch (e) {
-    await say("存相出錯", String(e) + "\n（請喺設定允許 Scriptable 存取相片）");
+    const fail = saveFailureMessage([String(e && e.message ? e.message : e)]);
+    await say(fail.title, fail.message);
     return;
   }
 
@@ -491,11 +728,8 @@ async function main() {
         (errors.length ? "\n有 " + errors.length + " 張失敗" : "")
     );
   } else {
-    await say(
-      "下載失敗",
-      "搵到相但存唔入。請去 iPhone 設定 → Scriptable → 相片，改成「所有相片」。\n" +
-        (errors[0] || "")
-    );
+    const fail = saveFailureMessage(errors);
+    await say(fail.title, fail.message);
   }
 }
 
