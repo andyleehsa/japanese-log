@@ -75,14 +75,14 @@ textarea {
 </head>
 <body>
 <h1>IG存相 — 安裝</h1>
-<p class="sub">版本 1.9。用 Safari 開呢頁。最穩陣係複製連結之後，喺 Scriptable 撳播放。只會用網絡讀相，唔會打開 IG App。讀頁而家會真正等，唔會秒彈超時。</p>
+<p class="sub">版本 1.9.1。用 Safari 開呢頁。最穩陣係複製連結之後，喺 Scriptable 撳播放。只會用網絡讀相，唔會打開 IG App。讀頁會真正等，唔會秒彈超時。存相簿用官方寫法。</p>
 
 <div class="warn">
 你之前裝過嘅話，一定要先做呢三樣，否則會仲係舊問題：
 <ol>
 <li>打開「捷徑」App，<strong>刪走舊嘅「IG存相」</strong></li>
 <li>呢頁拉下<strong>刷新</strong></li>
-<li>腳本要見到 <span class="name">1.9.0-ig-photos</span>，再重新下載裝捷徑</li>
+<li>腳本要見到 <span class="name">1.9.1-ig-photos</span>，再重新下載裝捷徑</li>
 </ol>
 </div>
 
@@ -106,14 +106,16 @@ textarea {
 <li>名稱改成正好：<span class="name">IG存相解析</span></li>
 <li>撳 Done 儲存</li>
 </ol>
-<div class="warn">⚠️ 名要一字唔差：<span class="name">IG存相解析</span><br/>中間<strong>唔可以有空格</strong>！<br/>貼上之後，頭幾行要見到 <span class="name">1.9.0-ig-photos</span>。見唔到就刷新再複製一次。</div>
+<div class="warn">⚠️ 名要一字唔差：<span class="name">IG存相解析</span><br/>中間<strong>唔可以有空格</strong>！<br/>貼上之後，頭幾行要見到 <span class="name">1.9.1-ig-photos</span>。見唔到就刷新再複製一次。</div>
 <button type="button" class="copy" id="copyScript">複製腳本</button>
 <p class="note">複製完會顯示「已複製」。下面細框係後備，唔使睇。</p>
 <textarea id="script" readonly>// IG存相解析.js — Scriptable（IG 相／輪播）
 // v1.9：Timer.timeInterval 係毫秒。之前把 60 當秒，實際 60 毫秒就超時。
 // Request.timeoutInterval 仍然係秒，唔好乘 1000。讀頁仍然等 60 秒，失敗再試。
+// v1.9.1：存相簿用 Image.fromData，再 Photos.save。
+// https://docs.scriptable.app/image/  https://docs.scriptable.app/photos/
 
-const VERSION = "1.9.0-ig-photos";
+const VERSION = "1.9.1-ig-photos";
 const FETCH_SECONDS = 60;
 
 // Scriptable Timer.timeInterval is milliseconds.
@@ -484,13 +486,37 @@ function saveFailureMessage(errors) {
     return /download_timeout|timeout|timed out|empty|NSURLError|network|offline|could not connect|lost connection|socket/i.test(e);
   });
   const refused = list.some(function (e) {
-    return /HTTP 40[0-9]|HTTP 5[0-9]|forbidden|not_image/i.test(e);
+    return /HTTP 40[0-9]|HTTP 5[0-9]|forbidden/i.test(e);
+  });
+  const badImage = list.some(function (e) {
+    return /not_image/i.test(e);
   });
   const photo = list.some(function (e) {
     return /PHPhoto|not authorized|authorization status|permission denied|權限/i.test(e);
   });
+  const api = list.some(function (e) {
+    return /is not a function|is undefined|TypeError|ReferenceError|not defined|Can't find variable/i.test(e);
+  });
   const detail = list[0] || "";
-  if (refused &amp;&amp; !photo) {
+  if (api &amp;&amp; !photo) {
+    return {
+      title: "存相出錯",
+      message:
+        "相已經下載到，但係存入相簿嗰步程式出錯。呢個唔係 IG 拒絕圖片，亦唔係網絡超時。\n" +
+        "請刷新安裝頁，重新複製最新腳本再試。\n" +
+        detail
+    };
+  }
+  if (badImage &amp;&amp; !photo &amp;&amp; !api) {
+    return {
+      title: "下載失敗",
+      message:
+        "下載到嘅內容讀唔成圖片，可能 IG 冇畀到真正嘅相。\n" +
+        "請返 IG 重新撳「複製連結」，再喺 Scriptable 撳播放。\n" +
+        detail
+    };
+  }
+  if (refused &amp;&amp; !photo &amp;&amp; !api) {
     return {
       title: "下載失敗",
       message:
@@ -748,6 +774,13 @@ async function loadImageOnce(url) {
   return data;
 }
 
+async function saveDownloadedImage(data) {
+  // Photos 冇 fromData。官方係 Image.fromData(data) 再 Photos.save(image)。
+  const image = Image.fromData(data);
+  if (!image) throw new Error("not_image");
+  await Photos.save(image);
+}
+
 async function saveImages(urls, fallbacks) {
   let saved = 0;
   const errors = [];
@@ -774,7 +807,7 @@ async function saveImages(urls, fallbacks) {
       continue;
     }
     try {
-      await Photos.fromData(data);
+      await saveDownloadedImage(data);
       saved++;
     } catch (e) {
       errors.push(String(e &amp;&amp; e.message ? e.message : e).slice(0, 180));
@@ -882,13 +915,13 @@ Script.complete();
 <div class="card">
 <span class="step">第 3 步</span>
 <h2>最穩陣方法（唔經捷徑）</h2>
-<div class="use">複製連結 → 打開 Scriptable → 撳播放<span>撳「IG存相解析」上面嘅播放掣。第一句要係「IG存相 1.9.0-ig-photos」。全程留喺 Scriptable，唔會打開 IG App。</span></div>
+<div class="use">複製連結 → 打開 Scriptable → 撳播放<span>撳「IG存相解析」上面嘅播放掣。第一句要係「IG存相 1.9.1-ig-photos」。全程留喺 Scriptable，唔會打開 IG App。</span></div>
 <ol>
 <li>喺 IG 撳<strong>「複製連結」</strong></li>
 <li>打開 <strong>Scriptable</strong>（唔好開捷徑）</li>
 <li>撳 <span class="name">IG存相解析</span> 嘅<strong>播放</strong></li>
 </ol>
-<p class="note">輪播同單張都用呢條。第一句係版本。跟住要嘛「已存相」，要嘛 Scriptable 入面彈「存唔到」或「下載失敗」。唔會彈出 IG App。如果幾秒內就彈「連線超時」，即係腳本未係 1.9，刷新再複製。1.9 會真正等一陣先至話超時。只有「存唔入相簿」先至去設定改相片。</p>
+<p class="note">輪播同單張都用呢條。第一句係版本。跟住要嘛「已存相」，要嘛 Scriptable 入面彈「存唔到」或「下載失敗」。唔會彈出 IG App。如果幾秒內就彈「連線超時」，即係腳本太舊，刷新再複製，要見到 1.9.1-ig-photos。只有「存唔入相簿」先至去設定改相片。如果話「存相出錯」，再複製一次最新腳本。</p>
 </div>
 
 <div class="card">

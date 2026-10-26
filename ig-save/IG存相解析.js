@@ -1,8 +1,10 @@
 // IG存相解析.js — Scriptable（IG 相／輪播）
 // v1.9：Timer.timeInterval 係毫秒。之前把 60 當秒，實際 60 毫秒就超時。
 // Request.timeoutInterval 仍然係秒，唔好乘 1000。讀頁仍然等 60 秒，失敗再試。
+// v1.9.1：存相簿用 Image.fromData，再 Photos.save。
+// https://docs.scriptable.app/image/  https://docs.scriptable.app/photos/
 
-const VERSION = "1.9.0-ig-photos";
+const VERSION = "1.9.1-ig-photos";
 const FETCH_SECONDS = 60;
 
 // Scriptable Timer.timeInterval is milliseconds.
@@ -373,13 +375,37 @@ function saveFailureMessage(errors) {
     return /download_timeout|timeout|timed out|empty|NSURLError|network|offline|could not connect|lost connection|socket/i.test(e);
   });
   const refused = list.some(function (e) {
-    return /HTTP 40[0-9]|HTTP 5[0-9]|forbidden|not_image/i.test(e);
+    return /HTTP 40[0-9]|HTTP 5[0-9]|forbidden/i.test(e);
+  });
+  const badImage = list.some(function (e) {
+    return /not_image/i.test(e);
   });
   const photo = list.some(function (e) {
     return /PHPhoto|not authorized|authorization status|permission denied|權限/i.test(e);
   });
+  const api = list.some(function (e) {
+    return /is not a function|is undefined|TypeError|ReferenceError|not defined|Can't find variable/i.test(e);
+  });
   const detail = list[0] || "";
-  if (refused && !photo) {
+  if (api && !photo) {
+    return {
+      title: "存相出錯",
+      message:
+        "相已經下載到，但係存入相簿嗰步程式出錯。呢個唔係 IG 拒絕圖片，亦唔係網絡超時。\n" +
+        "請刷新安裝頁，重新複製最新腳本再試。\n" +
+        detail
+    };
+  }
+  if (badImage && !photo && !api) {
+    return {
+      title: "下載失敗",
+      message:
+        "下載到嘅內容讀唔成圖片，可能 IG 冇畀到真正嘅相。\n" +
+        "請返 IG 重新撳「複製連結」，再喺 Scriptable 撳播放。\n" +
+        detail
+    };
+  }
+  if (refused && !photo && !api) {
     return {
       title: "下載失敗",
       message:
@@ -637,6 +663,13 @@ async function loadImageOnce(url) {
   return data;
 }
 
+async function saveDownloadedImage(data) {
+  // Photos 冇 fromData。官方係 Image.fromData(data) 再 Photos.save(image)。
+  const image = Image.fromData(data);
+  if (!image) throw new Error("not_image");
+  await Photos.save(image);
+}
+
 async function saveImages(urls, fallbacks) {
   let saved = 0;
   const errors = [];
@@ -663,7 +696,7 @@ async function saveImages(urls, fallbacks) {
       continue;
     }
     try {
-      await Photos.fromData(data);
+      await saveDownloadedImage(data);
       saved++;
     } catch (e) {
       errors.push(String(e && e.message ? e.message : e).slice(0, 180));
