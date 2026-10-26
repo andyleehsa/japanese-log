@@ -33,7 +33,12 @@ li { margin: 8px 0; font-size: 1.05rem; }
   background: #fff6e5; border: 1px solid #f0c36d; color: #6b4a00;
   border-radius: 12px; padding: 12px 14px; margin: 12px 0; font-size: 1rem; font-weight: 600;
 }
-.ok { color: #0a7; font-weight: 700; }
+.use {
+  background: #111; color: #fff; border-radius: 14px;
+  padding: 18px 16px; margin: 12px 0 0;
+  font-size: 1.25rem; font-weight: 700; line-height: 1.35;
+}
+.use span { display: block; font-size: .95rem; font-weight: 500; color: #ddd; margin-top: 6px; }
 button, a.btn {
   display: block; width: 100%; text-align: center;
   padding: 18px 16px; margin: 12px 0 0;
@@ -70,7 +75,16 @@ textarea {
 </head>
 <body>
 <h1>IG存相 — 安裝</h1>
-<p class="sub">用 Safari 開呢頁。跟四步就得。唔使 Google Docs。</p>
+<p class="sub">版本 1.4。用 Safari 開呢頁。單張相：分享過去就入相簿，唔使再貼連結。</p>
+
+<div class="warn">
+你之前裝過嘅話，一定要先做呢三樣，否則會仲係舊問題：
+<ol>
+<li>打開「捷徑」App，<strong>刪走舊嘅「IG存相」</strong></li>
+<li>呢頁拉下<strong>刷新</strong></li>
+<li>腳本要見到 <span class="name">1.4.0-ig-photos</span>，再重新下載裝捷徑</li>
+</ol>
+</div>
 
 <div class="card">
 <span class="step">第 1 步</span>
@@ -86,50 +100,100 @@ textarea {
 <span class="step">第 2 步</span>
 <h2>複製腳本入 Scriptable</h2>
 <ol>
-<li>撳大掣<strong>「複製腳本」</strong></li>
+<li>撳綠色大掣<strong>「複製腳本」</strong></li>
 <li>打開 Scriptable → 右上 <strong>＋</strong></li>
 <li>長按空白位 → <strong>貼上</strong></li>
 <li>名稱改成正好：<span class="name">IG存相解析</span></li>
 <li>撳 Done 儲存</li>
 </ol>
-<div class="warn">⚠️ 名要一字唔差：<span class="name">IG存相解析</span><br/>中間<strong>唔可以有空格</strong>！</div>
+<div class="warn">⚠️ 名要一字唔差：<span class="name">IG存相解析</span><br/>中間<strong>唔可以有空格</strong>！<br/>貼上之後，頭幾行要見到 <span class="name">1.4.0-ig-photos</span>。見唔到就刷新再複製一次。</div>
 <button type="button" class="copy" id="copyScript">複製腳本</button>
 <p class="note">複製完會顯示「已複製」。下面細框係後備，唔使睇。</p>
 <textarea id="script" readonly>// IG存相解析.js — Scriptable（IG 相／輪播）
-// v1.3：開 IG 有超時；先彈提示再開頁；避免捷徑一直轉圈。
+// v1.4：捷徑有相就直接入相簿。呢度只係「有貼文連結」先開。
+// 由捷徑開但冇連結：短提示後停止，唔再彈長「貼上連結」。
 
-const VERSION = "1.3.0-ig-photos";
+const VERSION = "1.4.0-ig-photos";
 
-function firstArg() {
-  if (args.urls &amp;&amp; args.urls.length) return String(args.urls[0]);
-  if (args.plainTexts &amp;&amp; args.plainTexts.length) return String(args.plainTexts[0]);
-  if (args.shortcutParameter != null) return String(args.shortcutParameter);
+function queryBag() {
   try {
-    if (args.queryParameters) {
-      const q = args.queryParameters;
-      if (q.url) return String(q.url);
-      if (q.text) return String(q.text);
-      if (q.input) return String(q.input);
+    return args.queryParameters || null;
+  } catch (e) {
+    return null;
+  }
+}
+
+function paramText(q) {
+  if (!q) return "";
+  const keys = ["url", "text", "input", "link"];
+  for (let i = 0; i &lt; keys.length; i++) {
+    const v = q[keys[i]];
+    if (v != null &amp;&amp; String(v).trim()) return String(v);
+  }
+  return "";
+}
+
+function openedFromShortcut(q) {
+  if (q &amp;&amp; (q.scriptName || q.url || q.text || q.input || q.link)) return true;
+  try {
+    if (args.urls &amp;&amp; args.urls.length &amp;&amp; String(args.urls[0]).indexOf("scriptable:") === 0) {
+      return true;
     }
   } catch (e) {}
-  try {
-    const pb = Pasteboard.pasteString();
-    return pb ? String(pb) : "";
-  } catch (e) {
-    return "";
-  }
+  return false;
 }
 
 function extractUrl(text) {
   if (!text) return "";
-  let t = String(text);
-  if (/instagram\.com|instagr\.am/i.test(t) &amp;&amp; !/^https?:/i.test(t.trim())) {
-    t = "https://" + t.trim().replace(/^\/\//, "");
+  let t = String(text).trim();
+  for (let i = 0; i &lt; 2; i++) {
+    try {
+      const decoded = decodeURIComponent(t);
+      if (decoded === t) break;
+      t = decoded;
+    } catch (e) {
+      break;
+    }
+  }
+  if (/instagram\.com|instagr\.am/i.test(t) &amp;&amp; !/^https?:/i.test(t)) {
+    t = "https://" + t.replace(/^\/\//, "");
   }
   const m = t.match(
-    /https?:\/\/(?:www\.)?(?:instagram\.com|instagr\.am)\/[^\s&lt;&gt;"'\u3000]+/i
+    /https?:\/\/(?:[a-z0-9-]+\.)*(?:instagram\.com|instagr\.am)\/[^\s&lt;&gt;"'\u3000]+/i
   );
   return m ? m[0].replace(/[)\].,，。！？]+$/u, "") : "";
+}
+
+function firstUseful() {
+  const q = queryBag();
+  const chunks = [];
+  const fromQuery = paramText(q);
+  if (fromQuery) chunks.push(fromQuery);
+  try {
+    if (args.shortcutParameter != null &amp;&amp; String(args.shortcutParameter).trim()) {
+      chunks.push(String(args.shortcutParameter));
+    }
+  } catch (e) {}
+  try {
+    if (args.plainTexts &amp;&amp; args.plainTexts.length) {
+      for (let i = 0; i &lt; args.plainTexts.length; i++) chunks.push(String(args.plainTexts[i]));
+    }
+  } catch (e) {}
+  try {
+    if (args.urls &amp;&amp; args.urls.length) {
+      for (let i = 0; i &lt; args.urls.length; i++) chunks.push(String(args.urls[i]));
+    }
+  } catch (e) {}
+  for (let i = 0; i &lt; chunks.length; i++) {
+    const found = extractUrl(chunks[i]);
+    if (found) return found;
+  }
+  if (openedFromShortcut(q)) return "";
+  try {
+    return extractUrl(Pasteboard.pasteString() || "");
+  } catch (e) {
+    return "";
+  }
 }
 
 function normalizeUrl(url) {
@@ -150,15 +214,15 @@ async function say(title, message) {
   const a = new Alert();
   a.title = title;
   a.message = message;
-  a.addAction("繼續");
+  a.addAction("知道");
   await a.present();
 }
 
 async function askUrl() {
   const a = new Alert();
   a.title = "貼上 IG 連結";
-  a.message = "喺 IG 撳「複製連結」，再貼喺下面。";
-  a.addTextField("https://www.instagram.com/p/…", firstArg() || "");
+  a.message = "呢個只係喺 Scriptable 入面自己打開先用。貼 instagram 貼文連結。";
+  a.addTextField("https://www.instagram.com/p/…");
   a.addAction("下載");
   a.addCancelAction("取消");
   const idx = await a.present();
@@ -269,34 +333,18 @@ const EXTRACT_JS = `
     images,
     skippedVideo,
     title: document.title || '',
-    version: '1.3.0-ig-photos'
+    version: '1.4.0-ig-photos'
   });
 })();
 `;
 
 async function extractWithWebView(url) {
   const wv = new WebView();
-
-  await say(
-    "請睇 IG 頁",
-    "下一頁會打開 Instagram。\n" +
-      "若要登入就登入；見到貼文相之後，撳右上角關閉／完成，就會開始存相。\n" +
-      "（若載入太耐會自動繼續，唔會一直轉圈）"
-  );
-
   let loadState = "ok";
   try {
     await withTimeout(wv.loadURL(url), 15, "load_timeout");
   } catch (e) {
     loadState = String(e &amp;&amp; e.message ? e.message : e);
-    // 仍然 present，等用家手動等頁面／登入
-  }
-
-  if (loadState !== "ok") {
-    await say(
-      "載入較慢",
-      "IG 頁載入超過 15 秒。仍然打開頁面俾你睇；見到相就關閉。"
-    );
   }
 
   await wv.present(true);
@@ -373,13 +421,18 @@ async function saveImages(urls) {
 }
 
 async function main() {
-  let url = normalizeUrl(extractUrl(firstArg()) || "");
+  const fromShortcut = openedFromShortcut(queryBag());
+  let url = normalizeUrl(firstUseful() || "");
   if (!url) {
-    try {
-      url = normalizeUrl(extractUrl(Pasteboard.pasteString() || ""));
-    } catch (e) {}
-  }
-  if (!url) {
+    if (fromShortcut) {
+      await say(
+        "冇帶到連結",
+        "捷徑冇傳 IG 連結，已停止。\n" +
+          "單張相：IG 分享 → 揀 IG存相。\n" +
+          "輪播或要更清：喺 IG 撳複製連結，再開捷徑 App 撳一次 IG存相。"
+      );
+      return;
+    }
     url = await askUrl();
   }
   if (!url) {
@@ -396,8 +449,6 @@ async function main() {
     await say("略過影片", "呢個係 Reel／Story／IGTV，呢版只存相（單相／輪播）。");
     return;
   }
-
-  await say("開始", "版本 " + VERSION + "\n連結：\n" + url);
 
   let extracted;
   try {
@@ -424,8 +475,6 @@ async function main() {
     await say("存唔到", msg);
     return;
   }
-
-  await say("搵到相", "搵到 " + extracted.images.length + " 張，而家存入相簿…");
 
   let saved = 0;
   let errors = [];
@@ -472,28 +521,33 @@ Script.complete();
 
 <div class="card">
 <span class="step">第 3 步</span>
-<h2>加入捷徑「IG存相」</h2>
+<h2>裝新捷徑「IG存相」</h2>
 <ol>
-<li>撳下面掣下載簽名捷徑</li>
+<li>確認舊嘅「IG存相」已經刪咗</li>
+<li>撳下面掣下載</li>
 <li>用 Safari 下載 → 去「檔案」App 搵到檔</li>
 <li>撳檔 → <strong>加入捷徑</strong></li>
 <li>打開捷徑 → 撳「IG存相」→ ⓘ → 打開<strong>在分享表單中顯示</strong></li>
 </ol>
 <a class="btn" href="IG-save.shortcut">下載捷徑「IG存相」</a>
-<p class="note">如果問權限，選「一律允許」。</p>
+<p class="note">第一次問「允許儲存相片」，撳允許。如果問捷徑權限，選「一律允許」。</p>
 </div>
 
 <div class="card">
 <span class="step">第 4 步</span>
 <h2>平時點用</h2>
-<p style="font-size:1.15rem;margin:0;">
-IG 貼文 → 分享（紙飛機）→ 揀 <strong>IG存相</strong> → 等幾秒 → 相入相簿。
-</p>
-<p class="note">只存相（單相／輪播）。Reel／片會略過。第一次可能要喺 Scriptable 登入 IG 一次。</p>
+<div class="use">日常：IG 分享 → 揀「IG存相」<span>單張相直接入相簿。唔使貼連結，捷徑唔會一直轉圈。相未必係最高清。</span></div>
+<h2 style="margin-top:16px;">輪播全部，或者要更清</h2>
+<ol>
+<li>喺 IG 撳<strong>「複製連結」</strong>（呢次唔好撳分享去 IG存相）</li>
+<li>打開「捷徑」App</li>
+<li>撳一次「IG存相」</li>
+</ol>
+<p class="note">條路會打開 IG 頁。見到相就撳右上角完成，相先存入相簿。唔好留喺分享畫面等佢叫你貼連結。</p>
 </div>
 
 <div class="card">
-<p class="note" style="margin:0">搞唔掂？確認腳本名係 <span class="name">IG存相解析</span>（無空格），捷徑名係 <span class="name">IG存相</span>。</p>
+<p class="note" style="margin:0">搞唔掂？確認腳本名係 <span class="name">IG存相解析</span>（無空格），捷徑名係 <span class="name">IG存相</span>，而且你刪咗舊捷徑再裝。</p>
 </div>
 
 <div id="toast">已複製 ✓</div>
