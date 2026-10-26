@@ -1,38 +1,88 @@
 // IG存相解析.js — Scriptable（IG 相／輪播）
-// v1.3：開 IG 有超時；先彈提示再開頁；避免捷徑一直轉圈。
+// v1.4：捷徑有相就直接入相簿。呢度只係「有貼文連結」先開。
+// 由捷徑開但冇連結：短提示後停止，唔再彈長「貼上連結」。
 
-const VERSION = "1.3.0-ig-photos";
+const VERSION = "1.4.0-ig-photos";
 
-function firstArg() {
-  if (args.urls && args.urls.length) return String(args.urls[0]);
-  if (args.plainTexts && args.plainTexts.length) return String(args.plainTexts[0]);
-  if (args.shortcutParameter != null) return String(args.shortcutParameter);
+function queryBag() {
   try {
-    if (args.queryParameters) {
-      const q = args.queryParameters;
-      if (q.url) return String(q.url);
-      if (q.text) return String(q.text);
-      if (q.input) return String(q.input);
+    return args.queryParameters || null;
+  } catch (e) {
+    return null;
+  }
+}
+
+function paramText(q) {
+  if (!q) return "";
+  const keys = ["url", "text", "input", "link"];
+  for (let i = 0; i < keys.length; i++) {
+    const v = q[keys[i]];
+    if (v != null && String(v).trim()) return String(v);
+  }
+  return "";
+}
+
+function openedFromShortcut(q) {
+  if (q && (q.scriptName || q.url || q.text || q.input || q.link)) return true;
+  try {
+    if (args.urls && args.urls.length && String(args.urls[0]).indexOf("scriptable:") === 0) {
+      return true;
     }
   } catch (e) {}
-  try {
-    const pb = Pasteboard.pasteString();
-    return pb ? String(pb) : "";
-  } catch (e) {
-    return "";
-  }
+  return false;
 }
 
 function extractUrl(text) {
   if (!text) return "";
-  let t = String(text);
-  if (/instagram\.com|instagr\.am/i.test(t) && !/^https?:/i.test(t.trim())) {
-    t = "https://" + t.trim().replace(/^\/\//, "");
+  let t = String(text).trim();
+  for (let i = 0; i < 2; i++) {
+    try {
+      const decoded = decodeURIComponent(t);
+      if (decoded === t) break;
+      t = decoded;
+    } catch (e) {
+      break;
+    }
+  }
+  if (/instagram\.com|instagr\.am/i.test(t) && !/^https?:/i.test(t)) {
+    t = "https://" + t.replace(/^\/\//, "");
   }
   const m = t.match(
-    /https?:\/\/(?:www\.)?(?:instagram\.com|instagr\.am)\/[^\s<>"'\u3000]+/i
+    /https?:\/\/(?:[a-z0-9-]+\.)*(?:instagram\.com|instagr\.am)\/[^\s<>"'\u3000]+/i
   );
   return m ? m[0].replace(/[)\].,，。！？]+$/u, "") : "";
+}
+
+function firstUseful() {
+  const q = queryBag();
+  const chunks = [];
+  const fromQuery = paramText(q);
+  if (fromQuery) chunks.push(fromQuery);
+  try {
+    if (args.shortcutParameter != null && String(args.shortcutParameter).trim()) {
+      chunks.push(String(args.shortcutParameter));
+    }
+  } catch (e) {}
+  try {
+    if (args.plainTexts && args.plainTexts.length) {
+      for (let i = 0; i < args.plainTexts.length; i++) chunks.push(String(args.plainTexts[i]));
+    }
+  } catch (e) {}
+  try {
+    if (args.urls && args.urls.length) {
+      for (let i = 0; i < args.urls.length; i++) chunks.push(String(args.urls[i]));
+    }
+  } catch (e) {}
+  for (let i = 0; i < chunks.length; i++) {
+    const found = extractUrl(chunks[i]);
+    if (found) return found;
+  }
+  if (openedFromShortcut(q)) return "";
+  try {
+    return extractUrl(Pasteboard.pasteString() || "");
+  } catch (e) {
+    return "";
+  }
 }
 
 function normalizeUrl(url) {
@@ -53,15 +103,15 @@ async function say(title, message) {
   const a = new Alert();
   a.title = title;
   a.message = message;
-  a.addAction("繼續");
+  a.addAction("知道");
   await a.present();
 }
 
 async function askUrl() {
   const a = new Alert();
   a.title = "貼上 IG 連結";
-  a.message = "喺 IG 撳「複製連結」，再貼喺下面。";
-  a.addTextField("https://www.instagram.com/p/…", firstArg() || "");
+  a.message = "呢個只係喺 Scriptable 入面自己打開先用。貼 instagram 貼文連結。";
+  a.addTextField("https://www.instagram.com/p/…");
   a.addAction("下載");
   a.addCancelAction("取消");
   const idx = await a.present();
@@ -172,34 +222,18 @@ const EXTRACT_JS = `
     images,
     skippedVideo,
     title: document.title || '',
-    version: '1.3.0-ig-photos'
+    version: '1.4.0-ig-photos'
   });
 })();
 `;
 
 async function extractWithWebView(url) {
   const wv = new WebView();
-
-  await say(
-    "請睇 IG 頁",
-    "下一頁會打開 Instagram。\n" +
-      "若要登入就登入；見到貼文相之後，撳右上角關閉／完成，就會開始存相。\n" +
-      "（若載入太耐會自動繼續，唔會一直轉圈）"
-  );
-
   let loadState = "ok";
   try {
     await withTimeout(wv.loadURL(url), 15, "load_timeout");
   } catch (e) {
     loadState = String(e && e.message ? e.message : e);
-    // 仍然 present，等用家手動等頁面／登入
-  }
-
-  if (loadState !== "ok") {
-    await say(
-      "載入較慢",
-      "IG 頁載入超過 15 秒。仍然打開頁面俾你睇；見到相就關閉。"
-    );
   }
 
   await wv.present(true);
@@ -276,13 +310,18 @@ async function saveImages(urls) {
 }
 
 async function main() {
-  let url = normalizeUrl(extractUrl(firstArg()) || "");
+  const fromShortcut = openedFromShortcut(queryBag());
+  let url = normalizeUrl(firstUseful() || "");
   if (!url) {
-    try {
-      url = normalizeUrl(extractUrl(Pasteboard.pasteString() || ""));
-    } catch (e) {}
-  }
-  if (!url) {
+    if (fromShortcut) {
+      await say(
+        "冇帶到連結",
+        "捷徑冇傳 IG 連結，已停止。\n" +
+          "單張相：IG 分享 → 揀 IG存相。\n" +
+          "輪播或要更清：喺 IG 撳複製連結，再開捷徑 App 撳一次 IG存相。"
+      );
+      return;
+    }
     url = await askUrl();
   }
   if (!url) {
@@ -299,8 +338,6 @@ async function main() {
     await say("略過影片", "呢個係 Reel／Story／IGTV，呢版只存相（單相／輪播）。");
     return;
   }
-
-  await say("開始", "版本 " + VERSION + "\n連結：\n" + url);
 
   let extracted;
   try {
@@ -327,8 +364,6 @@ async function main() {
     await say("存唔到", msg);
     return;
   }
-
-  await say("搵到相", "搵到 " + extracted.images.length + " 張，而家存入相簿…");
 
   let saved = 0;
   let errors = [];
