@@ -75,14 +75,14 @@ textarea {
 </head>
 <body>
 <h1>IG存相 — 安裝</h1>
-<p class="sub">版本 1.7。用 Safari 開呢頁。最穩陣係複製連結之後，喺 Scriptable 撳播放。只會用網絡讀相，唔會打開 IG App。</p>
+<p class="sub">版本 1.8。用 Safari 開呢頁。最穩陣係複製連結之後，喺 Scriptable 撳播放。只會用網絡讀相，唔會打開 IG App。流動數據讀得慢會再試。</p>
 
 <div class="warn">
 你之前裝過嘅話，一定要先做呢三樣，否則會仲係舊問題：
 <ol>
 <li>打開「捷徑」App，<strong>刪走舊嘅「IG存相」</strong></li>
 <li>呢頁拉下<strong>刷新</strong></li>
-<li>腳本要見到 <span class="name">1.7.0-ig-photos</span>，再重新下載裝捷徑</li>
+<li>腳本要見到 <span class="name">1.8.0-ig-photos</span>，再重新下載裝捷徑</li>
 </ol>
 </div>
 
@@ -106,14 +106,15 @@ textarea {
 <li>名稱改成正好：<span class="name">IG存相解析</span></li>
 <li>撳 Done 儲存</li>
 </ol>
-<div class="warn">⚠️ 名要一字唔差：<span class="name">IG存相解析</span><br/>中間<strong>唔可以有空格</strong>！<br/>貼上之後，頭幾行要見到 <span class="name">1.7.0-ig-photos</span>。見唔到就刷新再複製一次。</div>
+<div class="warn">⚠️ 名要一字唔差：<span class="name">IG存相解析</span><br/>中間<strong>唔可以有空格</strong>！<br/>貼上之後，頭幾行要見到 <span class="name">1.8.0-ig-photos</span>。見唔到就刷新再複製一次。</div>
 <button type="button" class="copy" id="copyScript">複製腳本</button>
 <p class="note">複製完會顯示「已複製」。下面細框係後備，唔使睇。</p>
 <textarea id="script" readonly>// IG存相解析.js — Scriptable（IG 相／輪播）
-// v1.7：抽相同下載只用 Request。唔開瀏覽頁，所以唔會交俾 IG App。
-// 公開相先讀 embed 頁嘅圖片網址，失敗再試 GraphQL。CDN 圖帶 Referer，超時會再試較細圖。
+// v1.8：讀 IG 頁加長到 60 秒，每個網址超時再試一次。仍然只用 Request，唔開瀏覽頁。
+// 先 embed，再試較輕嘅 /embed/。全部超時先至話存唔到。
 
-const VERSION = "1.7.0-ig-photos";
+const VERSION = "1.8.0-ig-photos";
+const FETCH_SECONDS = 60;
 
 function queryBag() {
   try {
@@ -544,7 +545,10 @@ function httpTargets(url) {
   }
   const code = shortcodeOf(clean);
   const video = /instagram\.com\/(?:reel|reels|tv|stories)\//i.test(clean);
-  if (code &amp;&amp; !video) push("https://www.instagram.com/p/" + code + "/embed/captioned/");
+  if (code &amp;&amp; !video) {
+    push("https://www.instagram.com/p/" + code + "/embed/captioned/");
+    push("https://www.instagram.com/p/" + code + "/embed/");
+  }
   push(clean);
   return out;
 }
@@ -554,7 +558,10 @@ function missingReason(info) {
   if (item.isReelPath) return "呢頁好似係影片，呢版只存相。";
   if (item.loginWall) return "公開貼文先得。呢條可能係私人、已刪除，或者要登入先睇到。";
   if (item.fetched) return "讀到 IG 回覆，但係入面冇相片網址。請用公開相嘅「複製連結」再試（Reel 唔存）。";
-  return "連線失敗，讀唔到 IG。請轉 Wi‑Fi 再撳播放。" + (item.lastError ? "\n" + item.lastError : "");
+  if (/fetch_timeout|timeout/i.test(item.lastError || "")) {
+    return "連線超時，讀唔到 IG。流動數據可能較慢。\n請轉 Wi‑Fi，或者再撳播放試一次。\n" + item.lastError;
+  }
+  return "連線失敗，讀唔到 IG。請轉 Wi‑Fi，或者再撳播放試一次。" + (item.lastError ? "\n" + item.lastError : "");
 }
 
 function htmlHeaders() {
@@ -568,7 +575,7 @@ function htmlHeaders() {
 
 async function fetchText(url, headers) {
   const req = new Request(String(url).split("#")[0]);
-  req.timeoutInterval = 25;
+  req.timeoutInterval = FETCH_SECONDS;
   req.headers = headers || htmlHeaders();
   let finalUrl = String(url);
   try {
@@ -578,7 +585,7 @@ async function fetchText(url, headers) {
       } catch (e) {}
     };
   } catch (e) {}
-  const body = await withTimeout(req.loadString(), 25, "fetch_timeout");
+  const body = await withTimeout(req.loadString(), FETCH_SECONDS, "fetch_timeout");
   let setCookie = "";
   let status = 0;
   try {
@@ -593,7 +600,7 @@ async function fetchText(url, headers) {
 async function fetchGraphql(shortcode, lsd, csrf) {
   const req = new Request("https://www.instagram.com/api/graphql");
   req.method = "POST";
-  req.timeoutInterval = 25;
+  req.timeoutInterval = FETCH_SECONDS;
   req.headers = {
     "User-Agent": SAFARI_UA,
     "Accept": "*/*",
@@ -611,7 +618,7 @@ async function fetchGraphql(shortcode, lsd, csrf) {
   });
   req.body = "variables=" + encodeURIComponent(variables)
     + "&amp;doc_id=27128499623469141&amp;server_timestamps=true&amp;lsd=" + encodeURIComponent(lsd || "");
-  return await withTimeout(req.loadString(), 25, "fetch_timeout");
+  return await withTimeout(req.loadString(), FETCH_SECONDS, "fetch_timeout");
 }
 
 async function extractByRequest(url) {
@@ -629,14 +636,21 @@ async function extractByRequest(url) {
     if (/instagram\.com\/(?:reel|reels|tv|stories)\//i.test(page)) {
       return { ok: false, images: [], isReelPath: true, via: "request", fetched: fetched };
     }
-    let res;
-    try {
-      res = await fetchText(page);
-      fetched++;
-    } catch (e) {
-      lastError = String(e &amp;&amp; e.message ? e.message : e);
-      continue;
+    let res = null;
+    for (let attempt = 0; attempt &lt; 2; attempt++) {
+      try {
+        res = await fetchText(page);
+        break;
+      } catch (e) {
+        lastError = String(e &amp;&amp; e.message ? e.message : e);
+        res = null;
+        if (attempt === 0) {
+          try { await sleepSeconds(1.5); } catch (err) {}
+        }
+      }
     }
+    if (!res) continue;
+    fetched++;
     const cookieMatch = String(res.setCookie || "").match(/csrftoken=([^;,\s]+)/);
     if (cookieMatch) csrf = cookieMatch[1];
     const lsdMatch = String(res.body || "").match(/"LSD",\[\],\{"token":"([^"]+)"/);
@@ -648,7 +662,9 @@ async function extractByRequest(url) {
     const code = shortcodeOf(landed) || shortcodeOf(page) || shortcodeOf(res.body);
     if (code) {
       const embed = "https://www.instagram.com/p/" + code + "/embed/captioned/";
+      const light = "https://www.instagram.com/p/" + code + "/embed/";
       if (!seen[embed]) queue.push(embed);
+      if (!seen[light]) queue.push(light);
     }
     const parsed = imagesFromHtml(res.body || "");
     if (parsed.images.length &gt; best.images.length) best = parsed;
@@ -658,13 +674,19 @@ async function extractByRequest(url) {
   if (!best.images.length) {
     const code = shortcodeOf(url) || shortcodeOf(queue.join("\n"));
     if (code) {
-      try {
-        const json = await fetchGraphql(code, lsd, csrf);
-        fetched++;
-        const parsed = imagesFromHtml(json || "");
-        if (parsed.images.length) best = parsed;
-      } catch (e) {
-        lastError = String(e &amp;&amp; e.message ? e.message : e);
+      for (let attempt = 0; attempt &lt; 2 &amp;&amp; !best.images.length; attempt++) {
+        try {
+          const json = await fetchGraphql(code, lsd, csrf);
+          fetched++;
+          const parsed = imagesFromHtml(json || "");
+          if (parsed.images.length) best = parsed;
+          break;
+        } catch (e) {
+          lastError = String(e &amp;&amp; e.message ? e.message : e);
+          if (attempt === 0) {
+            try { await sleepSeconds(1.5); } catch (err) {}
+          }
+        }
       }
     }
   }
@@ -853,13 +875,13 @@ Script.complete();
 <div class="card">
 <span class="step">第 3 步</span>
 <h2>最穩陣方法（唔經捷徑）</h2>
-<div class="use">複製連結 → 打開 Scriptable → 撳播放<span>撳「IG存相解析」上面嘅播放掣。第一句要係「IG存相 1.7.0-ig-photos」。全程留喺 Scriptable，唔會打開 IG App。</span></div>
+<div class="use">複製連結 → 打開 Scriptable → 撳播放<span>撳「IG存相解析」上面嘅播放掣。第一句要係「IG存相 1.8.0-ig-photos」。全程留喺 Scriptable，唔會打開 IG App。</span></div>
 <ol>
 <li>喺 IG 撳<strong>「複製連結」</strong></li>
 <li>打開 <strong>Scriptable</strong>（唔好開捷徑）</li>
 <li>撳 <span class="name">IG存相解析</span> 嘅<strong>播放</strong></li>
 </ol>
-<p class="note">輪播同單張都用呢條。第一句係版本。跟住要嘛「已存相」，要嘛 Scriptable 入面彈「存唔到」或「下載失敗」。唔會彈出 IG App。如果見到 IG App，即係腳本未係 1.7，刷新再複製。下載失敗就轉 Wi‑Fi，或者返 IG 重新複製連結。只有「存唔入相簿」先至去設定改相片。</p>
+<p class="note">輪播同單張都用呢條。第一句係版本。跟住要嘛「已存相」，要嘛 Scriptable 入面彈「存唔到」或「下載失敗」。唔會彈出 IG App。如果見到 IG App，即係腳本未係 1.8，刷新再複製。如果話「連線超時」，轉 Wi‑Fi 或者再撳播放，流動數據會慢啲。只有「存唔入相簿」先至去設定改相片。</p>
 </div>
 
 <div class="card">

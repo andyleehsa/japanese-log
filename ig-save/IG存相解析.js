@@ -1,8 +1,9 @@
 // IG存相解析.js — Scriptable（IG 相／輪播）
-// v1.7：抽相同下載只用 Request。唔開瀏覽頁，所以唔會交俾 IG App。
-// 公開相先讀 embed 頁嘅圖片網址，失敗再試 GraphQL。CDN 圖帶 Referer，超時會再試較細圖。
+// v1.8：讀 IG 頁加長到 60 秒，每個網址超時再試一次。仍然只用 Request，唔開瀏覽頁。
+// 先 embed，再試較輕嘅 /embed/。全部超時先至話存唔到。
 
-const VERSION = "1.7.0-ig-photos";
+const VERSION = "1.8.0-ig-photos";
+const FETCH_SECONDS = 60;
 
 function queryBag() {
   try {
@@ -433,7 +434,10 @@ function httpTargets(url) {
   }
   const code = shortcodeOf(clean);
   const video = /instagram\.com\/(?:reel|reels|tv|stories)\//i.test(clean);
-  if (code && !video) push("https://www.instagram.com/p/" + code + "/embed/captioned/");
+  if (code && !video) {
+    push("https://www.instagram.com/p/" + code + "/embed/captioned/");
+    push("https://www.instagram.com/p/" + code + "/embed/");
+  }
   push(clean);
   return out;
 }
@@ -443,7 +447,10 @@ function missingReason(info) {
   if (item.isReelPath) return "呢頁好似係影片，呢版只存相。";
   if (item.loginWall) return "公開貼文先得。呢條可能係私人、已刪除，或者要登入先睇到。";
   if (item.fetched) return "讀到 IG 回覆，但係入面冇相片網址。請用公開相嘅「複製連結」再試（Reel 唔存）。";
-  return "連線失敗，讀唔到 IG。請轉 Wi‑Fi 再撳播放。" + (item.lastError ? "\n" + item.lastError : "");
+  if (/fetch_timeout|timeout/i.test(item.lastError || "")) {
+    return "連線超時，讀唔到 IG。流動數據可能較慢。\n請轉 Wi‑Fi，或者再撳播放試一次。\n" + item.lastError;
+  }
+  return "連線失敗，讀唔到 IG。請轉 Wi‑Fi，或者再撳播放試一次。" + (item.lastError ? "\n" + item.lastError : "");
 }
 
 function htmlHeaders() {
@@ -457,7 +464,7 @@ function htmlHeaders() {
 
 async function fetchText(url, headers) {
   const req = new Request(String(url).split("#")[0]);
-  req.timeoutInterval = 25;
+  req.timeoutInterval = FETCH_SECONDS;
   req.headers = headers || htmlHeaders();
   let finalUrl = String(url);
   try {
@@ -467,7 +474,7 @@ async function fetchText(url, headers) {
       } catch (e) {}
     };
   } catch (e) {}
-  const body = await withTimeout(req.loadString(), 25, "fetch_timeout");
+  const body = await withTimeout(req.loadString(), FETCH_SECONDS, "fetch_timeout");
   let setCookie = "";
   let status = 0;
   try {
@@ -482,7 +489,7 @@ async function fetchText(url, headers) {
 async function fetchGraphql(shortcode, lsd, csrf) {
   const req = new Request("https://www.instagram.com/api/graphql");
   req.method = "POST";
-  req.timeoutInterval = 25;
+  req.timeoutInterval = FETCH_SECONDS;
   req.headers = {
     "User-Agent": SAFARI_UA,
     "Accept": "*/*",
@@ -500,7 +507,7 @@ async function fetchGraphql(shortcode, lsd, csrf) {
   });
   req.body = "variables=" + encodeURIComponent(variables)
     + "&doc_id=27128499623469141&server_timestamps=true&lsd=" + encodeURIComponent(lsd || "");
-  return await withTimeout(req.loadString(), 25, "fetch_timeout");
+  return await withTimeout(req.loadString(), FETCH_SECONDS, "fetch_timeout");
 }
 
 async function extractByRequest(url) {
@@ -518,14 +525,21 @@ async function extractByRequest(url) {
     if (/instagram\.com\/(?:reel|reels|tv|stories)\//i.test(page)) {
       return { ok: false, images: [], isReelPath: true, via: "request", fetched: fetched };
     }
-    let res;
-    try {
-      res = await fetchText(page);
-      fetched++;
-    } catch (e) {
-      lastError = String(e && e.message ? e.message : e);
-      continue;
+    let res = null;
+    for (let attempt = 0; attempt < 2; attempt++) {
+      try {
+        res = await fetchText(page);
+        break;
+      } catch (e) {
+        lastError = String(e && e.message ? e.message : e);
+        res = null;
+        if (attempt === 0) {
+          try { await sleepSeconds(1.5); } catch (err) {}
+        }
+      }
     }
+    if (!res) continue;
+    fetched++;
     const cookieMatch = String(res.setCookie || "").match(/csrftoken=([^;,\s]+)/);
     if (cookieMatch) csrf = cookieMatch[1];
     const lsdMatch = String(res.body || "").match(/"LSD",\[\],\{"token":"([^"]+)"/);
@@ -537,7 +551,9 @@ async function extractByRequest(url) {
     const code = shortcodeOf(landed) || shortcodeOf(page) || shortcodeOf(res.body);
     if (code) {
       const embed = "https://www.instagram.com/p/" + code + "/embed/captioned/";
+      const light = "https://www.instagram.com/p/" + code + "/embed/";
       if (!seen[embed]) queue.push(embed);
+      if (!seen[light]) queue.push(light);
     }
     const parsed = imagesFromHtml(res.body || "");
     if (parsed.images.length > best.images.length) best = parsed;
@@ -547,13 +563,19 @@ async function extractByRequest(url) {
   if (!best.images.length) {
     const code = shortcodeOf(url) || shortcodeOf(queue.join("\n"));
     if (code) {
-      try {
-        const json = await fetchGraphql(code, lsd, csrf);
-        fetched++;
-        const parsed = imagesFromHtml(json || "");
-        if (parsed.images.length) best = parsed;
-      } catch (e) {
-        lastError = String(e && e.message ? e.message : e);
+      for (let attempt = 0; attempt < 2 && !best.images.length; attempt++) {
+        try {
+          const json = await fetchGraphql(code, lsd, csrf);
+          fetched++;
+          const parsed = imagesFromHtml(json || "");
+          if (parsed.images.length) best = parsed;
+          break;
+        } catch (e) {
+          lastError = String(e && e.message ? e.message : e);
+          if (attempt === 0) {
+            try { await sleepSeconds(1.5); } catch (err) {}
+          }
+        }
       }
     }
   }

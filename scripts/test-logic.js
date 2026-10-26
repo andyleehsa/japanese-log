@@ -602,7 +602,8 @@ const igDecoded = igScript[1]
   .replace(/&#39;/g, "'")
   .replace(/&amp;/g, "&");
 assert.strictEqual(igDecoded, igJs);
-assert.strictEqual(igJs.includes('const VERSION = "1.7.0-ig-photos"'), true);
+assert.strictEqual(igJs.includes('const VERSION = "1.8.0-ig-photos"'), true);
+assert.strictEqual(igJs.includes("1.7.0-ig-photos"), false);
 assert.strictEqual(igJs.includes("1.6.1-ig-photos"), false);
 assert.strictEqual(igJs.includes("1.6.0-ig-photos"), false);
 assert.strictEqual(igJs.includes("1.5.0-ig-photos"), false);
@@ -625,6 +626,8 @@ assert.strictEqual(igJs.includes("#weblink"), false);
 assert.strictEqual(igJs.includes("loadString()"), true);
 assert.strictEqual(igJs.includes("function extractByRequest"), true);
 assert.strictEqual(igJs.includes("embed/captioned/"), true);
+assert.strictEqual(igJs.includes("const FETCH_SECONDS = 60"), true);
+assert.strictEqual(igJs.includes("attempt < 2"), true);
 assert.strictEqual(igJs.includes("function imagesFromHtml"), true);
 assert.strictEqual(igJs.includes("function shortcodeOf"), true);
 assert.strictEqual(igJs.includes("唔會打開 IG App"), true);
@@ -664,7 +667,11 @@ assert.strictEqual(igJs.includes("Script.complete();"), true);
   assert.strictEqual(sandbox.shortcodeOf("https://www.instagram.com/p/AbC123/?igsh=1"), "AbC123");
   assert.strictEqual(sandbox.shortcodeOf("https://www.instagram.com/share/ZZZ"), "");
   const targets = sandbox.httpTargets("https://www.instagram.com/p/AbC123/?igsh=1");
-  assert.ok(targets[0].indexOf("/p/AbC123/embed/captioned/") !== -1);
+  assert.strictEqual(targets[0], "https://www.instagram.com/p/AbC123/embed/captioned/");
+  assert.strictEqual(targets[1], "https://www.instagram.com/p/AbC123/embed/");
+  const slow = sandbox.missingReason({ fetched: 0, lastError: "fetch_timeout" });
+  assert.ok(slow.indexOf("再撳播放") !== -1);
+  assert.strictEqual(slow.indexOf("關 IG"), -1);
   const embedHtml =
     '<img class="EmbeddedMediaImage" src="https://scontent.cdninstagram.com/v/t51.71878-15/a_n.jpg?stp=dst-jpg_e15_s480x480_tt6&amp;_nc_cat=1" />' +
     '<img src="https://scontent.cdninstagram.com/v/t51.2885-19/p_n.jpg?stp=dst-jpg_s100x100_tt6&amp;_nc_cat=1" />';
@@ -712,7 +719,8 @@ assert.strictEqual(igHtml.includes("刪走舊嘅「IG存相」"), true);
 assert.strictEqual(igHtml.includes("複製連結"), true);
 assert.strictEqual(igHtml.includes("最穩陣方法"), true);
 assert.strictEqual(igHtml.includes("撳播放"), true);
-assert.strictEqual(igHtml.includes("1.7.0-ig-photos"), true);
+assert.strictEqual(igHtml.includes("1.8.0-ig-photos"), true);
+assert.strictEqual(igHtml.includes("1.7.0-ig-photos"), false);
 assert.strictEqual(igHtml.includes("1.6.1-ig-photos"), false);
 assert.strictEqual(igHtml.includes("1.6.0-ig-photos"), false);
 assert.strictEqual(igHtml.includes("唔會打開 IG App"), true);
