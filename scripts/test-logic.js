@@ -602,7 +602,8 @@ const igDecoded = igScript[1]
   .replace(/&#39;/g, "'")
   .replace(/&amp;/g, "&");
 assert.strictEqual(igDecoded, igJs);
-assert.strictEqual(igJs.includes('const VERSION = "1.6.0-ig-photos"'), true);
+assert.strictEqual(igJs.includes('const VERSION = "1.6.1-ig-photos"'), true);
+assert.strictEqual(igJs.includes("1.6.0-ig-photos"), false);
 assert.strictEqual(igJs.includes("1.5.0-ig-photos"), false);
 assert.strictEqual(igJs.includes("1.4.0-ig-photos"), false);
 assert.strictEqual(igJs.includes("1.3.0-ig-photos"), false);
@@ -625,6 +626,9 @@ assert.strictEqual(igJs.includes("loadString()"), true);
 assert.strictEqual(igJs.includes("function imagesFromHtml"), true);
 assert.strictEqual(igJs.includes("stayInScriptableUrl"), true);
 assert.strictEqual(igJs.includes("唔會打開 IG App"), true);
+assert.strictEqual(igJs.includes('req.timeoutInterval = 60'), true);
+assert.strictEqual(igJs.includes("function attemptSequence"), true);
+assert.strictEqual(igJs.includes("搵到相但存唔入。請去 iPhone 設定"), false);
 assert.strictEqual(igJs.includes("Script.complete();"), true);
 {
   const vm = require("vm");
@@ -635,7 +639,11 @@ assert.strictEqual(igJs.includes("Script.complete();"), true);
     igJs.slice(pureStart, pureEnd) +
       "\nthis.imagesFromHtml = imagesFromHtml;" +
       "\nthis.stayInScriptableUrl = stayInScriptableUrl;" +
-      "\nthis.pageCandidates = pageCandidates;",
+      "\nthis.pageCandidates = pageCandidates;" +
+      "\nthis.downloadPlan = downloadPlan;" +
+      "\nthis.attemptSequence = attemptSequence;" +
+      "\nthis.imageHeaders = imageHeaders;" +
+      "\nthis.saveFailureMessage = saveFailureMessage;",
     sandbox
   );
   const sample =
@@ -657,6 +665,31 @@ assert.strictEqual(igJs.includes("Script.complete();"), true);
   assert.strictEqual(sandbox.stayInScriptableUrl("https://example.com/p/AbC").indexOf("#weblink"), -1);
   const pages = sandbox.pageCandidates("https://www.instagram.com/p/AbC123/");
   assert.ok(pages.indexOf("https://www.instagram.com/p/AbC123/embed/captioned/") !== -1);
+  const sized =
+    '{"image_versions2":{"candidates":[' +
+    '{"width":2160,"url":"https://scontent.cdninstagram.com/v/big.jpg?stp=dst-jpg_e35","estimated_scans_sizes":[10,20]},' +
+    '{"width":1080,"url":"https://scontent.cdninstagram.com/v/mid.jpg?stp=dst-jpg_e35_s1080x1080"},' +
+    '{"width":640,"url":"https://scontent.cdninstagram.com/v/small.jpg"}]}}';
+  const sizedParsed = sandbox.imagesFromHtml(sized);
+  assert.strictEqual(sizedParsed.images[0], "https://scontent.cdninstagram.com/v/mid.jpg?stp=dst-jpg_e35_s1080x1080");
+  assert.strictEqual(sizedParsed.fallbacks[0][0], "https://scontent.cdninstagram.com/v/small.jpg");
+  assert.strictEqual(sizedParsed.fallbacks[0][1], "https://scontent.cdninstagram.com/v/big.jpg?stp=dst-jpg_e35");
+  const plan = sandbox.downloadPlan(sizedParsed.images[0], sizedParsed.fallbacks[0]);
+  assert.strictEqual(plan[0], sizedParsed.images[0]);
+  assert.ok(plan.indexOf("https://scontent.cdninstagram.com/v/small.jpg") !== -1);
+  const seq = sandbox.attemptSequence(plan);
+  assert.strictEqual(seq[0], plan[0]);
+  assert.strictEqual(seq[1], plan[0]);
+  assert.strictEqual(seq[2], plan[1]);
+  assert.strictEqual(seq.length, 3);
+  assert.strictEqual(sandbox.imageHeaders().Referer, "https://www.instagram.com/");
+  const timeoutMsg = sandbox.saveFailureMessage(["Error: download_timeout"]);
+  assert.strictEqual(timeoutMsg.title, "下載失敗");
+  assert.ok(timeoutMsg.message.indexOf("超時") !== -1);
+  assert.strictEqual(timeoutMsg.message.indexOf("所有相片"), -1);
+  const photoMsg = sandbox.saveFailureMessage(["PHPhotosErrorDomain not authorized"]);
+  assert.strictEqual(photoMsg.title, "存唔入相簿");
+  assert.ok(photoMsg.message.indexOf("所有相片") !== -1);
 }
 assert.strictEqual(igJs.includes("IG存相 解析"), false);
 assert.strictEqual(igHtml.includes(">IG存相解析<"), true);
@@ -667,7 +700,8 @@ assert.strictEqual(igHtml.includes("刪走舊嘅「IG存相」"), true);
 assert.strictEqual(igHtml.includes("複製連結"), true);
 assert.strictEqual(igHtml.includes("最穩陣方法"), true);
 assert.strictEqual(igHtml.includes("撳播放"), true);
-assert.strictEqual(igHtml.includes("1.6.0-ig-photos"), true);
+assert.strictEqual(igHtml.includes("1.6.1-ig-photos"), true);
+assert.strictEqual(igHtml.includes("1.6.0-ig-photos"), false);
 assert.strictEqual(igHtml.includes("1.5.0-ig-photos"), false);
 assert.strictEqual(igHtml.includes("1.4.0-ig-photos"), false);
 assert.strictEqual(igHtml.includes("唔會再跳去 IG App"), true);
