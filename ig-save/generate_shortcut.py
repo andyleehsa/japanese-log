@@ -1,15 +1,20 @@
 #!/usr/bin/env python3
 """Build and HubSign the「IG存相」shortcut.
 
-Share sheet:
-  1. Detect Links on Shortcut Input. A post/reel URL opens Scriptable.
-  2. Otherwise, if the share contains images, save them and stop.
-     Clipboard is not read on this path.
-  3. Text with no post URL and no image: alert, then stop.
+1.4 failed on a real phone: after Copy Link, running the shortcut in the
+Shortcuts app ended with no alert and Scriptable never opened. That branch
+fed a Text value to Open URL and showed no UI first. An empty Shortcut Input
+can also look like "has a value", so a Has No Value (101) gate skipped the
+clipboard and was the wrong switch.
 
-Shortcuts app (no Shortcut Input):
-  Read the clipboard once. An Instagram post URL opens Scriptable.
-  Otherwise alert and stop. Never asks Scriptable to paste a link.
+1.5:
+  1. Detect Links + Match on Shortcut Input.
+  2. If that found no post URL, read the clipboard as text, Detect Links,
+     and also Match the raw text. Not gated on Shortcut Input being empty.
+  3. If there is still no URL but there are images, save them and show a result.
+  4. If there is a URL, alert with the link, turn the text into a URL item,
+     then Open URL. No Wait to Return.
+  5. If there is nothing, alert and stop. No branch ends silently.
 """
 
 from __future__ import annotations
@@ -30,24 +35,30 @@ HUBSIGN_URL = "https://hubsign.routinehub.services/sign"
 SCRIPTABLE_RUN = (
     "scriptable:///run?scriptName=" + quote(SCRIPT_NAME, safe="") + "&url="
 )
+# Any instagram host, including /p/ /reel/ /reels/ /tv/ /share/, l.instagram.com,
+# instagr.am short links, and copy-link query strings such as igsh=.
 IG_POST_RE = (
-    r"https?://(?:[A-Za-z0-9-]+\.)*(?:instagram\.com|instagr\.am)"
-    r"/(?:p|reel|reels|tv|share)/\S+"
+    r"https?://(?:[A-Za-z0-9-]+\.)*(?:instagram\.com|instagr\.am)[^\s]*"
 )
 POST_URL_VAR = "貼文網址"
 NO_MEDIA_TITLE = "未存到相"
 NO_MEDIA_MESSAGE = (
-    "分享入面冇相，亦都冇 IG 貼文連結。\n\n"
-    "請喺 IG 撳「複製連結」，然後打開「捷徑」App，撳一次「IG存相」。\n"
-    "唔好留喺分享畫面等。"
+    "未搵到相，亦都冇 IG 連結。\n\n"
+    "最穩陣：喺 IG 撳「複製連結」，打開 Scriptable，撳「IG存相解析」播放。\n\n"
+    "輪播分享通常唔帶相同連結，一定要先複製連結。"
 )
 SAVED_TITLE = "已存入相簿"
-SAVED_BODY = "單圖已存。輪播要全部或要更清：先喺 IG 複製連結，再喺捷徑 App 跑一次。"
+SAVED_BODY = "單圖已存。輪播要全部：先複製連結，再開 Scriptable 撳「IG存相解析」播放。"
 SAVED_RESULT = (
     "已存入相簿。\n\n"
     "呢張係分享出嚟嘅相，未必係最高清。\n"
-    "輪播想要全部、或者要更清：喺 IG 撳「複製連結」，"
-    "再開「捷徑」App，撳一次「IG存相」。"
+    "輪播想要全部：喺 IG 撳「複製連結」，打開 Scriptable，撳「IG存相解析」播放。"
+)
+OPEN_TITLE = "即將打開 Scriptable"
+OPEN_LEAD = "即將打開 Scriptable 存相。\n連結：\n"
+OPEN_TAIL = (
+    "\n\n如果跟住冇見到「IG存相 1.5.0-ig-photos」，"
+    "請自己打開 Scriptable，撳「IG存相解析」播放。"
 )
 
 
@@ -162,17 +173,13 @@ def build_actions() -> list:
             {"GroupingIdentifier": grouping, "WFControlFlowMode": 2},
         )
 
-    def add_match_and_store(urls_uuid: str):
-        text_uuid = add(
-            "is.workflow.actions.gettext",
-            {"WFTextActionText": token_string_action_output("URLs", urls_uuid)},
-        )
+    def add_match_text_and_store(text_uuid: str, output_name: str = "Text"):
         match_uuid = add(
             "is.workflow.actions.text.match",
             {
                 "WFMatchTextCaseSensitive": False,
                 "WFMatchTextPattern": IG_POST_RE,
-                "text": token_string_action_output("Text", text_uuid),
+                "text": token_string_action_output(output_name, text_uuid),
             },
         )
         grouping = uid()
@@ -193,7 +200,39 @@ def build_actions() -> list:
         )
         end_if(grouping)
 
+    def add_match_and_store(urls_uuid: str):
+        text_uuid = add(
+            "is.workflow.actions.gettext",
+            {"WFTextActionText": token_string_action_output("URLs", urls_uuid)},
+        )
+        add_match_text_and_store(text_uuid, "Text")
+
+    def alert_open_message():
+        # CJK in this lead is BMP, so Python len equals the UTF-16 length Shortcuts stores.
+        lead = OPEN_LEAD
+        body = lead + "\ufffc" + OPEN_TAIL
+        return {
+            "Value": {
+                "attachmentsByRange": {
+                    f"{{{len(lead)}, 1}}": {
+                        "Type": "Variable",
+                        "VariableName": POST_URL_VAR,
+                    }
+                },
+                "string": body,
+            },
+            "WFSerializationType": "WFTextTokenString",
+        }
+
     def add_open_scriptable():
+        add(
+            "is.workflow.actions.alert",
+            {
+                "WFAlertActionTitle": OPEN_TITLE,
+                "WFAlertActionMessage": alert_open_message(),
+                "WFAlertActionCancelButtonShown": False,
+            },
+        )
         text_uuid = add(
             "is.workflow.actions.gettext",
             {"WFTextActionText": text_named_vars([("var", POST_URL_VAR)])},
@@ -210,10 +249,14 @@ def build_actions() -> list:
                 )
             },
         )
-        # No WFShowWorkflow: that flag is Wait to Return, which leaves the shortcut spinning.
+        url_uuid = add(
+            "is.workflow.actions.url",
+            {"WFURLActionURL": token_string_action_output("Text", scheme_uuid)},
+        )
+        # Open the URL item, not the Text. No WFShowWorkflow (Wait to Return).
         add(
             "is.workflow.actions.openurl",
-            {"WFInput": var_attachment("Text", scheme_uuid)},
+            {"WFInput": var_attachment("URL", url_uuid)},
         )
 
     def add_give_up():
@@ -231,12 +274,12 @@ def build_actions() -> list:
         "is.workflow.actions.comment",
         {
             "WFCommentActionText": (
-                "【IG存相 1.4】\n"
-                "分享有貼文連結：打開 Scriptable 存原圖／輪播。\n"
-                "分享有相但冇連結：直接存入相簿，然後停止。\n"
-                "分享面板唔讀剪貼簿，亦都唔等 Scriptable 返回。\n"
-                "冇輸入（喺捷徑 App 自己跑）：先至讀剪貼簿。\n"
-                "冇連結又冇相：提示複製連結，然後停止。"
+                "【IG存相 1.5】\n"
+                "先搵分享入面嘅 IG 連結。\n"
+                "未有連結就讀剪貼簿（唔再用「冇輸入」來閘）。\n"
+                "有連結：先彈「即將打開 Scriptable」同條連結，再將文字轉成 URL 打開。\n"
+                "未有連結但有相：存入相簿並顯示結果。\n"
+                "乜都冇：彈提示然後停止。每條路都有畫面。"
             )
         },
     )
@@ -263,6 +306,43 @@ def build_actions() -> list:
     start_if(has_url, 100, if_input_from(named_var_attachment(POST_URL_VAR)))
     add_open_scriptable()
     otherwise(has_url)
+
+    clip_uuid = add("is.workflow.actions.getclipboard", {})
+    clip_text_uuid = add(
+        "is.workflow.actions.gettext",
+        {"WFTextActionText": token_string_action_output("Clipboard", clip_uuid)},
+    )
+    clip_urls_uuid = add(
+        "is.workflow.actions.detect.link",
+        {"WFInput": var_attachment("Text", clip_text_uuid)},
+    )
+    clip_count_uuid = add(
+        "is.workflow.actions.count",
+        {
+            "WFCountType": "Items",
+            "WFInput": var_attachment("URLs", clip_urls_uuid),
+        },
+    )
+    clip_group = uid()
+    start_if(
+        clip_group,
+        2,
+        if_input_from(var_attachment("Count", clip_count_uuid)),
+        number=0,
+    )
+    add_match_and_store(clip_urls_uuid)
+    end_if(clip_group)
+
+    raw_group = uid()
+    start_if(raw_group, 100, if_input_from(named_var_attachment(POST_URL_VAR)))
+    otherwise(raw_group)
+    add_match_text_and_store(clip_text_uuid, "Text")
+    end_if(raw_group)
+
+    clip_url = uid()
+    start_if(clip_url, 100, if_input_from(named_var_attachment(POST_URL_VAR)))
+    add_open_scriptable()
+    otherwise(clip_url)
 
     images_uuid = add(
         "is.workflow.actions.detect.images",
@@ -294,42 +374,10 @@ def build_actions() -> list:
     add("is.workflow.actions.showresult", {"Text": SAVED_RESULT})
     add("is.workflow.actions.exit", {})
     otherwise(image_group)
-
-    empty_input = uid()
-    start_if(empty_input, 101, if_input_from(extension_input()))
-    clip_uuid = add("is.workflow.actions.getclipboard", {})
-    clip_urls_uuid = add(
-        "is.workflow.actions.detect.link",
-        {"WFInput": var_attachment("Clipboard", clip_uuid)},
-    )
-    clip_count_uuid = add(
-        "is.workflow.actions.count",
-        {
-            "WFCountType": "Items",
-            "WFInput": var_attachment("URLs", clip_urls_uuid),
-        },
-    )
-    clip_group = uid()
-    start_if(
-        clip_group,
-        2,
-        if_input_from(var_attachment("Count", clip_count_uuid)),
-        number=0,
-    )
-    add_match_and_store(clip_urls_uuid)
-    end_if(clip_group)
-
-    clip_url = uid()
-    start_if(clip_url, 100, if_input_from(named_var_attachment(POST_URL_VAR)))
-    add_open_scriptable()
-    otherwise(clip_url)
     add_give_up()
-    end_if(clip_url)
-    otherwise(empty_input)
-    add_give_up()
-    end_if(empty_input)
-
     end_if(image_group)
+
+    end_if(clip_url)
     end_if(has_url)
     return built
 
@@ -383,11 +431,21 @@ def _stack_at(actions: list, index: int):
 def validate(actions: list, plist_obj: dict) -> None:
     assert quote(SCRIPT_NAME, safe="") == "IG%E5%AD%98%E7%9B%B8%E8%A7%A3%E6%9E%90"
     assert SCRIPTABLE_RUN.endswith("&url=")
+    assert len(OPEN_LEAD) == len(OPEN_LEAD.encode("utf-16-le")) // 2
     post_re = re.compile(IG_POST_RE, re.I)
-    assert post_re.search("https://www.instagram.com/p/ABC123/?igsh=zzz")
-    assert post_re.search("https://instagram.com/reel/AbC_d")
-    assert post_re.search("https://www.instagram.com/share/XYZ")
-    assert not post_re.search("https://www.instagram.com/someuser/")
+    samples = [
+        "https://www.instagram.com/p/ABC123/?igsh=zzz",
+        "https://instagram.com/reel/AbC_d",
+        "https://www.instagram.com/reels/AbC/",
+        "https://www.instagram.com/tv/AbC/",
+        "https://www.instagram.com/share/XYZ",
+        "https://www.instagram.com/share/p/ABC123/?igsh=abc",
+        "https://www.instagram.com/share/reel/ABC123/",
+        "https://instagr.am/p/AbC",
+        "https://l.instagram.com/?u=https%3A%2F%2Fwww.instagram.com%2Fp%2FAbC%2F&e=1",
+    ]
+    for sample in samples:
+        assert post_re.search(sample), sample
     assert not post_re.search("https://example.com/p/ABC")
 
     identifiers = [item["WFWorkflowActionIdentifier"] for item in actions]
@@ -395,8 +453,11 @@ def validate(actions: list, plist_obj: dict) -> None:
     assert identifiers.count("is.workflow.actions.detect.images") == 1
     assert identifiers.count("is.workflow.actions.savetocameraroll") == 1
     assert identifiers.count("is.workflow.actions.getclipboard") == 1
+    assert identifiers.count("is.workflow.actions.url") == 2
     assert identifiers.count("is.workflow.actions.openurl") == 2
-    assert identifiers.count("is.workflow.actions.exit") == 3
+    assert identifiers.count("is.workflow.actions.alert") == 3
+    assert identifiers.count("is.workflow.actions.exit") == 2
+    assert identifiers.count("is.workflow.actions.showresult") == 1
     assert "is.workflow.actions.setclipboard" not in identifiers
     assert "is.workflow.actions.waittoreturn" not in identifiers
     assert "is.workflow.actions.delay" not in identifiers
@@ -410,6 +471,7 @@ def validate(actions: list, plist_obj: dict) -> None:
         if ident == "is.workflow.actions.conditional":
             mode = params.get("WFControlFlowMode")
             if mode == 0:
+                assert params.get("WFCondition") != 101
                 stack.append(params.get("GroupingIdentifier"))
             elif mode == 1:
                 assert stack[-1] == params.get("GroupingIdentifier")
@@ -417,27 +479,56 @@ def validate(actions: list, plist_obj: dict) -> None:
                 assert stack.pop() == params.get("GroupingIdentifier")
     assert stack == []
 
+    def visible_before(index: int) -> bool:
+        for earlier in range(index - 1, -1, -1):
+            previous = actions[earlier]
+            previous_id = previous["WFWorkflowActionIdentifier"]
+            if previous_id in (
+                "is.workflow.actions.alert",
+                "is.workflow.actions.showresult",
+                "is.workflow.actions.notification",
+            ):
+                return True
+            if previous_id == "is.workflow.actions.conditional":
+                return False
+        return False
+
     for index, item in enumerate(actions):
         ident = item["WFWorkflowActionIdentifier"]
+        params = item["WFWorkflowActionParameters"]
         active = _stack_at(actions, index)
         if ident == "is.workflow.actions.getclipboard":
-            assert any(frame["cond"] == 101 and frame["branch"] == "if" for frame in active)
-            assert not any(frame["cond"] == 2 and frame["branch"] == "if" for frame in active)
+            assert not any(frame["cond"] == 101 for frame in active)
+            assert any(frame["cond"] == 100 and frame["branch"] == "else" for frame in active)
         if ident == "is.workflow.actions.savetocameraroll":
             assert any(frame["cond"] == 2 and frame["branch"] == "if" for frame in active)
             assert any(frame["cond"] == 100 and frame["branch"] == "else" for frame in active)
-            assert not any(frame["cond"] == 101 for frame in active)
         if ident == "is.workflow.actions.openurl":
+            assert params["WFInput"]["Value"]["OutputName"] == "URL"
+            assert params["WFInput"]["Value"]["Type"] == "ActionOutput"
             assert any(frame["cond"] == 100 and frame["branch"] == "if" for frame in active)
             assert not any(frame["cond"] == 2 and frame["branch"] == "if" for frame in active)
+            saw_alert = False
+            saw_url = False
+            for earlier in range(index - 1, -1, -1):
+                previous_id = actions[earlier]["WFWorkflowActionIdentifier"]
+                if previous_id == "is.workflow.actions.alert":
+                    saw_alert = True
+                if previous_id == "is.workflow.actions.url":
+                    saw_url = True
+                if previous_id == "is.workflow.actions.conditional":
+                    break
+            assert saw_alert and saw_url
         if ident == "is.workflow.actions.exit":
+            assert visible_before(index)
             assert not any(frame["cond"] == 100 and frame["branch"] == "if" for frame in active)
 
     blob = json.dumps(actions, ensure_ascii=False)
     assert SCRIPTABLE_RUN in blob
     assert "Wait to Return" not in blob
-    assert "唔好留喺分享畫面等" in blob
-    assert "未必係最高清" in blob
+    assert "即將打開 Scriptable" in blob
+    assert "IG存相解析" in blob
+    assert "is.workflow.actions.url" in identifiers
 
 
 def sign(plist_obj: dict, name: str) -> bytes:
