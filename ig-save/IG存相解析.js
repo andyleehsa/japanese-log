@@ -1,7 +1,7 @@
 // IG存相解析.js — Scriptable（IG 相／輪播）
-// v1.2：每步有提示；會打開 IG 頁俾你睇；唔會静静卡住。
+// v1.3：開 IG 有超時；先彈提示再開頁；避免捷徑一直轉圈。
 
-const VERSION = "1.2.0-ig-photos";
+const VERSION = "1.3.0-ig-photos";
 
 function firstArg() {
   if (args.urls && args.urls.length) return String(args.urls[0]);
@@ -10,13 +10,17 @@ function firstArg() {
   try {
     if (args.queryParameters) {
       const q = args.queryParameters;
-      if (q.text) return String(q.text);
       if (q.url) return String(q.url);
+      if (q.text) return String(q.text);
       if (q.input) return String(q.input);
     }
   } catch (e) {}
-  const pb = Pasteboard.pasteString();
-  return pb ? String(pb) : "";
+  try {
+    const pb = Pasteboard.pasteString();
+    return pb ? String(pb) : "";
+  } catch (e) {
+    return "";
+  }
 }
 
 function extractUrl(text) {
@@ -33,6 +37,9 @@ function extractUrl(text) {
 
 function normalizeUrl(url) {
   let u = String(url || "").trim();
+  try {
+    u = decodeURIComponent(u);
+  } catch (e) {}
   u = u.replace(/[?&](igshid|igsh|utm_[^=]+|img_index)=[^&]*/gi, "");
   u = u.replace(/\?&/, "?").replace(/[?&]$/, "");
   return u;
@@ -60,6 +67,34 @@ async function askUrl() {
   const idx = await a.present();
   if (idx == -1) return "";
   return normalizeUrl(extractUrl(a.textFieldValue(0) || ""));
+}
+
+function withTimeout(promise, seconds, label) {
+  return new Promise((resolve, reject) => {
+    let done = false;
+    const timer = new Timer();
+    timer.timeInterval = seconds;
+    timer.schedule(() => {
+      if (done) return;
+      done = true;
+      try { timer.invalidate(); } catch (e) {}
+      reject(new Error(label || "timeout"));
+    });
+    promise.then(
+      (v) => {
+        if (done) return;
+        done = true;
+        try { timer.invalidate(); } catch (e) {}
+        resolve(v);
+      },
+      (err) => {
+        if (done) return;
+        done = true;
+        try { timer.invalidate(); } catch (e) {}
+        reject(err);
+      }
+    );
+  });
 }
 
 const EXTRACT_JS = `
@@ -137,7 +172,7 @@ const EXTRACT_JS = `
     images,
     skippedVideo,
     title: document.title || '',
-    version: '${VERSION}'
+    version: '1.3.0-ig-photos'
   });
 })();
 `;
@@ -145,29 +180,45 @@ const EXTRACT_JS = `
 async function extractWithWebView(url) {
   const wv = new WebView();
 
-  // 先載入，再呈現俾用家睇（唔會背景卡死無反應）
+  await say(
+    "請睇 IG 頁",
+    "下一頁會打開 Instagram。\n" +
+      "若要登入就登入；見到貼文相之後，撳右上角關閉／完成，就會開始存相。\n" +
+      "（若載入太耐會自動繼續，唔會一直轉圈）"
+  );
+
+  let loadState = "ok";
   try {
-    await wv.loadURL(url);
+    await withTimeout(wv.loadURL(url), 15, "load_timeout");
   } catch (e) {
-    return { ok: false, error: "load_failed", message: String(e), url };
+    loadState = String(e && e.message ? e.message : e);
+    // 仍然 present，等用家手動等頁面／登入
   }
 
-  const open = new Alert();
-  open.title = "請睇 IG 頁";
-  open.message =
-    "下一頁會打開 Instagram。\n" +
-    "若要登入就登入；見到貼文相之後，撳右上角關閉／完成，就會開始存相。";
-  open.addAction("打開頁面");
-  open.addCancelAction("取消");
-  if ((await open.present()) == -1) {
-    return { ok: false, error: "cancelled", url };
+  if (loadState !== "ok") {
+    await say(
+      "載入較慢",
+      "IG 頁載入超過 15 秒。仍然打開頁面俾你睇；見到相就關閉。"
+    );
   }
 
   await wv.present(true);
 
-  // 關閉後再抽一次資料
-  await wv.evaluateJavaScript("await new Promise(r => setTimeout(r, 800)); true");
-  let raw = await wv.evaluateJavaScript(EXTRACT_JS);
+  try {
+    await withTimeout(
+      wv.evaluateJavaScript("await new Promise(r => setTimeout(r, 600)); true"),
+      5,
+      "wait_timeout"
+    );
+  } catch (e) {}
+
+  let raw;
+  try {
+    raw = await withTimeout(wv.evaluateJavaScript(EXTRACT_JS), 10, "extract_timeout");
+  } catch (e) {
+    return { ok: false, error: "extract_timeout", message: String(e), url };
+  }
+
   let data;
   try {
     data = typeof raw == "string" ? JSON.parse(raw) : raw;
@@ -175,24 +226,26 @@ async function extractWithWebView(url) {
     data = { ok: false, error: "parse_failed", message: String(e), url };
   }
 
-  if ((!data.images || !data.images.length) && data.loginWall) {
+  if ((!data.images || !data.images.length) && (data.loginWall || loadState !== "ok")) {
     const again = new Alert();
     again.title = "仲未見到相";
-    again.message = "可能未登入或頁面未載入完。再開一次頁面？";
+    again.message = "可能未登入或頁面未載入完。再開一次？";
     again.addAction("再開");
     again.addCancelAction("取消");
     if ((await again.present()) == -1) {
       data.ok = false;
-      data.error = "login_wall";
+      data.error = data.loginWall ? "login_wall" : "no_images";
       return data;
     }
-    await wv.loadURL(url);
-    await wv.present(true);
-    raw = await wv.evaluateJavaScript(EXTRACT_JS);
     try {
+      await withTimeout(wv.loadURL(url), 15, "load_timeout");
+    } catch (e) {}
+    await wv.present(true);
+    try {
+      raw = await withTimeout(wv.evaluateJavaScript(EXTRACT_JS), 10, "extract_timeout");
       data = typeof raw == "string" ? JSON.parse(raw) : raw;
     } catch (e) {
-      data = { ok: false, error: "parse_failed", url };
+      return { ok: false, error: "extract_timeout", url };
     }
   }
 
@@ -208,7 +261,7 @@ async function saveImages(urls) {
     try {
       const req = new Request(urls[i]);
       req.timeoutInterval = 45;
-      const data = await req.load();
+      const data = await withTimeout(req.load(), 45, "download_timeout");
       if (!data || data.byteLength < 200) {
         errors.push("empty_" + (i + 1));
         continue;
@@ -223,7 +276,12 @@ async function saveImages(urls) {
 }
 
 async function main() {
-  let url = normalizeUrl(extractUrl(firstArg()) || extractUrl(Pasteboard.pasteString() || ""));
+  let url = normalizeUrl(extractUrl(firstArg()) || "");
+  if (!url) {
+    try {
+      url = normalizeUrl(extractUrl(Pasteboard.pasteString() || ""));
+    } catch (e) {}
+  }
   if (!url) {
     url = await askUrl();
   }
@@ -242,7 +300,7 @@ async function main() {
     return;
   }
 
-  await say("開始", "下一歩會打開 IG 頁。\n連結：\n" + url);
+  await say("開始", "版本 " + VERSION + "\n連結：\n" + url);
 
   let extracted;
   try {
@@ -259,8 +317,8 @@ async function main() {
 
   if (!extracted.ok || !extracted.images || !extracted.images.length) {
     const msg =
-      extracted.error == "load_failed"
-        ? "載入 IG 失敗：" + (extracted.message || "")
+      extracted.error == "load_failed" || extracted.error == "load_timeout"
+        ? "載入 IG 太慢或失敗。"
         : extracted.error == "login_wall" || extracted.loginWall
           ? "登入牆或私人／刪除貼文，讀唔到相。"
           : extracted.isReelPath
