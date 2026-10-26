@@ -602,7 +602,8 @@ const igDecoded = igScript[1]
   .replace(/&#39;/g, "'")
   .replace(/&amp;/g, "&");
 assert.strictEqual(igDecoded, igJs);
-assert.strictEqual(igJs.includes('const VERSION = "1.5.0-ig-photos"'), true);
+assert.strictEqual(igJs.includes('const VERSION = "1.6.0-ig-photos"'), true);
+assert.strictEqual(igJs.includes("1.5.0-ig-photos"), false);
 assert.strictEqual(igJs.includes("1.4.0-ig-photos"), false);
 assert.strictEqual(igJs.includes("1.3.0-ig-photos"), false);
 assert.strictEqual(igJs.includes("1.2.0-ig-photos"), false);
@@ -617,7 +618,46 @@ assert.strictEqual(igJs.includes("冇帶到連結"), true);
 assert.strictEqual(igJs.includes("請睇 IG 頁"), false);
 assert.strictEqual(igJs.includes('a.addAction("繼續")'), false);
 assert.strictEqual(igJs.includes("await wv.present(true);"), true);
+assert.strictEqual(igJs.includes("wv.loadURL(safe)"), true);
+assert.strictEqual(igJs.includes("wv.loadURL(url)"), false);
+assert.strictEqual(igJs.includes("#weblink"), true);
+assert.strictEqual(igJs.includes("loadString()"), true);
+assert.strictEqual(igJs.includes("function imagesFromHtml"), true);
+assert.strictEqual(igJs.includes("stayInScriptableUrl"), true);
+assert.strictEqual(igJs.includes("唔會打開 IG App"), true);
 assert.strictEqual(igJs.includes("Script.complete();"), true);
+{
+  const vm = require("vm");
+  const pureStart = igJs.indexOf("function decodeEscapedUrl");
+  const pureEnd = igJs.indexOf("async function fetchHtml");
+  const sandbox = {};
+  vm.runInNewContext(
+    igJs.slice(pureStart, pureEnd) +
+      "\nthis.imagesFromHtml = imagesFromHtml;" +
+      "\nthis.stayInScriptableUrl = stayInScriptableUrl;" +
+      "\nthis.pageCandidates = pageCandidates;",
+    sandbox
+  );
+  const sample =
+    '<meta property="og:image" content="https://scontent.cdninstagram.com/v/photo.jpg?_nc=1" />' +
+    '<script>{"display_url":"https:\\/\\/scontent.cdninstagram.com\\/v\\/disp.jpg","video_versions":[{"url":"https://cdn.example/v.mp4"}],"image_versions2":{"candidates":[{"url":"https:\\/\\/scontent.cdninstagram.com\\/v\\/cand.jpg"}]}}</script>' +
+    '<img src="https://static.cdninstagram.com/rsrc.php/asset.png" />' +
+    '<img src="https://scontent.cdninstagram.com/v/img.jpg" />';
+  const parsed = sandbox.imagesFromHtml(sample);
+  assert.ok(parsed.images.indexOf("https://scontent.cdninstagram.com/v/photo.jpg?_nc=1") !== -1);
+  assert.ok(parsed.images.indexOf("https://scontent.cdninstagram.com/v/disp.jpg") !== -1);
+  assert.ok(parsed.images.indexOf("https://scontent.cdninstagram.com/v/cand.jpg") !== -1);
+  assert.ok(parsed.images.indexOf("https://scontent.cdninstagram.com/v/img.jpg") !== -1);
+  assert.ok(parsed.images.every((u) => u.indexOf("rsrc.php") === -1 && u.indexOf("static.cdninstagram") === -1));
+  assert.ok(parsed.skippedVideo >= 1);
+  assert.strictEqual(
+    sandbox.stayInScriptableUrl("https://www.instagram.com/p/AbC/?igsh=1"),
+    "https://www.instagram.com/p/AbC/?igsh=1#weblink"
+  );
+  assert.strictEqual(sandbox.stayInScriptableUrl("https://example.com/p/AbC").indexOf("#weblink"), -1);
+  const pages = sandbox.pageCandidates("https://www.instagram.com/p/AbC123/");
+  assert.ok(pages.indexOf("https://www.instagram.com/p/AbC123/embed/captioned/") !== -1);
+}
 assert.strictEqual(igJs.includes("IG存相 解析"), false);
 assert.strictEqual(igHtml.includes(">IG存相解析<"), true);
 assert.strictEqual(igHtml.includes("複製腳本"), true);
@@ -627,8 +667,10 @@ assert.strictEqual(igHtml.includes("刪走舊嘅「IG存相」"), true);
 assert.strictEqual(igHtml.includes("複製連結"), true);
 assert.strictEqual(igHtml.includes("最穩陣方法"), true);
 assert.strictEqual(igHtml.includes("撳播放"), true);
-assert.strictEqual(igHtml.includes("1.5.0-ig-photos"), true);
+assert.strictEqual(igHtml.includes("1.6.0-ig-photos"), true);
+assert.strictEqual(igHtml.includes("1.5.0-ig-photos"), false);
 assert.strictEqual(igHtml.includes("1.4.0-ig-photos"), false);
+assert.strictEqual(igHtml.includes("唔會再跳去 IG App"), true);
 const igShortcut = fs.readFileSync(require("path").join(__dirname, "../ig-save/IG-save.shortcut"));
 assert.strictEqual(igShortcut.subarray(0, 4).toString("utf8"), "AEA1");
 require("child_process").execFileSync("python3", [
