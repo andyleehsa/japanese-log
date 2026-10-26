@@ -7,6 +7,11 @@ fed a Text value to Open URL and showed no UI first. An empty Shortcut Input
 can also look like "has a value", so a Has No Value (101) gate skipped the
 clipboard and was the wrong switch.
 
+1.6: the shortcut still opens scriptable:// only. It must not open
+instagram.com. The script reads the page with Request, and only falls
+back to a WebView URL that ends in #weblink so iOS does not hand the
+page to the Instagram app.
+
 1.5:
   1. Detect Links + Match on Shortcut Input.
   2. If that found no post URL, read the clipboard as text, Detect Links,
@@ -57,7 +62,7 @@ SAVED_RESULT = (
 OPEN_TITLE = "即將打開 Scriptable"
 OPEN_LEAD = "即將打開 Scriptable 存相。\n連結：\n"
 OPEN_TAIL = (
-    "\n\n如果跟住冇見到「IG存相 1.5.0-ig-photos」，"
+    "\n\n如果跟住冇見到「IG存相 1.6.0-ig-photos」，"
     "請自己打開 Scriptable，撳「IG存相解析」播放。"
 )
 
@@ -274,12 +279,13 @@ def build_actions() -> list:
         "is.workflow.actions.comment",
         {
             "WFCommentActionText": (
-                "【IG存相 1.5】\n"
+                "【IG存相 1.6】\n"
                 "先搵分享入面嘅 IG 連結。\n"
-                "未有連結就讀剪貼簿（唔再用「冇輸入」來閘）。\n"
-                "有連結：先彈「即將打開 Scriptable」同條連結，再將文字轉成 URL 打開。\n"
+                "未有連結就讀剪貼簿。\n"
+                "有連結：先彈「即將打開 Scriptable」同條連結，再打開 scriptable://。\n"
+                "唔好直接打開 instagram.com，否則 iOS 會跳去 IG App。\n"
                 "未有連結但有相：存入相簿並顯示結果。\n"
-                "乜都冇：彈提示然後停止。每條路都有畫面。"
+                "乜都冇：彈提示然後停止。"
             )
         },
     )
