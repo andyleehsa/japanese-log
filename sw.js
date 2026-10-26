@@ -57,8 +57,15 @@ self.addEventListener("fetch", function (event) {
   if (request.method !== "GET") return;
   var url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
+  // Standalone IG install page. Leave it to the network so it is not stored
+  // in the lesson-app cache and an offline miss is not rewritten to index.html.
+  if (isIgSavePath(url.pathname)) return;
   event.respondWith(networkFirst(request));
 });
+
+function isIgSavePath(pathname) {
+  return pathname.indexOf("/ig-save/") !== -1 || /\/ig-save$/.test(pathname);
+}
 
 function fresh(url) {
   return fetch(url, { cache: "reload" });

@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<title>IG存相 — iPhone 安裝</title>
+<style>
+:root { --pad: max(16px, env(safe-area-inset-left)); }
+* { box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang HK", "Helvetica Neue", sans-serif;
+  margin: 0; padding: 16px; padding-bottom: 48px;
+  line-height: 1.45; background: #f2f2f7; color: #111;
+  -webkit-text-size-adjust: 100%;
+}
+h1 { font-size: 1.5rem; margin: 4px 0 6px; }
+.sub { color: #666; font-size: .95rem; margin: 0 0 16px; }
+.card {
+  background: #fff; border-radius: 16px; padding: 18px;
+  margin: 14px 0; box-shadow: 0 1px 4px rgba(0,0,0,.08);
+}
+.step {
+  display: inline-block; background: #111; color: #fff;
+  border-radius: 999px; padding: 2px 10px; font-size: .8rem;
+  font-weight: 700; margin-bottom: 8px;
+}
+h2 { font-size: 1.2rem; margin: 0 0 10px; }
+ol, ul { margin: 0; padding-left: 1.25em; }
+li { margin: 8px 0; font-size: 1.05rem; }
+.note { color: #555; font-size: .95rem; margin: 10px 0 0; }
+.warn {
+  background: #fff6e5; border: 1px solid #f0c36d; color: #6b4a00;
+  border-radius: 12px; padding: 12px 14px; margin: 12px 0; font-size: 1rem; font-weight: 600;
+}
+.ok { color: #0a7; font-weight: 700; }
+button, a.btn {
+  display: block; width: 100%; text-align: center;
+  padding: 18px 16px; margin: 12px 0 0;
+  border: 0; border-radius: 14px;
+  background: #007aff; color: #fff;
+  font-size: 1.2rem; font-weight: 700;
+  text-decoration: none; cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+button.copy { background: #34c759; font-size: 1.35rem; padding: 22px 16px; }
+button.copy.done { background: #248a3d; }
+a.btn.sec { background: #111; }
+a.btn.soft { background: #5856d6; }
+textarea {
+  width: 100%; min-height: 120px; margin-top: 10px;
+  font-size: 11px; line-height: 1.35;
+  border: 1px solid #ddd; border-radius: 10px; padding: 10px;
+  font-family: ui-monospace, Menlo, monospace;
+  background: #fafafa; color: #333;
+}
+.name {
+  display: inline-block; background: #eee; border-radius: 8px;
+  padding: 2px 8px; font-family: ui-monospace, Menlo, monospace;
+  font-weight: 700;
+}
+#toast {
+  display: none; position: fixed; left: 50%; bottom: 28px;
+  transform: translateX(-50%);
+  background: #111; color: #fff; padding: 12px 20px;
+  border-radius: 999px; font-weight: 700; z-index: 9;
+  box-shadow: 0 4px 16px rgba(0,0,0,.25);
+}
+</style>
+</head>
+<body>
+<h1>IG存相 — 安裝</h1>
+<p class="sub">用 Safari 開呢頁。跟四步就得。唔使 Google Docs。</p>
+
+<div class="card">
+<span class="step">第 1 步</span>
+<h2>裝 Scriptable（免費）</h2>
+<ol>
+<li>撳下面掣去 App Store</li>
+<li>裝<strong>Scriptable</strong>（免費嗰個）</li>
+</ol>
+<a class="btn soft" href="https://apps.apple.com/app/scriptable/id1405459188">開 App Store 裝 Scriptable</a>
+</div>
+
+<div class="card">
+<span class="step">第 2 步</span>
+<h2>複製腳本入 Scriptable</h2>
+<ol>
+<li>撳大掣<strong>「複製腳本」</strong></li>
+<li>打開 Scriptable → 右上 <strong>＋</strong></li>
+<li>長按空白位 → <strong>貼上</strong></li>
+<li>名稱改成正好：<span class="name">IG存相解析</span></li>
+<li>撳 Done 儲存</li>
+</ol>
+<div class="warn">⚠️ 名要一字唔差：<span class="name">IG存相解析</span><br/>中間<strong>唔可以有空格</strong>！</div>
+<button type="button" class="copy" id="copyScript">複製腳本</button>
+<p class="note">複製完會顯示「已複製」。下面細框係後備，唔使睇。</p>
+<textarea id="script" readonly>// IG存相解析.js  — Scriptable（IG 相／輪播專用，免費、無伺服器）
+// 由捷徑「IG存相」呼叫：用你部機嘅 Instagram 登入狀態開頁 → 抽出相 → 直接存入相簿。
+// 範圍：單相 + 輪播。Reel／片會略過。唔處理 Threads。
+
+const VERSION = &quot;1.0.0-ig-photos&quot;;
+const SCRIPT_NAME = &quot;IG存相解析&quot;;
+
+function firstArg() {
+  if (args.urls &amp;&amp; args.urls.length) return String(args.urls[0]);
+  if (args.plainTexts &amp;&amp; args.plainTexts.length) return String(args.plainTexts[0]);
+  if (args.shortcutParameter != null) return String(args.shortcutParameter);
+  const pb = Pasteboard.pasteString();
+  return pb ? String(pb) : &quot;&quot;;
+}
+
+function extractUrl(text) {
+  if (!text) return &quot;&quot;;
+  const m = String(text).match(
+    /https?:\/\/(?:www\.)?(?:instagram\.com|instagr\.am)\/[^\s&lt;&gt;&quot;&#x27;]+/i
+  );
+  return m ? m[0].replace(/[)\].,，。！？]+$/, &quot;&quot;) : &quot;&quot;;
+}
+
+function normalizeUrl(url) {
+  let u = url.trim();
+  u = u.replace(/[?&amp;](igshid|igsh|utm_[^=]+|img_index)=[^&amp;]*/gi, &quot;&quot;);
+  u = u.replace(/\?&amp;/, &quot;?&quot;).replace(/[?&amp;]$/, &quot;&quot;);
+  return u;
+}
+
+function isReelOrVideoPath(url) {
+  return /instagram\.com\/(reel|tv|stories)\//i.test(url);
+}
+
+async function presentLogin(webview) {
+  const alert = new Alert();
+  alert.title = &quot;需要登入一次&quot;;
+  alert.message =
+    &quot;請喺下一個視窗用 Instagram 官方頁面登入。\n&quot; +
+    &quot;密碼只會留喺你部手機，唔會送到其他伺服器。\n登入完撳右上角關閉就得。&quot;;
+  alert.addAction(&quot;去登入&quot;);
+  alert.addCancelAction(&quot;取消&quot;);
+  const idx = await alert.present();
+  if (idx == -1) return true;
+  await webview.present(true);
+  return false;
+}
+
+const EXTRACT_JS = `
+(() =&gt; {
+  const abs = (u) =&gt; { try { return new URL(u, location.href).href; } catch (e) { return u; } };
+  const og = (p) =&gt; {
+    const el = document.querySelector(&#x27;meta[property=&quot;&#x27; + p + &#x27;&quot;], meta[name=&quot;&#x27; + p + &#x27;&quot;]&#x27;);
+    return el ? (el.getAttribute(&#x27;content&#x27;) || &#x27;&#x27;) : &#x27;&#x27;;
+  };
+  const unescapeJson = (s) =&gt; {
+    try { return JSON.parse(&#x27;&quot;&#x27; + s + &#x27;&quot;&#x27;); } catch (e) {
+      return s.replace(/\\\\n/g,&#x27;\\n&#x27;).replace(/\\\\&quot;/g,&#x27;&quot;&#x27;).replace(/\\\\u([0-9a-fA-F]{4})/g,(_,h)=&gt;String.fromCharCode(parseInt(h,16)));
+    }
+  };
+
+  let blobText = &#x27;&#x27;;
+  for (const s of document.querySelectorAll(&#x27;script&#x27;)) {
+    const t = s.textContent || &#x27;&#x27;;
+    if (t.length &gt; 400 &amp;&amp; /(image_versions2|carousel_media|xdt_api|display_uri)/.test(t)) {
+      blobText += &#x27;\\n&#x27; + t;
+    }
+  }
+
+  let username = &#x27;&#x27;;
+  const um = blobText.match(/&quot;username&quot;\\s*:\\s*&quot;([A-Za-z0-9._]+)&quot;/);
+  if (um) username = um[1];
+  if (!username) {
+    const pm = location.pathname.match(/\\/@([A-Za-z0-9._]+)/);
+    if (pm) username = pm[1];
+  }
+
+  // Prefer carousel_media blocks first (keeps slide order), then image_versions2.
+  let images = [];
+  let skippedVideo = 0;
+  let m;
+
+  // Count video_versions as skipped (we do not save video).
+  const reVid = /&quot;video_versions&quot;\\s*:\\s*\\[/g;
+  while ((m = reVid.exec(blobText))) skippedVideo++;
+
+  // Carousel: each media node often has image_versions2; collect candidate URLs in order.
+  const reImg = /&quot;image_versions2&quot;\\s*:\\s*\\{\\s*&quot;candidates&quot;\\s*:\\s*\\[\\s*\\{[\\s\\S]*?&quot;url&quot;\\s*:\\s*&quot;(https:[^&quot;]+)&quot;/g;
+  while ((m = reImg.exec(blobText))) {
+    images.push(unescapeJson(m[1]));
+  }
+
+  if (images.length == 0) {
+    const reDisp = /&quot;display_uri&quot;\\s*:\\s*&quot;(https:[^&quot;]+)&quot;/g;
+    while ((m = reDisp.exec(blobText))) images.push(unescapeJson(m[1]));
+  }
+
+  if (images.length == 0) {
+    [...document.querySelectorAll(&#x27;img&#x27;)].forEach(i =&gt; {
+      const s = i.currentSrc || i.src;
+      if (s &amp;&amp; /cdninstagram|fbcdn/i.test(s) &amp;&amp; !/profile_pic|emoji|rsrc/i.test(s)) {
+        images.push(abs(s));
+      }
+    });
+    const ogi = og(&#x27;og:image&#x27;);
+    if (ogi &amp;&amp; images.length == 0) images.push(ogi);
+  }
+
+  const seen = new Set();
+  images = images.filter(u =&gt; {
+    if (!u || u.startsWith(&#x27;data:&#x27;)) return false;
+    if (/\\.(mp4|m3u8)(\\?|$)/i.test(u)) { skippedVideo++; return false; }
+    if (/rsrc\\.php|static\\.cdninstagram\\.com\\/rsrc|profile_pic|emoji/i.test(u)) return false;
+    const key = u.split(&#x27;?&#x27;)[0];
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  }).slice(0, 20);
+
+  const bodyText = document.body ? (document.body.innerText || &#x27;&#x27;) : &#x27;&#x27;;
+  const loginWall = /Log in with your Instagram|用 Instagram 帳戶登入/i.test(bodyText)
+    &amp;&amp; images.length == 0;
+
+  const pathReel = /\\/(reel|tv|stories)\\//i.test(location.pathname);
+
+  return JSON.stringify({
+    ok: !loginWall &amp;&amp; images.length &gt; 0,
+    loginWall,
+    isReelPath: pathReel,
+    url: location.href,
+    username,
+    images,
+    skippedVideo,
+    title: document.title || og(&#x27;og:title&#x27;) || &#x27;&#x27;,
+    version: &#x27;${VERSION}&#x27;
+  });
+})();
+`;
+
+async function extractWithWebView(url) {
+  const wv = new WebView();
+  await wv.loadURL(url);
+  await wv.evaluateJavaScript(&quot;await new Promise(r =&gt; setTimeout(r, 2800)); true&quot;);
+
+  let html = &quot;&quot;;
+  try { html = await wv.getHTML(); } catch (e) { html = &quot;&quot;; }
+  const looksLogin =
+    /Log in with your Instagram|用 Instagram 帳戶登入/i.test(html) &amp;&amp;
+    !(/image_versions2/.test(html) || html.indexOf(&quot;cdninstagram.com/v/&quot;) &gt;= 0);
+  if (looksLogin) {
+    const cancelled = await presentLogin(wv);
+    if (cancelled) return { ok: false, error: &quot;user_cancelled_login&quot;, url };
+    await wv.loadURL(url);
+    await wv.evaluateJavaScript(&quot;await new Promise(r =&gt; setTimeout(r, 3000)); true&quot;);
+  }
+
+  let raw = await wv.evaluateJavaScript(EXTRACT_JS);
+  let data;
+  try { data = typeof raw == &quot;string&quot; ? JSON.parse(raw) : raw; }
+  catch (e) { data = { ok: false, error: &quot;parse_failed&quot;, message: String(e) }; }
+
+  if (data.loginWall) {
+    const alert = new Alert();
+    alert.title = &quot;睇唔到貼文&quot;;
+    alert.message = &quot;可能係私人帳號、已刪除，或者仲未登入。可以再試登入。&quot;;
+    alert.addAction(&quot;再試登入&quot;);
+    alert.addCancelAction(&quot;取消&quot;);
+    if ((await alert.present()) == -1) {
+      data.ok = false;
+      data.error = &quot;login_wall&quot;;
+      return data;
+    }
+    await wv.present(true);
+    await wv.loadURL(url);
+    await wv.evaluateJavaScript(&quot;await new Promise(r =&gt; setTimeout(r, 3000)); true&quot;);
+    raw = await wv.evaluateJavaScript(EXTRACT_JS);
+    try { data = typeof raw == &quot;string&quot; ? JSON.parse(raw) : raw; }
+    catch (e) { data = { ok: false, error: &quot;parse_failed&quot; }; }
+  }
+
+  data.url = data.url || url;
+  if (data.images &amp;&amp; data.images.length) data.ok = true;
+  return data;
+}
+
+async function saveImages(urls) {
+  let saved = 0;
+  const errors = [];
+  for (let i = 0; i &lt; urls.length; i++) {
+    try {
+      const req = new Request(urls[i]);
+      req.timeoutInterval = 45;
+      const data = await req.load();
+      if (!data || data.byteLength &lt; 200) {
+        errors.push(&quot;empty_&quot; + (i + 1));
+        continue;
+      }
+      await Photos.fromData(data);
+      saved++;
+    } catch (e) {
+      errors.push(String(e).slice(0, 80));
+    }
+  }
+  return { saved, errors };
+}
+
+async function finish(result) {
+  const json = JSON.stringify(result);
+  Pasteboard.copy(json);
+  Script.setShortcutOutput(json);
+  return result;
+}
+
+async function main() {
+  const rawIn = firstArg();
+  const url = normalizeUrl(extractUrl(rawIn) || extractUrl(Pasteboard.pasteString() || &quot;&quot;));
+  if (!url) {
+    const out = { ok: false, error: &quot;no_url&quot;, message: &quot;搵唔到 Instagram 連結&quot;, version: VERSION };
+    const a = new Alert();
+    a.title = &quot;搵唔到連結&quot;;
+    a.message = &quot;請由 IG 貼文分享表單打開「IG存相」，或者先複製貼文連結再跑。&quot;;
+    a.addAction(&quot;知道&quot;);
+    await a.present();
+    return finish(out);
+  }
+
+  if (!/instagram\.com|instagr\.am/i.test(url)) {
+    return finish({ ok: false, error: &quot;unsupported&quot;, url, message: &quot;只支援 Instagram&quot;, version: VERSION });
+  }
+
+  if (isReelOrVideoPath(url)) {
+    const out = {
+      ok: false,
+      error: &quot;reel_skipped&quot;,
+      url,
+      message: &quot;呢個係 Reel／Story／IGTV，本捷徑只存相（單相／輪播）。&quot;,
+      version: VERSION
+    };
+    const a = new Alert();
+    a.title = &quot;略過影片&quot;;
+    a.message = out.message;
+    a.addAction(&quot;知道&quot;);
+    await a.present();
+    return finish(out);
+  }
+
+  let extracted;
+  try {
+    extracted = await extractWithWebView(url);
+  } catch (e) {
+    return finish({ ok: false, error: &quot;exception&quot;, message: String(e), url, version: VERSION });
+  }
+
+  if (!extracted.ok || !extracted.images || !extracted.images.length) {
+    const msg =
+      extracted.error == &quot;login_wall&quot; || extracted.loginWall
+        ? &quot;登入牆或私人／刪除貼文，讀唔到相。&quot;
+        : extracted.isReelPath
+          ? &quot;呢頁好似係影片，本捷徑只存相。&quot;
+          : &quot;讀唔到相片（可能係私人貼文或頁面未載入完）。&quot;;
+    const a = new Alert();
+    a.title = &quot;存唔到&quot;;
+    a.message = msg;
+    a.addAction(&quot;知道&quot;);
+    await a.present();
+    return finish({
+      ok: false,
+      error: extracted.error || &quot;no_images&quot;,
+      url,
+      username: extracted.username || &quot;&quot;,
+      skippedVideo: extracted.skippedVideo || 0,
+      message: msg,
+      version: VERSION
+    });
+  }
+
+  const { saved, errors } = await saveImages(extracted.images);
+  const out = {
+    ok: saved &gt; 0,
+    url: extracted.url || url,
+    username: extracted.username || &quot;&quot;,
+    found: extracted.images.length,
+    saved,
+    skippedVideo: extracted.skippedVideo || 0,
+    errors,
+    version: VERSION
+  };
+
+  const a = new Alert();
+  if (saved &gt; 0) {
+    a.title = &quot;已存相 ✓&quot;;
+    a.message =
+      &quot;已存 &quot; + saved + &quot; 張入相簿&quot; +
+      (extracted.username ? &quot;（@&quot; + extracted.username + &quot;）&quot; : &quot;&quot;) +
+      (extracted.skippedVideo ? &quot;\n（略過 &quot; + extracted.skippedVideo + &quot; 段影片）&quot; : &quot;&quot;) +
+      (errors.length ? &quot;\n有 &quot; + errors.length + &quot; 張下載失敗&quot; : &quot;&quot;);
+  } else {
+    a.title = &quot;下載失敗&quot;;
+    a.message = &quot;搵到相但存唔入相簿。請檢查網絡同相簿權限。&quot;;
+  }
+  a.addAction(&quot;知道&quot;);
+  await a.present();
+  return finish(out);
+}
+
+await main();
+</textarea>
+</div>
+
+<div class="card">
+<span class="step">第 3 步</span>
+<h2>加入捷徑「IG存相」</h2>
+<ol>
+<li>撳下面掣下載簽名捷徑</li>
+<li>用 Safari 下載 → 去「檔案」App 搵到檔</li>
+<li>撳檔 → <strong>加入捷徑</strong></li>
+<li>打開捷徑 → 撳「IG存相」→ ⓘ → 打開<strong>在分享表單中顯示</strong></li>
+</ol>
+<a class="btn" href="https://drive.google.com/file/d/1yqDdo45WHULkwhJ8naQtt6fvo7rEUI7g/view">下載捷徑「IG存相」</a>
+<p class="note">如果問權限，選「一律允許」。</p>
+</div>
+
+<div class="card">
+<span class="step">第 4 步</span>
+<h2>平時點用</h2>
+<p style="font-size:1.15rem;margin:0;">
+IG 貼文 → 分享（紙飛機）→ 揀 <strong>IG存相</strong> → 等幾秒 → 相入相簿。
+</p>
+<p class="note">只存相（單相／輪播）。Reel／片會略過。第一次可能要喺 Scriptable 登入 IG 一次。</p>
+</div>
+
+<div class="card">
+<p class="note" style="margin:0">搞唔掂？確認腳本名係 <span class="name">IG存相解析</span>（無空格），捷徑名係 <span class="name">IG存相</span>。</p>
+</div>
+
+<div id="toast">已複製 ✓</div>
+
+<script>
+(function(){
+  var ta = document.getElementById('script');
+  var btn = document.getElementById('copyScript');
+  var toast = document.getElementById('toast');
+  function showOk(){
+    btn.textContent = '已複製 ✓';
+    btn.classList.add('done');
+    toast.style.display = 'block';
+    setTimeout(function(){ toast.style.display = 'none'; }, 1800);
+  }
+  function fallback(){
+    ta.focus();
+    ta.select();
+    ta.setSelectionRange(0, ta.value.length);
+    try {
+      var ok = document.execCommand('copy');
+      if (ok) showOk();
+      else alert('請長按下面文字框 → 全選 → 複製');
+    } catch (e) {
+      alert('請長按下面文字框 → 全選 → 複製');
+    }
+  }
+  btn.addEventListener('click', function(){
+    var text = ta.value;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(showOk).catch(fallback);
+    } else {
+      fallback();
+    }
+  });
+})();
+</script>
+</body>
+</html>

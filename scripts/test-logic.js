@@ -580,6 +580,35 @@ assert.ok(/\.choice \.jp, \.choice \.reading \{[^}]*overflow-wrap:\s*anywhere/.t
 assert.ok(css.indexOf("max(14px, 0.8rem)") !== -1);
 assert.ok(!/\.tabbar a \{[^}]*font-size:\s*11px/.test(css));
 assert.ok(sw.indexOf('key.indexOf(CACHE_PREFIX) === 0') !== -1);
+assert.ok(sw.indexOf("if (isIgSavePath(url.pathname)) return;") !== -1);
+const isIgSavePath = new Function(sw.slice(sw.indexOf("function isIgSavePath"), sw.indexOf("function fresh")) + "\nreturn isIgSavePath;")();
+assert.strictEqual(isIgSavePath("/japanese-log/ig-save/"), true);
+assert.strictEqual(isIgSavePath("/japanese-log/ig-save"), true);
+assert.strictEqual(isIgSavePath("/japanese-log/ig-save/index.html"), true);
+assert.strictEqual(isIgSavePath("/japanese-log/ig-save/IG%E5%AD%98%E7%9B%B8%E8%A7%A3%E6%9E%90.js"), true);
+assert.strictEqual(isIgSavePath("/japanese-log/"), false);
+assert.strictEqual(isIgSavePath("/japanese-log/index.html"), false);
+assert.strictEqual(isIgSavePath("/japanese-log/sw.js"), false);
+assert.strictEqual(isIgSavePath("/japanese-log/js/app.js"), false);
+const igHtml = fs.readFileSync(require("path").join(__dirname, "../ig-save/index.html"), "utf8");
+const igJs = fs.readFileSync(require("path").join(__dirname, "../ig-save/IG存相解析.js"), "utf8");
+const igScript = igHtml.match(/<textarea id="script"[^>]*>([\s\S]*?)<\/textarea>/);
+assert.ok(igScript, "install page must embed the script");
+const igDecoded = igScript[1]
+  .replace(/&lt;/g, "<")
+  .replace(/&gt;/g, ">")
+  .replace(/&quot;/g, "\"")
+  .replace(/&#x27;/g, "'")
+  .replace(/&#39;/g, "'")
+  .replace(/&amp;/g, "&");
+assert.strictEqual(igDecoded, igJs);
+assert.strictEqual(igJs.includes('const SCRIPT_NAME = "IG存相解析"'), true);
+assert.strictEqual(igJs.includes("IG存相 解析"), false);
+assert.strictEqual(igHtml.includes("複製腳本"), true);
+assert.strictEqual(igHtml.includes('lang="zh-Hant"'), true);
+assert.strictEqual(igHtml.includes("https://drive.google.com/file/d/1yqDdo45WHULkwhJ8naQtt6fvo7rEUI7g/view"), true);
+assert.strictEqual(igHtml.includes("sw.js"), false);
+assert.strictEqual(igHtml.includes("manifest.json"), false);
 assert.ok(sw.indexOf("jp-log-v15") === -1);
 assert.ok(sw.indexOf("js/sync.js") === -1);
 assert.ok(sw.indexOf("cache.addAll") === -1);
