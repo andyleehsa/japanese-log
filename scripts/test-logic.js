@@ -602,7 +602,8 @@ const igDecoded = igScript[1]
   .replace(/&#39;/g, "'")
   .replace(/&amp;/g, "&");
 assert.strictEqual(igDecoded, igJs);
-assert.strictEqual(igJs.includes('const VERSION = "1.8.0-ig-photos"'), true);
+assert.strictEqual(igJs.includes('const VERSION = "1.9.0-ig-photos"'), true);
+assert.strictEqual(igJs.includes("1.8.0-ig-photos"), false);
 assert.strictEqual(igJs.includes("1.7.0-ig-photos"), false);
 assert.strictEqual(igJs.includes("1.6.1-ig-photos"), false);
 assert.strictEqual(igJs.includes("1.6.0-ig-photos"), false);
@@ -627,7 +628,19 @@ assert.strictEqual(igJs.includes("loadString()"), true);
 assert.strictEqual(igJs.includes("function extractByRequest"), true);
 assert.strictEqual(igJs.includes("embed/captioned/"), true);
 assert.strictEqual(igJs.includes("const FETCH_SECONDS = 60"), true);
+assert.strictEqual(igJs.includes("return seconds * 1000"), true);
+assert.strictEqual(igJs.includes("timer.timeInterval = timerMs(seconds)"), true);
+assert.strictEqual(igJs.includes("timer.timeInterval = seconds"), false);
+assert.strictEqual(igJs.includes("req.timeoutInterval = FETCH_SECONDS"), true);
 assert.strictEqual(igJs.includes("attempt < 2"), true);
+{
+  const withFn = igJs.slice(igJs.indexOf("function withTimeout"), igJs.indexOf("function decodeEscapedUrl"));
+  const sleepFn = igJs.slice(igJs.indexOf("function sleepSeconds"), igJs.indexOf("function statusOf"));
+  assert.ok(withFn.includes("timer.timeInterval = timerMs(seconds)"));
+  assert.ok(sleepFn.includes("timer.timeInterval = timerMs(seconds)"));
+  assert.strictEqual(withFn.includes("timer.timeInterval = seconds"), false);
+  assert.strictEqual(sleepFn.includes("timer.timeInterval = seconds"), false);
+}
 assert.strictEqual(igJs.includes("function imagesFromHtml"), true);
 assert.strictEqual(igJs.includes("function shortcodeOf"), true);
 assert.strictEqual(igJs.includes("唔會打開 IG App"), true);
@@ -719,7 +732,8 @@ assert.strictEqual(igHtml.includes("刪走舊嘅「IG存相」"), true);
 assert.strictEqual(igHtml.includes("複製連結"), true);
 assert.strictEqual(igHtml.includes("最穩陣方法"), true);
 assert.strictEqual(igHtml.includes("撳播放"), true);
-assert.strictEqual(igHtml.includes("1.8.0-ig-photos"), true);
+assert.strictEqual(igHtml.includes("1.9.0-ig-photos"), true);
+assert.strictEqual(igHtml.includes("1.8.0-ig-photos"), false);
 assert.strictEqual(igHtml.includes("1.7.0-ig-photos"), false);
 assert.strictEqual(igHtml.includes("1.6.1-ig-photos"), false);
 assert.strictEqual(igHtml.includes("1.6.0-ig-photos"), false);

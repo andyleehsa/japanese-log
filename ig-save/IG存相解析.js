@@ -1,9 +1,16 @@
 // IG存相解析.js — Scriptable（IG 相／輪播）
-// v1.8：讀 IG 頁加長到 60 秒，每個網址超時再試一次。仍然只用 Request，唔開瀏覽頁。
-// 先 embed，再試較輕嘅 /embed/。全部超時先至話存唔到。
+// v1.9：Timer.timeInterval 係毫秒。之前把 60 當秒，實際 60 毫秒就超時。
+// Request.timeoutInterval 仍然係秒，唔好乘 1000。讀頁仍然等 60 秒，失敗再試。
 
-const VERSION = "1.8.0-ig-photos";
+const VERSION = "1.9.0-ig-photos";
 const FETCH_SECONDS = 60;
+
+// Scriptable Timer.timeInterval is milliseconds.
+// https://docs.scriptable.app/timer/
+// Request.timeoutInterval is seconds. Do not pass timerMs() to a Request.
+function timerMs(seconds) {
+  return seconds * 1000;
+}
 
 function queryBag() {
   try {
@@ -119,7 +126,7 @@ function withTimeout(promise, seconds, label) {
   return new Promise((resolve, reject) => {
     let done = false;
     const timer = new Timer();
-    timer.timeInterval = seconds;
+    timer.timeInterval = timerMs(seconds);
     timer.schedule(() => {
       if (done) return;
       done = true;
@@ -596,7 +603,7 @@ async function extractByRequest(url) {
 function sleepSeconds(seconds) {
   return new Promise(function (resolve) {
     const timer = new Timer();
-    timer.timeInterval = seconds;
+    timer.timeInterval = timerMs(seconds);
     timer.schedule(function () {
       try { timer.invalidate(); } catch (e) {}
       resolve();

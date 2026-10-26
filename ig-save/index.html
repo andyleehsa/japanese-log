@@ -75,14 +75,14 @@ textarea {
 </head>
 <body>
 <h1>IG存相 — 安裝</h1>
-<p class="sub">版本 1.8。用 Safari 開呢頁。最穩陣係複製連結之後，喺 Scriptable 撳播放。只會用網絡讀相，唔會打開 IG App。流動數據讀得慢會再試。</p>
+<p class="sub">版本 1.9。用 Safari 開呢頁。最穩陣係複製連結之後，喺 Scriptable 撳播放。只會用網絡讀相，唔會打開 IG App。讀頁而家會真正等，唔會秒彈超時。</p>
 
 <div class="warn">
 你之前裝過嘅話，一定要先做呢三樣，否則會仲係舊問題：
 <ol>
 <li>打開「捷徑」App，<strong>刪走舊嘅「IG存相」</strong></li>
 <li>呢頁拉下<strong>刷新</strong></li>
-<li>腳本要見到 <span class="name">1.8.0-ig-photos</span>，再重新下載裝捷徑</li>
+<li>腳本要見到 <span class="name">1.9.0-ig-photos</span>，再重新下載裝捷徑</li>
 </ol>
 </div>
 
@@ -106,15 +106,22 @@ textarea {
 <li>名稱改成正好：<span class="name">IG存相解析</span></li>
 <li>撳 Done 儲存</li>
 </ol>
-<div class="warn">⚠️ 名要一字唔差：<span class="name">IG存相解析</span><br/>中間<strong>唔可以有空格</strong>！<br/>貼上之後，頭幾行要見到 <span class="name">1.8.0-ig-photos</span>。見唔到就刷新再複製一次。</div>
+<div class="warn">⚠️ 名要一字唔差：<span class="name">IG存相解析</span><br/>中間<strong>唔可以有空格</strong>！<br/>貼上之後，頭幾行要見到 <span class="name">1.9.0-ig-photos</span>。見唔到就刷新再複製一次。</div>
 <button type="button" class="copy" id="copyScript">複製腳本</button>
 <p class="note">複製完會顯示「已複製」。下面細框係後備，唔使睇。</p>
 <textarea id="script" readonly>// IG存相解析.js — Scriptable（IG 相／輪播）
-// v1.8：讀 IG 頁加長到 60 秒，每個網址超時再試一次。仍然只用 Request，唔開瀏覽頁。
-// 先 embed，再試較輕嘅 /embed/。全部超時先至話存唔到。
+// v1.9：Timer.timeInterval 係毫秒。之前把 60 當秒，實際 60 毫秒就超時。
+// Request.timeoutInterval 仍然係秒，唔好乘 1000。讀頁仍然等 60 秒，失敗再試。
 
-const VERSION = "1.8.0-ig-photos";
+const VERSION = "1.9.0-ig-photos";
 const FETCH_SECONDS = 60;
+
+// Scriptable Timer.timeInterval is milliseconds.
+// https://docs.scriptable.app/timer/
+// Request.timeoutInterval is seconds. Do not pass timerMs() to a Request.
+function timerMs(seconds) {
+  return seconds * 1000;
+}
 
 function queryBag() {
   try {
@@ -230,7 +237,7 @@ function withTimeout(promise, seconds, label) {
   return new Promise((resolve, reject) =&gt; {
     let done = false;
     const timer = new Timer();
-    timer.timeInterval = seconds;
+    timer.timeInterval = timerMs(seconds);
     timer.schedule(() =&gt; {
       if (done) return;
       done = true;
@@ -707,7 +714,7 @@ async function extractByRequest(url) {
 function sleepSeconds(seconds) {
   return new Promise(function (resolve) {
     const timer = new Timer();
-    timer.timeInterval = seconds;
+    timer.timeInterval = timerMs(seconds);
     timer.schedule(function () {
       try { timer.invalidate(); } catch (e) {}
       resolve();
@@ -875,13 +882,13 @@ Script.complete();
 <div class="card">
 <span class="step">第 3 步</span>
 <h2>最穩陣方法（唔經捷徑）</h2>
-<div class="use">複製連結 → 打開 Scriptable → 撳播放<span>撳「IG存相解析」上面嘅播放掣。第一句要係「IG存相 1.8.0-ig-photos」。全程留喺 Scriptable，唔會打開 IG App。</span></div>
+<div class="use">複製連結 → 打開 Scriptable → 撳播放<span>撳「IG存相解析」上面嘅播放掣。第一句要係「IG存相 1.9.0-ig-photos」。全程留喺 Scriptable，唔會打開 IG App。</span></div>
 <ol>
 <li>喺 IG 撳<strong>「複製連結」</strong></li>
 <li>打開 <strong>Scriptable</strong>（唔好開捷徑）</li>
 <li>撳 <span class="name">IG存相解析</span> 嘅<strong>播放</strong></li>
 </ol>
-<p class="note">輪播同單張都用呢條。第一句係版本。跟住要嘛「已存相」，要嘛 Scriptable 入面彈「存唔到」或「下載失敗」。唔會彈出 IG App。如果見到 IG App，即係腳本未係 1.8，刷新再複製。如果話「連線超時」，轉 Wi‑Fi 或者再撳播放，流動數據會慢啲。只有「存唔入相簿」先至去設定改相片。</p>
+<p class="note">輪播同單張都用呢條。第一句係版本。跟住要嘛「已存相」，要嘛 Scriptable 入面彈「存唔到」或「下載失敗」。唔會彈出 IG App。如果幾秒內就彈「連線超時」，即係腳本未係 1.9，刷新再複製。1.9 會真正等一陣先至話超時。只有「存唔入相簿」先至去設定改相片。</p>
 </div>
 
 <div class="card">
