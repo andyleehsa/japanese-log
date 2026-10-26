@@ -4,6 +4,8 @@
 
 開啟網址：<https://andyleehsa.github.io/japanese-log/>
 
+IG存相安裝頁（Safari，與上面的學習頁分開）：<https://andyleehsa.github.io/japanese-log/ig-save/>
+
 ## 開啟 GitHub Pages
 
 1. 打開 <https://github.com/andyleehsa/japanese-log>
@@ -35,6 +37,7 @@
 | `content/units-index.json` | 等級與單元路線 |
 | `content/units/` | 已開放單元的課文 |
 | `docs/` | 設定、課文格式、單元說明 |
+| `ig-save/` | IG存相的 iPhone 安裝頁，與日文學習頁分開 |
 | `scripts/validate-content.js` | 檢查課文，不需第三方套件 |
 | `scripts/check_unit.py` | 同一套單元檢查的 Python 版本 |
 | `scripts/test-logic.js` | 判分、進度與回饋的邏輯測試 |
