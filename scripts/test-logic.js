@@ -602,7 +602,8 @@ const igDecoded = igScript[1]
   .replace(/&#39;/g, "'")
   .replace(/&amp;/g, "&");
 assert.strictEqual(igDecoded, igJs);
-assert.strictEqual(igJs.includes('const VERSION = "1.6.1-ig-photos"'), true);
+assert.strictEqual(igJs.includes('const VERSION = "1.7.0-ig-photos"'), true);
+assert.strictEqual(igJs.includes("1.6.1-ig-photos"), false);
 assert.strictEqual(igJs.includes("1.6.0-ig-photos"), false);
 assert.strictEqual(igJs.includes("1.5.0-ig-photos"), false);
 assert.strictEqual(igJs.includes("1.4.0-ig-photos"), false);
@@ -618,13 +619,14 @@ assert.ok(igMain.indexOf("if (fromShortcut)") < igMain.indexOf("url = await askU
 assert.strictEqual(igJs.includes("冇帶到連結"), true);
 assert.strictEqual(igJs.includes("請睇 IG 頁"), false);
 assert.strictEqual(igJs.includes('a.addAction("繼續")'), false);
-assert.strictEqual(igJs.includes("await wv.present(true);"), true);
-assert.strictEqual(igJs.includes("wv.loadURL(safe)"), true);
-assert.strictEqual(igJs.includes("wv.loadURL(url)"), false);
-assert.strictEqual(igJs.includes("#weblink"), true);
+assert.strictEqual(igJs.includes("WebView"), false);
+assert.strictEqual(igJs.includes("loadURL"), false);
+assert.strictEqual(igJs.includes("#weblink"), false);
 assert.strictEqual(igJs.includes("loadString()"), true);
+assert.strictEqual(igJs.includes("function extractByRequest"), true);
+assert.strictEqual(igJs.includes("embed/captioned/"), true);
 assert.strictEqual(igJs.includes("function imagesFromHtml"), true);
-assert.strictEqual(igJs.includes("stayInScriptableUrl"), true);
+assert.strictEqual(igJs.includes("function shortcodeOf"), true);
 assert.strictEqual(igJs.includes("唔會打開 IG App"), true);
 assert.strictEqual(igJs.includes('req.timeoutInterval = 60'), true);
 assert.strictEqual(igJs.includes("function attemptSequence"), true);
@@ -633,13 +635,14 @@ assert.strictEqual(igJs.includes("Script.complete();"), true);
 {
   const vm = require("vm");
   const pureStart = igJs.indexOf("function decodeEscapedUrl");
-  const pureEnd = igJs.indexOf("async function fetchHtml");
+  const pureEnd = igJs.indexOf("async function fetchText");
   const sandbox = {};
   vm.runInNewContext(
     igJs.slice(pureStart, pureEnd) +
       "\nthis.imagesFromHtml = imagesFromHtml;" +
-      "\nthis.stayInScriptableUrl = stayInScriptableUrl;" +
-      "\nthis.pageCandidates = pageCandidates;" +
+      "\nthis.shortcodeOf = shortcodeOf;" +
+      "\nthis.httpTargets = httpTargets;" +
+      "\nthis.missingReason = missingReason;" +
       "\nthis.downloadPlan = downloadPlan;" +
       "\nthis.attemptSequence = attemptSequence;" +
       "\nthis.imageHeaders = imageHeaders;" +
@@ -658,13 +661,22 @@ assert.strictEqual(igJs.includes("Script.complete();"), true);
   assert.ok(parsed.images.indexOf("https://scontent.cdninstagram.com/v/img.jpg") !== -1);
   assert.ok(parsed.images.every((u) => u.indexOf("rsrc.php") === -1 && u.indexOf("static.cdninstagram") === -1));
   assert.ok(parsed.skippedVideo >= 1);
-  assert.strictEqual(
-    sandbox.stayInScriptableUrl("https://www.instagram.com/p/AbC/?igsh=1"),
-    "https://www.instagram.com/p/AbC/?igsh=1#weblink"
-  );
-  assert.strictEqual(sandbox.stayInScriptableUrl("https://example.com/p/AbC").indexOf("#weblink"), -1);
-  const pages = sandbox.pageCandidates("https://www.instagram.com/p/AbC123/");
-  assert.ok(pages.indexOf("https://www.instagram.com/p/AbC123/embed/captioned/") !== -1);
+  assert.strictEqual(sandbox.shortcodeOf("https://www.instagram.com/p/AbC123/?igsh=1"), "AbC123");
+  assert.strictEqual(sandbox.shortcodeOf("https://www.instagram.com/share/ZZZ"), "");
+  const targets = sandbox.httpTargets("https://www.instagram.com/p/AbC123/?igsh=1");
+  assert.ok(targets[0].indexOf("/p/AbC123/embed/captioned/") !== -1);
+  const embedHtml =
+    '<img class="EmbeddedMediaImage" src="https://scontent.cdninstagram.com/v/t51.71878-15/a_n.jpg?stp=dst-jpg_e15_s480x480_tt6&amp;_nc_cat=1" />' +
+    '<img src="https://scontent.cdninstagram.com/v/t51.2885-19/p_n.jpg?stp=dst-jpg_s100x100_tt6&amp;_nc_cat=1" />';
+  const emb = sandbox.imagesFromHtml(embedHtml);
+  assert.strictEqual(emb.images.length, 1);
+  assert.ok(emb.images[0].indexOf("s480x480") !== -1);
+  assert.strictEqual(emb.images[0].indexOf("&amp;"), -1);
+  assert.ok(sandbox.missingReason({ fetched: 1 }).indexOf("冇相片") !== -1);
+  const refused = sandbox.saveFailureMessage(["HTTP 403"]);
+  assert.strictEqual(refused.title, "下載失敗");
+  assert.ok(refused.message.indexOf("拒絕") !== -1);
+  assert.strictEqual(refused.message.indexOf("所有相片"), -1);
   const sized =
     '{"image_versions2":{"candidates":[' +
     '{"width":2160,"url":"https://scontent.cdninstagram.com/v/big.jpg?stp=dst-jpg_e35","estimated_scans_sizes":[10,20]},' +
@@ -700,11 +712,12 @@ assert.strictEqual(igHtml.includes("刪走舊嘅「IG存相」"), true);
 assert.strictEqual(igHtml.includes("複製連結"), true);
 assert.strictEqual(igHtml.includes("最穩陣方法"), true);
 assert.strictEqual(igHtml.includes("撳播放"), true);
-assert.strictEqual(igHtml.includes("1.6.1-ig-photos"), true);
+assert.strictEqual(igHtml.includes("1.7.0-ig-photos"), true);
+assert.strictEqual(igHtml.includes("1.6.1-ig-photos"), false);
 assert.strictEqual(igHtml.includes("1.6.0-ig-photos"), false);
+assert.strictEqual(igHtml.includes("唔會打開 IG App"), true);
 assert.strictEqual(igHtml.includes("1.5.0-ig-photos"), false);
 assert.strictEqual(igHtml.includes("1.4.0-ig-photos"), false);
-assert.strictEqual(igHtml.includes("唔會再跳去 IG App"), true);
 const igShortcut = fs.readFileSync(require("path").join(__dirname, "../ig-save/IG-save.shortcut"));
 assert.strictEqual(igShortcut.subarray(0, 4).toString("utf8"), "AEA1");
 require("child_process").execFileSync("python3", [
