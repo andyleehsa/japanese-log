@@ -602,7 +602,8 @@ const igDecoded = igScript[1]
   .replace(/&#39;/g, "'")
   .replace(/&amp;/g, "&");
 assert.strictEqual(igDecoded, igJs);
-assert.strictEqual(igJs.includes('const VERSION = "1.9.2-ig-photos"'), true);
+assert.strictEqual(igJs.includes('const VERSION = "1.9.3-ig-photos"'), true);
+assert.strictEqual(igJs.includes("1.9.2-ig-photos"), false);
 assert.strictEqual(igJs.includes("1.9.1-ig-photos"), false);
 assert.strictEqual(igJs.includes("1.9.0-ig-photos"), false);
 assert.strictEqual(igJs.includes("1.8.0-ig-photos"), false);
@@ -657,6 +658,17 @@ assert.strictEqual(igJs.includes("EmbeddedMediaImage"), true);
 assert.strictEqual(igJs.includes("const reAny"), false);
 assert.strictEqual(igJs.includes("張失敗"), false);
 assert.strictEqual(igJs.includes("張未存到"), true);
+assert.strictEqual(igJs.includes("搵到 "), true);
+assert.strictEqual(igJs.includes("全部存"), true);
+assert.strictEqual(igJs.includes("揀邊啲存"), true);
+assert.strictEqual(igJs.includes("new UITable()"), true);
+assert.strictEqual(igJs.includes("dismissOnSelect = false"), true);
+assert.strictEqual(igJs.includes("存已揀嘅相"), true);
+{
+  const chooseFn = igJs.slice(igJs.indexOf("async function chooseImages"), igJs.indexOf("async function main"));
+  assert.ok(chooseFn.indexOf("count <= 1") !== -1);
+  assert.ok(chooseFn.indexOf("count <= 1") < chooseFn.indexOf("askCarouselMode"));
+}
 assert.strictEqual(igJs.includes("搵到相但存唔入。請去 iPhone 設定"), false);
 assert.strictEqual(igJs.includes("Script.complete();"), true);
 {
@@ -673,7 +685,9 @@ assert.strictEqual(igJs.includes("Script.complete();"), true);
       "\nthis.downloadPlan = downloadPlan;" +
       "\nthis.attemptSequence = attemptSequence;" +
       "\nthis.imageHeaders = imageHeaders;" +
-      "\nthis.saveFailureMessage = saveFailureMessage;",
+      "\nthis.saveFailureMessage = saveFailureMessage;" +
+      "\nthis.chosenIndices = chosenIndices;" +
+      "\nthis.subsetPairs = subsetPairs;",
     sandbox
   );
   const sample =
@@ -787,6 +801,19 @@ assert.strictEqual(igJs.includes("Script.complete();"), true);
   assert.strictEqual(loose.images.length, 1);
   assert.ok(loose.images[0].indexOf("real.jpg") !== -1);
   assert.strictEqual(loose.skippedVideo, 0);
+  const allIdx = sandbox.chosenIndices(1, "all", []);
+  assert.strictEqual(allIdx.length, 1);
+  assert.strictEqual(allIdx[0], 0);
+  const pickedIdx = sandbox.chosenIndices(4, "pick", [2, 0, 2]);
+  assert.strictEqual(pickedIdx.length, 2);
+  assert.strictEqual(pickedIdx[0], 0);
+  assert.strictEqual(pickedIdx[1], 2);
+  assert.strictEqual(sandbox.chosenIndices(4, "cancel", [1]).length, 0);
+  const subset = sandbox.subsetPairs(["a", "b", "c"], [["a1"], ["b1"], ["c1"]], [0, 2]);
+  assert.strictEqual(subset.images.length, 2);
+  assert.strictEqual(subset.images[0], "a");
+  assert.strictEqual(subset.images[1], "c");
+  assert.strictEqual(subset.fallbacks[1][0], "c1");
 }
 assert.strictEqual(igJs.includes("IG存相 解析"), false);
 assert.strictEqual(igHtml.includes(">IG存相解析<"), true);
@@ -797,8 +824,10 @@ assert.strictEqual(igHtml.includes("刪走舊嘅「IG存相」"), true);
 assert.strictEqual(igHtml.includes("複製連結"), true);
 assert.strictEqual(igHtml.includes("最穩陣方法"), true);
 assert.strictEqual(igHtml.includes("撳播放"), true);
-assert.strictEqual(igHtml.includes("1.9.2-ig-photos"), true);
+assert.strictEqual(igHtml.includes("1.9.3-ig-photos"), true);
+assert.strictEqual(igHtml.includes("1.9.2-ig-photos"), false);
 assert.strictEqual(igHtml.includes("1.9.1-ig-photos"), false);
+assert.strictEqual(igHtml.includes("揀邊啲存"), true);
 assert.strictEqual(igHtml.includes("1.9.0-ig-photos"), false);
 assert.strictEqual(igHtml.includes("1.8.0-ig-photos"), false);
 assert.strictEqual(igHtml.includes("1.7.0-ig-photos"), false);

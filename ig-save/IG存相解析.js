@@ -1,10 +1,12 @@
 // IG存相解析.js — Scriptable（IG 相／輪播）
 // v1.9：Timer.timeInterval 係毫秒。之前把 60 當秒，實際 60 毫秒就超時。
 // Request.timeoutInterval 仍然係秒，唔好乘 1000。讀頁仍然等 60 秒，失敗再試。
-// v1.9.2：存相簿用 Image.fromData 再 Photos.save。只存呢篇貼文嘅相，輪播存晒每張。
+// v1.9.3：存相簿用 Image.fromData 再 Photos.save。只存呢篇嘅相。
+// 單張直接存。輪播可以全部存，或者喺表入面揀邊啲先存。
 // https://docs.scriptable.app/image/  https://docs.scriptable.app/photos/
+// https://docs.scriptable.app/uitable/
 
-const VERSION = "1.9.2-ig-photos";
+const VERSION = "1.9.3-ig-photos";
 const FETCH_SECONDS = 60;
 
 // Scriptable Timer.timeInterval is milliseconds.
@@ -710,6 +712,39 @@ function missingReason(info) {
   return "連線失敗，讀唔到 IG。請轉 Wi‑Fi，或者再撳播放試一次。" + (item.lastError ? "\n" + item.lastError : "");
 }
 
+function chosenIndices(count, mode, picked) {
+  const n = count || 0;
+  if (n <= 0 || mode === "cancel") return [];
+  if (mode === "all" || n === 1) {
+    const all = [];
+    for (let i = 0; i < n; i++) all.push(i);
+    return all;
+  }
+  const out = [];
+  const src = picked || [];
+  for (let i = 0; i < src.length; i++) {
+    const idx = src[i];
+    if (idx >= 0 && idx < n && out.indexOf(idx) < 0) out.push(idx);
+  }
+  out.sort(function (a, b) { return a - b; });
+  return out;
+}
+
+function subsetPairs(images, fallbacks, indices) {
+  const urls = [];
+  const alts = [];
+  const imgs = images || [];
+  const fb = fallbacks || [];
+  const order = indices || [];
+  for (let i = 0; i < order.length; i++) {
+    const idx = order[i];
+    if (!imgs[idx]) continue;
+    urls.push(imgs[idx]);
+    alts.push(fb[idx] || []);
+  }
+  return { images: urls, fallbacks: alts };
+}
+
 function htmlHeaders() {
   return {
     "User-Agent": SAFARI_UA,
@@ -933,6 +968,134 @@ async function saveImages(urls, fallbacks) {
   return { saved, errors };
 }
 
+function styleChoiceCell(cell, on) {
+  try {
+    cell.titleFont = Font.boldSystemFont(22);
+    cell.subtitleFont = Font.systemFont(16);
+    if (on === true) cell.titleColor = Color.green();
+    else if (on === false) cell.titleColor = Color.gray();
+  } catch (e) {}
+}
+
+async function askCarouselMode(count) {
+  const a = new Alert();
+  a.title = "搵到 " + count + " 張相";
+  a.message = "可以全部存，或者揀邊啲先存。";
+  a.addAction("全部存");
+  a.addAction("揀邊啲存");
+  a.addCancelAction("取消");
+  const idx = await a.present();
+  if (idx === -1) return "cancel";
+  if (idx === 0) return "all";
+  return "pick";
+}
+
+async function pickByAlerts(count) {
+  const picked = [];
+  for (let i = 0; i < count; i++) {
+    const a = new Alert();
+    a.title = "第 " + (i + 1) + "／" + count + " 張";
+    a.message = "呢張存唔存？";
+    a.addAction("存呢張");
+    a.addAction("唔存呢張");
+    a.addAction("之後全部都存");
+    a.addCancelAction("取消");
+    const idx = await a.present();
+    if (idx === -1) return null;
+    if (idx === 0) picked.push(i);
+    if (idx === 2) {
+      for (let j = i; j < count; j++) picked.push(j);
+      break;
+    }
+  }
+  return picked;
+}
+
+async function pickWithTable(count) {
+  const selected = [];
+  for (let i = 0; i < count; i++) selected.push(true);
+  let decision = "cancel";
+  const table = new UITable();
+  table.showSeparators = true;
+
+  function rebuild(live) {
+    table.removeAllRows();
+    const hint = new UITableRow();
+    const hintCell = hint.addText("揀要存嘅相", "打勾＝會存。撳一行就轉。");
+    styleChoiceCell(hintCell);
+    table.addRow(hint);
+    for (let i = 0; i < count; i++) {
+      const row = new UITableRow();
+      row.dismissOnSelect = false;
+      row.onSelect = function (index) {
+        selected[index] = !selected[index];
+        rebuild(true);
+      }.bind(null, i);
+      const on = selected[i];
+      const cell = row.addText(
+        (on ? "✓  存  第 " : "○  唔存  第 ") + (i + 1) + " 張",
+        on ? "撳一下就唔存呢張" : "撳一下就存呢張"
+      );
+      styleChoiceCell(cell, on);
+      table.addRow(row);
+    }
+    const allRow = new UITableRow();
+    allRow.dismissOnSelect = false;
+    allRow.onSelect = function () {
+      for (let n = 0; n < count; n++) selected[n] = true;
+      rebuild(true);
+    };
+    const allCell = allRow.addText("全選", "全部打勾");
+    styleChoiceCell(allCell);
+    table.addRow(allRow);
+    const saveRow = new UITableRow();
+    saveRow.dismissOnSelect = true;
+    saveRow.onSelect = function () { decision = "save"; };
+    const saveCell = saveRow.addText("存已揀嘅相", "撳呢行就開始下載");
+    styleChoiceCell(saveCell, true);
+    table.addRow(saveRow);
+    const cancelRow = new UITableRow();
+    cancelRow.dismissOnSelect = true;
+    cancelRow.onSelect = function () { decision = "cancel"; };
+    const cancelCell = cancelRow.addText("取消", "唔存，返回");
+    styleChoiceCell(cancelCell, false);
+    table.addRow(cancelRow);
+    if (live) table.reload();
+  }
+
+  rebuild(false);
+  await table.present(true);
+  if (decision !== "save") return null;
+  const picked = [];
+  for (let i = 0; i < count; i++) if (selected[i]) picked.push(i);
+  return picked;
+}
+
+async function pickIndices(count) {
+  try {
+    if (typeof UITable !== "function") return await pickByAlerts(count);
+    return await pickWithTable(count);
+  } catch (e) {
+    return await pickByAlerts(count);
+  }
+}
+
+async function chooseImages(images, fallbacks) {
+  const count = (images || []).length;
+  if (count <= 1) {
+    return { images: images || [], fallbacks: fallbacks || [], cancelled: false };
+  }
+  const mode = await askCarouselMode(count);
+  if (mode === "cancel") return { images: [], fallbacks: [], cancelled: true, reason: "cancel" };
+  if (mode === "all") return { images: images, fallbacks: fallbacks || [], cancelled: false };
+  const picked = await pickIndices(count);
+  if (!picked) return { images: [], fallbacks: [], cancelled: true, reason: "cancel" };
+  const indices = chosenIndices(count, "pick", picked);
+  if (!indices.length) return { images: [], fallbacks: [], cancelled: true, reason: "none" };
+  const subset = subsetPairs(images, fallbacks, indices);
+  return { images: subset.images, fallbacks: subset.fallbacks, cancelled: false };
+}
+
 async function main() {
   await say("IG存相 " + VERSION, "腳本已開始。只會用網絡讀相，唔會打開 IG App。");
   const fromShortcut = openedFromShortcut(queryBag());
@@ -989,10 +1152,17 @@ async function main() {
     return;
   }
 
+  const choice = await chooseImages(extracted.images, extracted.fallbacks);
+  if (choice.cancelled) {
+    if (choice.reason === "none") await say("未揀相", "冇揀任何相，已取消。");
+    else await say("已取消", "冇存相。");
+    return;
+  }
+
   let saved = 0;
   let errors = [];
   try {
-    const r = await saveImages(extracted.images, extracted.fallbacks);
+    const r = await saveImages(choice.images, choice.fallbacks);
     saved = r.saved;
     errors = r.errors;
   } catch (e) {
