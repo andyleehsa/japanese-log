@@ -75,14 +75,14 @@ textarea {
 </head>
 <body>
 <h1>IG存相 — 安裝</h1>
-<p class="sub">版本 1.9.4。用 Safari 開呢頁。最穩陣係複製連結之後，喺 Scriptable 撳播放。只會用網絡讀相，唔會打開 IG App。只存呢條連結嗰篇嘅相。單張直接存。輪播會問你「全部存」定「揀邊啲存」，揀嘅時候會見到每張相嘅細圖。</p>
+<p class="sub">版本 1.9.5。用 Safari 開呢頁。最穩陣係複製連結之後，喺 Scriptable 撳播放。只會用網絡讀相，唔會打開 IG App。只存呢條連結嗰篇嘅相。單張直接存。輪播會問你「全部存」定「揀邊啲存」。揀嘅時候會用同存相一樣嘅方法載入每張相，見到相先至揀。</p>
 
 <div class="warn">
 你之前裝過嘅話，一定要先做呢三樣，否則會仲係舊問題：
 <ol>
 <li>打開「捷徑」App，<strong>刪走舊嘅「IG存相」</strong></li>
 <li>呢頁拉下<strong>刷新</strong></li>
-<li>腳本要見到 <span class="name">1.9.4-ig-photos</span>，再重新下載裝捷徑</li>
+<li>腳本要見到 <span class="name">1.9.5-ig-photos</span>，再重新下載裝捷徑</li>
 </ol>
 </div>
 
@@ -106,7 +106,7 @@ textarea {
 <li>名稱改成正好：<span class="name">IG存相解析</span></li>
 <li>撳 Done 儲存</li>
 </ol>
-<div class="warn">⚠️ 名要一字唔差：<span class="name">IG存相解析</span><br/>中間<strong>唔可以有空格</strong>！<br/>貼上之後，頭幾行要見到 <span class="name">1.9.4-ig-photos</span>。見唔到就刷新再複製一次。</div>
+<div class="warn">⚠️ 名要一字唔差：<span class="name">IG存相解析</span><br/>中間<strong>唔可以有空格</strong>！<br/>貼上之後，頭幾行要見到 <span class="name">1.9.5-ig-photos</span>。見唔到就刷新再複製一次。</div>
 <button type="button" class="copy" id="copyScript">複製腳本</button>
 <p class="note">複製完會顯示「已複製」。下面細框係後備，唔使睇。</p>
 <textarea id="script" readonly>// IG存相解析.js — Scriptable（IG 相／輪播）
@@ -114,10 +114,13 @@ textarea {
 // Request.timeoutInterval 仍然係秒，唔好乘 1000。讀頁仍然等 60 秒，失敗再試。
 // v1.9.4：存相簿用 Image.fromData 再 Photos.save。只存呢篇嘅相。
 // 單張直接存。輪播可以全部存，或者睇住細圖揀邊啲先存。
+// v1.9.5：預覽唔再改 CDN 網址。1.9.4 把簽名網址改成 s320，每張都預覽失敗。
+// 而家預覽用同 Photos.save 一樣嘅下載（imageHeaders、60 秒、重試），再喺記憶體縮細顯示。
 // https://docs.scriptable.app/image/  https://docs.scriptable.app/photos/
-// https://docs.scriptable.app/uitable/
+// https://docs.scriptable.app/uitable/  https://docs.scriptable.app/quicklook/
+// https://docs.scriptable.app/drawcontext/
 
-const VERSION = "1.9.4-ig-photos";
+const VERSION = "1.9.5-ig-photos";
 const FETCH_SECONDS = 60;
 
 // Scriptable Timer.timeInterval is milliseconds.
@@ -684,29 +687,9 @@ function downloadPlan(url, extras) {
   return ordered.slice(0, 4);
 }
 
-function previewUrl(url, extras) {
-  const list = [];
-  function push(raw) {
-    const u = decodeEscapedUrl(raw);
-    if (!u || list.indexOf(u) &gt;= 0) return;
-    list.push(u);
-  }
-  push(url);
-  const extraList = extras || [];
-  for (let i = 0; i &lt; extraList.length; i++) push(extraList[i]);
-  let best = "";
-  let bestW = 99999;
-  for (let i = 0; i &lt; list.length; i++) {
-    const w = widthHint(list[i]);
-    if (w &gt;= 160 &amp;&amp; w &lt;= 480 &amp;&amp; w &lt; bestW) {
-      best = list[i];
-      bestW = w;
-    }
-  }
-  if (best) return best;
-  const seed = list[0] || "";
-  if (!seed) return "";
-  return withStp(seed, "dst-jpg_e35_s320x320_tt6");
+function previewRequestUrl(url, extras) {
+  const plan = downloadPlan(url, extras);
+  return plan.length ? plan[0] : "";
 }
 
 function attemptSequence(plan) {
@@ -1062,15 +1045,54 @@ async function loadImageOnce(url) {
   return data;
 }
 
-async function loadPreviewImage(url) {
+async function downloadImageData(url, extras) {
+  const seq = attemptSequence(downloadPlan(url, extras));
+  let lastError = "download_timeout";
+  for (let t = 0; t &lt; seq.length; t++) {
+    try {
+      return await loadImageOnce(seq[t]);
+    } catch (e) {
+      lastError = String(e &amp;&amp; e.message ? e.message : e);
+      if (t &lt; seq.length - 1) {
+        try { await sleepSeconds(1.2); } catch (err) {}
+      }
+    }
+  }
+  throw new Error(lastError || "download_timeout");
+}
+
+function scaledPreview(image) {
+  try {
+    if (!image) return null;
+    if (typeof DrawContext !== "function" || typeof Size !== "function" || typeof Rect !== "function") return image;
+    const size = image.size;
+    const w = size &amp;&amp; size.width;
+    const h = size &amp;&amp; size.height;
+    if (!w || !h) return image;
+    const maxEdge = 220;
+    if (w &lt;= maxEdge &amp;&amp; h &lt;= maxEdge) return image;
+    const scale = maxEdge / Math.max(w, h);
+    const tw = Math.max(1, Math.round(w * scale));
+    const th = Math.max(1, Math.round(h * scale));
+    const ctx = new DrawContext();
+    ctx.opaque = true;
+    ctx.respectScreenScale = true;
+    ctx.size = new Size(tw, th);
+    ctx.drawImageInRect(image, new Rect(0, 0, tw, th));
+    return ctx.getImage() || image;
+  } catch (e) {
+    return image;
+  }
+}
+
+async function loadPreviewImage(url, extras) {
   if (!url) return null;
   try {
-    const req = new Request(url);
-    req.timeoutInterval = 8;
-    req.headers = imageHeaders();
-    const data = await withTimeout(req.load(), 8, "preview_timeout");
-    if (!data || data.byteLength &lt; 200) return null;
-    return Image.fromData(data) || null;
+    const data = await downloadImageData(url, extras);
+    const full = Image.fromData(data);
+    if (!full) return null;
+    const thumb = scaledPreview(full) || full;
+    return { full: full, thumb: thumb, data: data };
   } catch (e) {
     return null;
   }
@@ -1080,7 +1102,7 @@ async function loadPreviews(images, fallbacks) {
   const imgs = images || [];
   const fb = fallbacks || [];
   const jobs = [];
-  for (let i = 0; i &lt; imgs.length; i++) jobs.push(loadPreviewImage(previewUrl(imgs[i], fb[i])));
+  for (let i = 0; i &lt; imgs.length; i++) jobs.push(loadPreviewImage(imgs[i], fb[i]));
   try {
     return await Promise.all(jobs);
   } catch (e) {
@@ -1097,36 +1119,38 @@ async function saveDownloadedImage(data) {
   await Photos.save(image);
 }
 
-async function saveImages(urls, fallbacks) {
+async function saveImages(urls, fallbacks, cached) {
   let saved = 0;
   const errors = [];
   const list = urls || [];
   const alts = fallbacks || [];
+  const ready = cached || [];
   for (let i = 0; i &lt; list.length; i++) {
-    const seq = attemptSequence(downloadPlan(list[i], alts[i]));
-    let data = null;
-    let lastError = "download_timeout";
-    for (let t = 0; t &lt; seq.length; t++) {
-      try {
-        data = await loadImageOnce(seq[t]);
-        lastError = "";
-        break;
-      } catch (e) {
-        lastError = String(e &amp;&amp; e.message ? e.message : e);
-        if (t &lt; seq.length - 1) {
-          try { await sleepSeconds(1.2); } catch (err) {}
-        }
-      }
-    }
+    let data = ready[i] || null;
+    const usedCache = !!data;
     if (!data) {
-      errors.push(lastError || "download_timeout");
-      continue;
+      try {
+        data = await downloadImageData(list[i], alts[i]);
+      } catch (e) {
+        errors.push(String(e &amp;&amp; e.message ? e.message : e));
+        continue;
+      }
     }
     try {
       await saveDownloadedImage(data);
       saved++;
     } catch (e) {
-      errors.push(String(e &amp;&amp; e.message ? e.message : e).slice(0, 180));
+      if (!usedCache) {
+        errors.push(String(e &amp;&amp; e.message ? e.message : e).slice(0, 180));
+        continue;
+      }
+      try {
+        const fresh = await downloadImageData(list[i], alts[i]);
+        await saveDownloadedImage(fresh);
+        saved++;
+      } catch (e2) {
+        errors.push(String(e2 &amp;&amp; e2.message ? e2.message : e2).slice(0, 180));
+      }
     }
   }
   return { saved, errors };
@@ -1199,7 +1223,7 @@ async function pickWithTable(count, previews) {
     table.addRow(hint);
     for (let i = 0; i &lt; count; i++) {
       const row = new UITableRow();
-      try { row.height = 110; } catch (e) {}
+      try { row.height = 168; } catch (e) {}
       row.dismissOnSelect = false;
       row.onSelect = function (index) {
         selected[index] = !selected[index];
@@ -1237,7 +1261,7 @@ async function pickWithTable(count, previews) {
     const saveRow = new UITableRow();
     saveRow.dismissOnSelect = true;
     saveRow.onSelect = function () { decision = "save"; };
-    const saveCell = saveRow.addText("存已揀嘅相", "撳呢行就開始下載大圖");
+    const saveCell = saveRow.addText("存已揀嘅相", "撳呢行就存入相簿");
     styleChoiceCell(saveCell, true);
     table.addRow(saveRow);
     const cancelRow = new UITableRow();
@@ -1260,13 +1284,30 @@ async function pickWithTable(count, previews) {
 
 async function pickIndices(images, fallbacks) {
   const count = (images || []).length;
-  const previews = await loadPreviews(images, fallbacks);
-  try {
-    if (typeof UITable !== "function") return await pickByLooking(count, previews);
-    return await pickWithTable(count, previews);
-  } catch (e) {
-    return await pickByLooking(count, previews);
+  const wait = new Alert();
+  wait.title = "載入緊相";
+  wait.message = "用同存相一樣嘅方法下載 " + count + " 張預覽。下載完就見到相，請稍等。";
+  wait.addAction("開始載入");
+  wait.addCancelAction("取消");
+  if ((await wait.present()) === -1) return { picked: null, bytes: [] };
+  const loaded = await loadPreviews(images, fallbacks);
+  const thumbs = [];
+  const fulls = [];
+  const bytes = [];
+  for (let i = 0; i &lt; count; i++) {
+    const item = loaded[i];
+    fulls.push(item &amp;&amp; item.full ? item.full : null);
+    thumbs.push(item &amp;&amp; (item.thumb || item.full) ? (item.thumb || item.full) : null);
+    bytes.push(item &amp;&amp; item.data ? item.data : null);
   }
+  let picked = null;
+  try {
+    if (typeof UITable !== "function") picked = await pickByLooking(count, fulls);
+    else picked = await pickWithTable(count, thumbs);
+  } catch (e) {
+    picked = await pickByLooking(count, fulls);
+  }
+  return { picked: picked, bytes: bytes };
 }
 
 async function chooseImages(images, fallbacks) {
@@ -1277,12 +1318,16 @@ async function chooseImages(images, fallbacks) {
   const mode = await askCarouselMode(count);
   if (mode === "cancel") return { images: [], fallbacks: [], cancelled: true, reason: "cancel" };
   if (mode === "all") return { images: images, fallbacks: fallbacks || [], cancelled: false };
-  const picked = await pickIndices(images, fallbacks);
+  const pack = await pickIndices(images, fallbacks);
+  const picked = pack &amp;&amp; pack.picked;
   if (!picked) return { images: [], fallbacks: [], cancelled: true, reason: "cancel" };
   const indices = chosenIndices(count, "pick", picked);
   if (!indices.length) return { images: [], fallbacks: [], cancelled: true, reason: "none" };
   const subset = subsetPairs(images, fallbacks, indices);
-  return { images: subset.images, fallbacks: subset.fallbacks, cancelled: false };
+  const cached = [];
+  const bytes = (pack &amp;&amp; pack.bytes) || [];
+  for (let i = 0; i &lt; indices.length; i++) cached.push(bytes[indices[i]] || null);
+  return { images: subset.images, fallbacks: subset.fallbacks, cached: cached, cancelled: false };
 }
 
 async function main() {
@@ -1351,7 +1396,7 @@ async function main() {
   let saved = 0;
   let errors = [];
   try {
-    const r = await saveImages(choice.images, choice.fallbacks);
+    const r = await saveImages(choice.images, choice.fallbacks, choice.cached);
     saved = r.saved;
     errors = r.errors;
   } catch (e) {
@@ -1388,13 +1433,13 @@ Script.complete();
 <div class="card">
 <span class="step">第 3 步</span>
 <h2>最穩陣方法（唔經捷徑）</h2>
-<div class="use">複製連結 → 打開 Scriptable → 撳播放<span>撳「IG存相解析」上面嘅播放掣。第一句要係「IG存相 1.9.4-ig-photos」。全程留喺 Scriptable，唔會打開 IG App。</span></div>
+<div class="use">複製連結 → 打開 Scriptable → 撳播放<span>撳「IG存相解析」上面嘅播放掣。第一句要係「IG存相 1.9.5-ig-photos」。全程留喺 Scriptable，唔會打開 IG App。</span></div>
 <ol>
 <li>喺 IG 撳<strong>「複製連結」</strong></li>
 <li>打開 <strong>Scriptable</strong>（唔好開捷徑）</li>
 <li>撳 <span class="name">IG存相解析</span> 嘅<strong>播放</strong></li>
 </ol>
-<p class="note">輪播同單張都用呢條。第一句係版本。單張會直接存。多過一張會先問「全部存」定「揀邊啲存」。揀邊啲存會見到細圖，撳一行就轉存唔存。跟住要嘛「已存相」，要嘛「存唔到」或「下載失敗」。唔會彈出 IG App。如果幾秒內就彈「連線超時」，即係腳本太舊，刷新再複製，要見到 1.9.4-ig-photos。只有「存唔入相簿」先至去設定改相片。如果話「存相出錯」，再複製一次最新腳本。</p>
+<p class="note">輪播同單張都用呢條。第一句係版本。單張會直接存。多過一張會先問「全部存」定「揀邊啲存」。揀邊啲存會先載入每張相（同存入相簿同一個下載），左邊見到細圖，撳一行就轉存唔存。如果表格顯示唔到圖，就會逐張彈出嚟睇，再問存唔存。跟住要嘛「已存相」，要嘛「存唔到」或「下載失敗」。唔會彈出 IG App。如果幾秒內就彈「連線超時」，即係腳本太舊，刷新再複製，要見到 1.9.5-ig-photos。只有「存唔入相簿」先至去設定改相片。如果話「存相出錯」，再複製一次最新腳本。</p>
 </div>
 
 <div class="card">

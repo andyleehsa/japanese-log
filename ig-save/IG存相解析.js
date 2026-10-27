@@ -3,10 +3,13 @@
 // Request.timeoutInterval 仍然係秒，唔好乘 1000。讀頁仍然等 60 秒，失敗再試。
 // v1.9.4：存相簿用 Image.fromData 再 Photos.save。只存呢篇嘅相。
 // 單張直接存。輪播可以全部存，或者睇住細圖揀邊啲先存。
+// v1.9.5：預覽唔再改 CDN 網址。1.9.4 把簽名網址改成 s320，每張都預覽失敗。
+// 而家預覽用同 Photos.save 一樣嘅下載（imageHeaders、60 秒、重試），再喺記憶體縮細顯示。
 // https://docs.scriptable.app/image/  https://docs.scriptable.app/photos/
-// https://docs.scriptable.app/uitable/
+// https://docs.scriptable.app/uitable/  https://docs.scriptable.app/quicklook/
+// https://docs.scriptable.app/drawcontext/
 
-const VERSION = "1.9.4-ig-photos";
+const VERSION = "1.9.5-ig-photos";
 const FETCH_SECONDS = 60;
 
 // Scriptable Timer.timeInterval is milliseconds.
@@ -573,29 +576,9 @@ function downloadPlan(url, extras) {
   return ordered.slice(0, 4);
 }
 
-function previewUrl(url, extras) {
-  const list = [];
-  function push(raw) {
-    const u = decodeEscapedUrl(raw);
-    if (!u || list.indexOf(u) >= 0) return;
-    list.push(u);
-  }
-  push(url);
-  const extraList = extras || [];
-  for (let i = 0; i < extraList.length; i++) push(extraList[i]);
-  let best = "";
-  let bestW = 99999;
-  for (let i = 0; i < list.length; i++) {
-    const w = widthHint(list[i]);
-    if (w >= 160 && w <= 480 && w < bestW) {
-      best = list[i];
-      bestW = w;
-    }
-  }
-  if (best) return best;
-  const seed = list[0] || "";
-  if (!seed) return "";
-  return withStp(seed, "dst-jpg_e35_s320x320_tt6");
+function previewRequestUrl(url, extras) {
+  const plan = downloadPlan(url, extras);
+  return plan.length ? plan[0] : "";
 }
 
 function attemptSequence(plan) {
@@ -951,15 +934,54 @@ async function loadImageOnce(url) {
   return data;
 }
 
-async function loadPreviewImage(url) {
+async function downloadImageData(url, extras) {
+  const seq = attemptSequence(downloadPlan(url, extras));
+  let lastError = "download_timeout";
+  for (let t = 0; t < seq.length; t++) {
+    try {
+      return await loadImageOnce(seq[t]);
+    } catch (e) {
+      lastError = String(e && e.message ? e.message : e);
+      if (t < seq.length - 1) {
+        try { await sleepSeconds(1.2); } catch (err) {}
+      }
+    }
+  }
+  throw new Error(lastError || "download_timeout");
+}
+
+function scaledPreview(image) {
+  try {
+    if (!image) return null;
+    if (typeof DrawContext !== "function" || typeof Size !== "function" || typeof Rect !== "function") return image;
+    const size = image.size;
+    const w = size && size.width;
+    const h = size && size.height;
+    if (!w || !h) return image;
+    const maxEdge = 220;
+    if (w <= maxEdge && h <= maxEdge) return image;
+    const scale = maxEdge / Math.max(w, h);
+    const tw = Math.max(1, Math.round(w * scale));
+    const th = Math.max(1, Math.round(h * scale));
+    const ctx = new DrawContext();
+    ctx.opaque = true;
+    ctx.respectScreenScale = true;
+    ctx.size = new Size(tw, th);
+    ctx.drawImageInRect(image, new Rect(0, 0, tw, th));
+    return ctx.getImage() || image;
+  } catch (e) {
+    return image;
+  }
+}
+
+async function loadPreviewImage(url, extras) {
   if (!url) return null;
   try {
-    const req = new Request(url);
-    req.timeoutInterval = 8;
-    req.headers = imageHeaders();
-    const data = await withTimeout(req.load(), 8, "preview_timeout");
-    if (!data || data.byteLength < 200) return null;
-    return Image.fromData(data) || null;
+    const data = await downloadImageData(url, extras);
+    const full = Image.fromData(data);
+    if (!full) return null;
+    const thumb = scaledPreview(full) || full;
+    return { full: full, thumb: thumb, data: data };
   } catch (e) {
     return null;
   }
@@ -969,7 +991,7 @@ async function loadPreviews(images, fallbacks) {
   const imgs = images || [];
   const fb = fallbacks || [];
   const jobs = [];
-  for (let i = 0; i < imgs.length; i++) jobs.push(loadPreviewImage(previewUrl(imgs[i], fb[i])));
+  for (let i = 0; i < imgs.length; i++) jobs.push(loadPreviewImage(imgs[i], fb[i]));
   try {
     return await Promise.all(jobs);
   } catch (e) {
@@ -986,36 +1008,38 @@ async function saveDownloadedImage(data) {
   await Photos.save(image);
 }
 
-async function saveImages(urls, fallbacks) {
+async function saveImages(urls, fallbacks, cached) {
   let saved = 0;
   const errors = [];
   const list = urls || [];
   const alts = fallbacks || [];
+  const ready = cached || [];
   for (let i = 0; i < list.length; i++) {
-    const seq = attemptSequence(downloadPlan(list[i], alts[i]));
-    let data = null;
-    let lastError = "download_timeout";
-    for (let t = 0; t < seq.length; t++) {
-      try {
-        data = await loadImageOnce(seq[t]);
-        lastError = "";
-        break;
-      } catch (e) {
-        lastError = String(e && e.message ? e.message : e);
-        if (t < seq.length - 1) {
-          try { await sleepSeconds(1.2); } catch (err) {}
-        }
-      }
-    }
+    let data = ready[i] || null;
+    const usedCache = !!data;
     if (!data) {
-      errors.push(lastError || "download_timeout");
-      continue;
+      try {
+        data = await downloadImageData(list[i], alts[i]);
+      } catch (e) {
+        errors.push(String(e && e.message ? e.message : e));
+        continue;
+      }
     }
     try {
       await saveDownloadedImage(data);
       saved++;
     } catch (e) {
-      errors.push(String(e && e.message ? e.message : e).slice(0, 180));
+      if (!usedCache) {
+        errors.push(String(e && e.message ? e.message : e).slice(0, 180));
+        continue;
+      }
+      try {
+        const fresh = await downloadImageData(list[i], alts[i]);
+        await saveDownloadedImage(fresh);
+        saved++;
+      } catch (e2) {
+        errors.push(String(e2 && e2.message ? e2.message : e2).slice(0, 180));
+      }
     }
   }
   return { saved, errors };
@@ -1088,7 +1112,7 @@ async function pickWithTable(count, previews) {
     table.addRow(hint);
     for (let i = 0; i < count; i++) {
       const row = new UITableRow();
-      try { row.height = 110; } catch (e) {}
+      try { row.height = 168; } catch (e) {}
       row.dismissOnSelect = false;
       row.onSelect = function (index) {
         selected[index] = !selected[index];
@@ -1126,7 +1150,7 @@ async function pickWithTable(count, previews) {
     const saveRow = new UITableRow();
     saveRow.dismissOnSelect = true;
     saveRow.onSelect = function () { decision = "save"; };
-    const saveCell = saveRow.addText("存已揀嘅相", "撳呢行就開始下載大圖");
+    const saveCell = saveRow.addText("存已揀嘅相", "撳呢行就存入相簿");
     styleChoiceCell(saveCell, true);
     table.addRow(saveRow);
     const cancelRow = new UITableRow();
@@ -1149,13 +1173,30 @@ async function pickWithTable(count, previews) {
 
 async function pickIndices(images, fallbacks) {
   const count = (images || []).length;
-  const previews = await loadPreviews(images, fallbacks);
-  try {
-    if (typeof UITable !== "function") return await pickByLooking(count, previews);
-    return await pickWithTable(count, previews);
-  } catch (e) {
-    return await pickByLooking(count, previews);
+  const wait = new Alert();
+  wait.title = "載入緊相";
+  wait.message = "用同存相一樣嘅方法下載 " + count + " 張預覽。下載完就見到相，請稍等。";
+  wait.addAction("開始載入");
+  wait.addCancelAction("取消");
+  if ((await wait.present()) === -1) return { picked: null, bytes: [] };
+  const loaded = await loadPreviews(images, fallbacks);
+  const thumbs = [];
+  const fulls = [];
+  const bytes = [];
+  for (let i = 0; i < count; i++) {
+    const item = loaded[i];
+    fulls.push(item && item.full ? item.full : null);
+    thumbs.push(item && (item.thumb || item.full) ? (item.thumb || item.full) : null);
+    bytes.push(item && item.data ? item.data : null);
   }
+  let picked = null;
+  try {
+    if (typeof UITable !== "function") picked = await pickByLooking(count, fulls);
+    else picked = await pickWithTable(count, thumbs);
+  } catch (e) {
+    picked = await pickByLooking(count, fulls);
+  }
+  return { picked: picked, bytes: bytes };
 }
 
 async function chooseImages(images, fallbacks) {
@@ -1166,12 +1207,16 @@ async function chooseImages(images, fallbacks) {
   const mode = await askCarouselMode(count);
   if (mode === "cancel") return { images: [], fallbacks: [], cancelled: true, reason: "cancel" };
   if (mode === "all") return { images: images, fallbacks: fallbacks || [], cancelled: false };
-  const picked = await pickIndices(images, fallbacks);
+  const pack = await pickIndices(images, fallbacks);
+  const picked = pack && pack.picked;
   if (!picked) return { images: [], fallbacks: [], cancelled: true, reason: "cancel" };
   const indices = chosenIndices(count, "pick", picked);
   if (!indices.length) return { images: [], fallbacks: [], cancelled: true, reason: "none" };
   const subset = subsetPairs(images, fallbacks, indices);
-  return { images: subset.images, fallbacks: subset.fallbacks, cancelled: false };
+  const cached = [];
+  const bytes = (pack && pack.bytes) || [];
+  for (let i = 0; i < indices.length; i++) cached.push(bytes[indices[i]] || null);
+  return { images: subset.images, fallbacks: subset.fallbacks, cached: cached, cancelled: false };
 }
 
 async function main() {
@@ -1240,7 +1285,7 @@ async function main() {
   let saved = 0;
   let errors = [];
   try {
-    const r = await saveImages(choice.images, choice.fallbacks);
+    const r = await saveImages(choice.images, choice.fallbacks, choice.cached);
     saved = r.saved;
     errors = r.errors;
   } catch (e) {
