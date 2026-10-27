@@ -62,7 +62,7 @@ SAVED_RESULT = (
 OPEN_TITLE = "即將打開 Scriptable"
 OPEN_LEAD = "即將打開 Scriptable 存相。\n連結：\n"
 OPEN_TAIL = (
-    "\n\n如果跟住冇見到「IG存相 1.9.3-ig-photos」，"
+    "\n\n如果跟住冇見到「IG存相 1.9.4-ig-photos」，"
     "請自己打開 Scriptable，撳「IG存相解析」播放。"
 )
 
@@ -279,7 +279,7 @@ def build_actions() -> list:
         "is.workflow.actions.comment",
         {
             "WFCommentActionText": (
-                "【IG存相 1.9.3】\n"
+                "【IG存相 1.9.4】\n"
                 "先搵分享入面嘅 IG 連結。\n"
                 "未有連結就讀剪貼簿。\n"
                 "有連結：先彈「即將打開 Scriptable」同條連結，再打開 scriptable://。\n"
