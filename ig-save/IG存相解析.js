@@ -1,12 +1,12 @@
 // IG存相解析.js — Scriptable（IG 相／輪播）
 // v1.9：Timer.timeInterval 係毫秒。之前把 60 當秒，實際 60 毫秒就超時。
 // Request.timeoutInterval 仍然係秒，唔好乘 1000。讀頁仍然等 60 秒，失敗再試。
-// v1.9.3：存相簿用 Image.fromData 再 Photos.save。只存呢篇嘅相。
-// 單張直接存。輪播可以全部存，或者喺表入面揀邊啲先存。
+// v1.9.4：存相簿用 Image.fromData 再 Photos.save。只存呢篇嘅相。
+// 單張直接存。輪播可以全部存，或者睇住細圖揀邊啲先存。
 // https://docs.scriptable.app/image/  https://docs.scriptable.app/photos/
 // https://docs.scriptable.app/uitable/
 
-const VERSION = "1.9.3-ig-photos";
+const VERSION = "1.9.4-ig-photos";
 const FETCH_SECONDS = 60;
 
 // Scriptable Timer.timeInterval is milliseconds.
@@ -573,6 +573,31 @@ function downloadPlan(url, extras) {
   return ordered.slice(0, 4);
 }
 
+function previewUrl(url, extras) {
+  const list = [];
+  function push(raw) {
+    const u = decodeEscapedUrl(raw);
+    if (!u || list.indexOf(u) >= 0) return;
+    list.push(u);
+  }
+  push(url);
+  const extraList = extras || [];
+  for (let i = 0; i < extraList.length; i++) push(extraList[i]);
+  let best = "";
+  let bestW = 99999;
+  for (let i = 0; i < list.length; i++) {
+    const w = widthHint(list[i]);
+    if (w >= 160 && w <= 480 && w < bestW) {
+      best = list[i];
+      bestW = w;
+    }
+  }
+  if (best) return best;
+  const seed = list[0] || "";
+  if (!seed) return "";
+  return withStp(seed, "dst-jpg_e35_s320x320_tt6");
+}
+
 function attemptSequence(plan) {
   const seq = [];
   if (!plan || !plan.length) return seq;
@@ -926,6 +951,34 @@ async function loadImageOnce(url) {
   return data;
 }
 
+async function loadPreviewImage(url) {
+  if (!url) return null;
+  try {
+    const req = new Request(url);
+    req.timeoutInterval = 8;
+    req.headers = imageHeaders();
+    const data = await withTimeout(req.load(), 8, "preview_timeout");
+    if (!data || data.byteLength < 200) return null;
+    return Image.fromData(data) || null;
+  } catch (e) {
+    return null;
+  }
+}
+
+async function loadPreviews(images, fallbacks) {
+  const imgs = images || [];
+  const fb = fallbacks || [];
+  const jobs = [];
+  for (let i = 0; i < imgs.length; i++) jobs.push(loadPreviewImage(previewUrl(imgs[i], fb[i])));
+  try {
+    return await Promise.all(jobs);
+  } catch (e) {
+    const empty = [];
+    for (let i = 0; i < imgs.length; i++) empty.push(null);
+    return empty;
+  }
+}
+
 async function saveDownloadedImage(data) {
   // Photos 冇 fromData。官方係 Image.fromData(data) 再 Photos.save(image)。
   const image = Image.fromData(data);
@@ -990,12 +1043,19 @@ async function askCarouselMode(count) {
   return "pick";
 }
 
-async function pickByAlerts(count) {
+async function pickByLooking(count, previews) {
   const picked = [];
+  const shots = previews || [];
   for (let i = 0; i < count; i++) {
+    const shot = shots[i] || null;
+    if (shot) {
+      try {
+        if (typeof QuickLook !== "undefined") await QuickLook.present(shot, true);
+      } catch (e) {}
+    }
     const a = new Alert();
-    a.title = "第 " + (i + 1) + "／" + count + " 張";
-    a.message = "呢張存唔存？";
+    a.title = shot ? ("第 " + (i + 1) + "／" + count + " 張") : ("第 " + (i + 1) + " 張（預覽失敗）");
+    a.message = shot ? "頭先睇到嗰張，存唔存？" : "預覽唔到，仍然可以揀存唔存。";
     a.addAction("存呢張");
     a.addAction("唔存呢張");
     a.addAction("之後全部都存");
@@ -1011,31 +1071,46 @@ async function pickByAlerts(count) {
   return picked;
 }
 
-async function pickWithTable(count) {
+async function pickWithTable(count, previews) {
   const selected = [];
+  const shots = previews || [];
   for (let i = 0; i < count; i++) selected.push(true);
   let decision = "cancel";
+  let imageApiBroken = false;
   const table = new UITable();
   table.showSeparators = true;
 
   function rebuild(live) {
     table.removeAllRows();
     const hint = new UITableRow();
-    const hintCell = hint.addText("揀要存嘅相", "打勾＝會存。撳一行就轉。");
+    const hintCell = hint.addText("揀要存嘅相", "左邊係細圖。撳一行就轉存唔存。");
     styleChoiceCell(hintCell);
     table.addRow(hint);
     for (let i = 0; i < count; i++) {
       const row = new UITableRow();
+      try { row.height = 110; } catch (e) {}
       row.dismissOnSelect = false;
       row.onSelect = function (index) {
         selected[index] = !selected[index];
         rebuild(true);
       }.bind(null, i);
+      let failed = !shots[i];
+      if (shots[i] && !imageApiBroken) {
+        try {
+          const imgCell = row.addImage(shots[i]);
+          imgCell.widthWeight = 36;
+          failed = false;
+        } catch (e) {
+          imageApiBroken = true;
+          failed = true;
+        }
+      }
       const on = selected[i];
       const cell = row.addText(
-        (on ? "✓  存  第 " : "○  唔存  第 ") + (i + 1) + " 張",
+        (on ? "✓  存  第 " : "○  唔存  第 ") + (i + 1) + " 張" + (failed ? "（預覽失敗）" : ""),
         on ? "撳一下就唔存呢張" : "撳一下就存呢張"
       );
+      cell.widthWeight = failed ? 100 : 64;
       styleChoiceCell(cell, on);
       table.addRow(row);
     }
@@ -1051,7 +1126,7 @@ async function pickWithTable(count) {
     const saveRow = new UITableRow();
     saveRow.dismissOnSelect = true;
     saveRow.onSelect = function () { decision = "save"; };
-    const saveCell = saveRow.addText("存已揀嘅相", "撳呢行就開始下載");
+    const saveCell = saveRow.addText("存已揀嘅相", "撳呢行就開始下載大圖");
     styleChoiceCell(saveCell, true);
     table.addRow(saveRow);
     const cancelRow = new UITableRow();
@@ -1064,6 +1139,7 @@ async function pickWithTable(count) {
   }
 
   rebuild(false);
+  if (imageApiBroken) throw new Error("table_image");
   await table.present(true);
   if (decision !== "save") return null;
   const picked = [];
@@ -1071,12 +1147,14 @@ async function pickWithTable(count) {
   return picked;
 }
 
-async function pickIndices(count) {
+async function pickIndices(images, fallbacks) {
+  const count = (images || []).length;
+  const previews = await loadPreviews(images, fallbacks);
   try {
-    if (typeof UITable !== "function") return await pickByAlerts(count);
-    return await pickWithTable(count);
+    if (typeof UITable !== "function") return await pickByLooking(count, previews);
+    return await pickWithTable(count, previews);
   } catch (e) {
-    return await pickByAlerts(count);
+    return await pickByLooking(count, previews);
   }
 }
 
@@ -1088,7 +1166,7 @@ async function chooseImages(images, fallbacks) {
   const mode = await askCarouselMode(count);
   if (mode === "cancel") return { images: [], fallbacks: [], cancelled: true, reason: "cancel" };
   if (mode === "all") return { images: images, fallbacks: fallbacks || [], cancelled: false };
-  const picked = await pickIndices(count);
+  const picked = await pickIndices(images, fallbacks);
   if (!picked) return { images: [], fallbacks: [], cancelled: true, reason: "cancel" };
   const indices = chosenIndices(count, "pick", picked);
   if (!indices.length) return { images: [], fallbacks: [], cancelled: true, reason: "none" };
