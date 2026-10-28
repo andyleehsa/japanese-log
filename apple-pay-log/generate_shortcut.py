@@ -656,12 +656,12 @@ def main():
     actions = build_actions()
     plist_obj = build_plist(actions)
     validate(actions, plist_obj)
-    unsigned_path = OUT_DIR / UNSIGNED_FILENAME
-    unsigned_path.write_bytes(plistlib.dumps(plist_obj, fmt=plistlib.FMT_XML))
     if "--check" in sys.argv:
         print(f"shortcut structure OK ({len(actions)} actions)")
-        print(f"unsigned {unsigned_path} ({unsigned_path.stat().st_size} bytes)")
         return
+
+    unsigned_path = OUT_DIR / UNSIGNED_FILENAME
+    unsigned_path.write_bytes(plistlib.dumps(plist_obj, fmt=plistlib.FMT_XML))
 
     failed_path = OUT_DIR / "HUBSIGN_FAILED.txt"
     try:
