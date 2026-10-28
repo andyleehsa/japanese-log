@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<title>Apple Pay 記帳 — iPhone 安裝</title>
+<style>
+:root { --pad: max(16px, env(safe-area-inset-left)); }
+* { box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang HK", "Helvetica Neue", sans-serif;
+  margin: 0;
+  padding-top: max(16px, env(safe-area-inset-top));
+  padding-right: max(16px, env(safe-area-inset-right));
+  padding-bottom: max(48px, env(safe-area-inset-bottom));
+  padding-left: max(16px, env(safe-area-inset-left));
+  line-height: 1.45;
+  background: #f2f2f7;
+  color: #111;
+  -webkit-text-size-adjust: 100%;
+}
+h1 { font-size: 1.55rem; margin: 4px 0 6px; }
+.ver {
+  display: inline-block;
+  background: #111;
+  color: #fff;
+  border-radius: 999px;
+  padding: 3px 10px;
+  font-size: .85rem;
+  font-weight: 700;
+  margin: 0 0 10px;
+}
+.sub { color: #333; font-size: 1.05rem; margin: 0 0 16px; }
+.card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 18px;
+  margin: 14px 0;
+  box-shadow: 0 1px 4px rgba(0,0,0,.08);
+}
+.step {
+  display: inline-block;
+  background: #111;
+  color: #fff;
+  border-radius: 999px;
+  padding: 2px 10px;
+  font-size: .85rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+h2 { font-size: 1.25rem; margin: 0 0 10px; }
+ol, ul { margin: 0; padding-left: 1.25em; }
+li { margin: 10px 0; font-size: 1.12rem; }
+.note { color: #333; font-size: 1.02rem; margin: 10px 0 0; }
+.warn {
+  background: #fff6e5;
+  border: 1px solid #f0c36d;
+  color: #6b4a00;
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin: 12px 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+.limits {
+  background: #f4f4f6;
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin: 12px 0 0;
+}
+.use {
+  background: #111;
+  color: #fff;
+  border-radius: 14px;
+  padding: 18px 16px;
+  margin: 12px 0 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+.use span { display: block; font-size: 1rem; font-weight: 500; color: #ddd; margin-top: 8px; }
+a.btn {
+  display: block;
+  width: 100%;
+  text-align: center;
+  padding: 22px 16px;
+  margin: 14px 0 0;
+  border: 0;
+  border-radius: 14px;
+  background: #34c759;
+  color: #fff;
+  font-size: 1.35rem;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.name {
+  display: inline-block;
+  background: #eee;
+  border-radius: 8px;
+  padding: 2px 8px;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+</style>
+</head>
+<body>
+<h1>Apple Pay 記帳</h1>
+<p class="ver">v1.0.0-apple-pay-log</p>
+<p class="sub">用 Safari 開呢頁。用 Apple Pay 付完錢，自動喺共同備忘錄加一行。唔使裝其他 App，唔使登入銀行。</p>
+
+<div class="use">28/10/2026 16:05｜7-Eleven｜HK$12.00<span>成功就係備忘錄多一行：短日期 短時間｜商戶｜金額。商戶空白就改用交易名稱。</span></div>
+
+<div class="warn">
+iOS 27 分享出嚟嘅捷徑，通常帶唔到錢包觸發。下載加入之後，一定要喺呢部 iPhone 自己加一次「當我輕點錢包卡…」。只做一次。
+</div>
+
+<div class="card">
+<span class="step">第 1 步</span>
+<h2>先開一張共同備忘錄</h2>
+<ol>
+<li>打開「備忘錄」</li>
+<li>右下角撳 <strong>＋</strong>，新增一張</li>
+<li>第一行標題打正好：<span class="name">家庭開支 Apple Pay</span></li>
+<li>撳分享 → 協作，邀請 Andy。權限揀 <strong>可更改</strong>（共同編輯）</li>
+<li><strong>唔好上鎖</strong></li>
+</ol>
+<p class="note">太太部機同 Andy 部機都要睇到呢張，而且可以改字。上咗鎖就寫唔入。如果 Andy 已經開咗呢張，太太要喺備忘錄收邀請，權限一樣要係可更改。</p>
+</div>
+
+<div class="card">
+<span class="step">第 2 步</span>
+<h2>加入捷徑</h2>
+<ol>
+<li>撳下面綠色大掣下載</li>
+<li>下載完，撳返個檔。如果唔見，打開「檔案」App，喺「下載項目」搵</li>
+<li>撳 <strong>加入捷徑</strong></li>
+<li>如果問備忘錄名稱，保持 <span class="name">家庭開支 Apple Pay</span>，再撳加入</li>
+</ol>
+<a class="btn" href="ApplePay記帳.shortcut">下載捷徑「Apple Pay 記帳」</a>
+<p class="note">捷徑名會係 <span class="name">Apple Pay 記帳</span>。之前裝過舊版就先刪走舊嗰個，再下載。</p>
+</div>
+
+<div class="card">
+<span class="step">第 3 步</span>
+<h2>加錢包觸發（必做，只做一次）</h2>
+<div class="warn">Apple 分享捷徑時會抽走「錢包」觸發。呢步要喺太太部 iPhone 自己加，捷徑檔入面帶唔到。</div>
+<ol>
+<li>打開「捷徑」App</li>
+<li>下面撳 <strong>自動化</strong></li>
+<li>右上角撳 <strong>＋</strong></li>
+<li>揀 <strong>錢包</strong>。如果見到「交易」，都係同一個</li>
+<li>揀 <strong>當我輕點錢包卡…</strong></li>
+<li>剔選太太平時用嚟 Apple Pay 嘅信用卡（可以多過一張）</li>
+<li>如果有「類別」，全部剔選。漏剔嘅類別就唔會記</li>
+<li>下一步，揀已有嘅捷徑 <span class="name">Apple Pay 記帳</span>。唔好新建空白捷徑</li>
+<li>揀 <strong>立即執行</strong>。唔好揀「執行前先問我」，否則每次付款都要再撳一次</li>
+<li>系統如果問「通知我」，可以關掉。捷徑自己會彈「已記低」</li>
+</ol>
+<p class="note">第一次真正付款，iPhone 會問「捷徑」可唔可以取用「備忘錄」，撳允許。如果問通知，都撳允許，先睇到記低咗邊一行。</p>
+</div>
+
+<div class="card">
+<span class="step">第 4 步</span>
+<h2>用一筆小額試</h2>
+<ol>
+<li>用 Apple Pay 付一筆小錢（便利店都得）</li>
+<li>打開備忘錄 <span class="name">家庭開支 Apple Pay</span></li>
+<li>最尾應該多一行，好似上面嗰句：日期｜商戶｜金額</li>
+</ol>
+<p class="note">唔好淨係喺捷徑 App 打開嚟試，咁樣冇付款資料，唔會寫入備忘錄。付款之後可能要等幾秒。頭一個星期每次記完會有通知「已記低」，方便對單。</p>
+</div>
+
+<div class="card">
+<span class="step">記唔到嘅情況</span>
+<h2>限制</h2>
+<div class="limits">
+<ul>
+<li>只記錢包入面嘅 Apple Pay 輕點。實體卡直接拍卡機、自己打卡號、現金，都唔會記</li>
+<li>用 Apple Watch 付款，如果部 iPhone 冇記到，就改用 iPhone 嘅 Apple Pay 再試一筆小額</li>
+<li>銀行有時遲幾分鐘先把資料交俾錢包，捷徑可能漏一筆。漏咗可以人手喺備忘錄加一行</li>
+<li>備忘錄要解鎖，而且可以更改。上鎖就寫唔入</li>
+<li>名稱要包含 <span class="name">家庭開支 Apple Pay</span>。如果有兩張名都包含呢幾個字，會寫入名稱排序第一張</li>
+</ul>
+</div>
+<p class="note">搞唔掂？確認備忘錄冇上鎖，捷徑名係 <span class="name">Apple Pay 記帳</span>，自動化係「立即執行」，而且第一次已經允許取用備忘錄。</p>
+</div>
+</body>
+</html>
